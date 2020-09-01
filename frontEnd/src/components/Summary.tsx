@@ -11,7 +11,7 @@ export function Summary() {
             <Grid
                 container
                 direction="row"
-                justify="space-evenly"
+                justify="space-around"
                 alignItems="center"
             >
                 <Grid

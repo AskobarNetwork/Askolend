@@ -1,6 +1,8 @@
 import * as React from "react";
 
-import { Paper } from "@material-ui/core";
+import { Grid, Paper, Typography } from "@material-ui/core";
+
+import { MarketTable } from "./MarketTable";
 import { Summary } from "."
 
 interface Props {
@@ -15,6 +17,25 @@ export function HomeBox(props: Props) {
 	return (
 		<Paper  {...other}>
 			<Summary />
+			<Grid
+				container
+				direction="row"
+				justify="space-evenly"
+				alignItems="flex-start"
+			>
+				<Grid>
+					<Typography>
+						Supply Markets
+					</Typography>
+					<MarketTable />
+				</Grid>
+				<Grid>
+					<Typography>
+						Borrow Markets
+					</Typography>
+					<MarketTable />
+				</Grid>
+			</Grid>
 		</Paper>
 	);
 }

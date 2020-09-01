@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import { HomeBox } from "../components";
+import { Bar, HomeBox } from "../components";
+
 import { makeStyles } from "@material-ui/styles";
 
 export function HomePage() {
@@ -9,6 +10,7 @@ export function HomePage() {
 
 	return (
 		<div className={classes.root}>
+			<Bar />
 			<div className={classes.centerContainer}>
 				<HomeBox size={300} color={boxColor} />
 			</div>

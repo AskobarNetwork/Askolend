@@ -28,13 +28,13 @@ export function Bar() {
                     <Grid
                         container
                         direction="row"
-                        justify="space-evenly"
+                        justify="space-around"
                         alignItems="center"
                     >
                         <Grid>
                             <Typography variant="h6" className={classes.title}>
                                 Askolend
-                        </Typography>
+                            </Typography>
                         </Grid>
                         <Grid>
                             <Button color="inherit" variant="outlined">

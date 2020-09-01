@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { Paper } from "@material-ui/core";
+import { Summary } from "."
 
 interface Props {
 	size: number;
@@ -13,6 +14,7 @@ export function HomeBox(props: Props) {
 
 	return (
 		<Paper  {...other}>
+			<Summary />
 		</Paper>
 	);
 }

@@ -1,5 +1,6 @@
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
+import { Switch } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -50,7 +51,9 @@ export function MarketTable() {
                             </TableCell>
                             <TableCell align="right">{row.apy}</TableCell>
                             <TableCell align="right">{row.wallet}</TableCell>
-                            <TableCell align="right">{row.collateral}</TableCell>
+                            <TableCell align="right">
+                                <Switch defaultChecked={row.collateral}></Switch>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

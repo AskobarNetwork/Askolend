@@ -2,8 +2,9 @@ import * as React from "react";
 
 import { Grid, Paper, Typography } from "@material-ui/core";
 
-import { MarketTable } from "./MarketTable";
+import { BorrowMarketTable } from "./BorrowMarketTable";
 import { Summary } from "."
+import { SupplyMarketTable } from "./SupplyMarketTable";
 
 interface Props {
 	size: number;
@@ -30,7 +31,7 @@ export function HomeBox(props: Props) {
 						<Typography variant="h6" >
 							Supply Markets
 						</Typography>
-						<MarketTable />
+						<SupplyMarketTable />
 					</Grid>
 				</Grid>
 				<Grid>
@@ -41,7 +42,7 @@ export function HomeBox(props: Props) {
 						<Typography variant="h6" >
 							Borrow Markets
 						</Typography>
-						<MarketTable />
+						<BorrowMarketTable />
 					</Grid>
 				</Grid>
 			</Grid>

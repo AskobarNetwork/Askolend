@@ -1,6 +1,5 @@
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
-import { Switch } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -11,25 +10,26 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
     table: {
+        maxHeight: 650,
         minWidth: 650,
     },
 });
 
-function createData(asset: string, apy: string, wallet: string, collateral: boolean) {
-    return { asset, apy, wallet, collateral };
+function createData(asset: string, apy: string, wallet: string, liquidity: string) {
+    return { asset, apy, wallet, liquidity };
 }
 
 const rows = [
-    createData('Basic Attention Token', '10.52%', '0 BAT', false),
-    createData('Dai', '3.03%', '0 DAI', false),
-    createData('Ether', '0.20%', '0 ETH', false),
-    createData('USD Coin', '1.89%', '0 USDC', false),
-    createData('Tether', '2.75%', '0 USDT', false),
-    createData('Wrapped BTC', '0.97%', '0 WBTC', false),
-    createData('0x', '1.92%', '0 ZRX', false),
+    createData('Basic Attention Token', '10.52%', '0 BAT', '$4.06M'),
+    createData('Dai', '3.03%', '0 DAI', '$189.48M'),
+    createData('Ether', '0.20%', '0 ETH', '$375.54M'),
+    createData('USD Coin', '1.89%', '0 USDC', '$127.10M'),
+    createData('Tether', '2.75%', '0 USDT', '$4.63M'),
+    createData('Wrapped BTC', '0.97%', '0 WBTC', '$13.11M'),
+    createData('0x', '1.92%', '0 ZRX', '$52.67M'),
 ];
 
-export function MarketTable() {
+export function BorrowMarketTable() {
     const classes = useStyles();
 
     return (
@@ -40,7 +40,7 @@ export function MarketTable() {
                         <TableCell>Asset</TableCell>
                         <TableCell align="right">APY</TableCell>
                         <TableCell align="right">Wallet</TableCell>
-                        <TableCell align="right">Collateral</TableCell>
+                        <TableCell align="right">Liquidity</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -52,7 +52,7 @@ export function MarketTable() {
                             <TableCell align="right">{row.apy}</TableCell>
                             <TableCell align="right">{row.wallet}</TableCell>
                             <TableCell align="right">
-                                <Switch defaultChecked={row.collateral}></Switch>
+                                {row.liquidity}
                             </TableCell>
                         </TableRow>
                     ))}

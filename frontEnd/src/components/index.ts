@@ -1,4 +1,5 @@
 export * from "./HomeBox";
 export * from "./Bar"
 export * from "./Summary"
-export * from "./MarketTable"
+export * from "./BorrowMarketTable"
+export * from "./SupplyMarketTable"

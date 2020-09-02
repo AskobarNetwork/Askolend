@@ -30,7 +30,15 @@ const outerTheme = createMuiTheme({
 			elevation: 2,
 			variant: 'outlined'
 		},
-	}
+	},
+	overrides: {
+		MuiTableCell: {
+			root: {  
+				padding: '4px 8px',
+				lineHeight: '40px',
+			},
+		},
+	},
 });
 
 function Routes() {

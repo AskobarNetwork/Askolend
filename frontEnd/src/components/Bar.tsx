@@ -33,7 +33,7 @@ export function Bar() {
                     >
                         <Grid>
                             <Typography variant="h4" className={classes.title}>
-                                <img src={"favicon32x32.png"} /> Askolend
+                                <img src={"favicon32x32.png"} alt="" /> Askolend
                             </Typography>
                         </Grid>
                         <Grid>

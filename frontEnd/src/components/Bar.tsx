@@ -1,8 +1,8 @@
+import { Avatar, Grid } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
-import { Grid } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/styles';
@@ -11,11 +11,12 @@ const styles = (theme: any) => ({
     root: {
         flexGrow: 1,
     },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
     title: {
         flexGrow: 1,
+    },
+    small: {
+        maxWidth: '15px',
+        maxHeight: '15px',
     },
 });
 
@@ -35,7 +36,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     constructor(props: any) {
         super(props);
         this.state = {
-            button: this.walletDisplay()
+            button: this.walletButton()
         };
     }
 
@@ -50,9 +51,18 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     }
 
     walletDisplay = () => {
-        return <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
-            Wallet Info
-        </Button>;
+        const { classes } = this.props;
+        return (
+            <React.Fragment>
+                <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
+                    0.0000 &nbsp; <Avatar src={"favicon32x32.png"} alt="" className={classes.small} />
+                </Button>
+                &nbsp;
+                <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
+                    0x00...0000
+                </Button>
+            </React.Fragment>
+        );
     }
 
     render() {
@@ -62,15 +72,15 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
                 <AppBar position="static">
                     <Toolbar>
                         <Grid
+                            alignItems="center"
                             container
                             direction="row"
-                            justify="space-around"
-                            alignItems="center"
+                            justify="space-between"
                         >
                             <Grid>
-                                <Typography variant="h4" className={classes.title}>
+                                <Typography variant="h4" className={classes.title} noWrap display={"block"}>
                                     <img src={"favicon32x32.png"} alt="" /> Askolend
-                            </Typography>
+                                </Typography>
                             </Grid>
                             <Grid>
                                 {this.state.button}

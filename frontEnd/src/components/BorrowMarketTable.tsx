@@ -1,3 +1,5 @@
+import { Grid, Typography } from '@material-ui/core';
+
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import Table from '@material-ui/core/Table';
@@ -15,18 +17,18 @@ const useStyles = makeStyles({
     },
 });
 
-function createData(asset: string, apy: string, wallet: string, liquidity: string) {
-    return { asset, apy, wallet, liquidity };
+function createData(icon: any, asset: string, apy: string, wallet: string, liquidity: string) {
+    return { icon, asset, apy, wallet, liquidity };
 }
 
 const rows = [
-    createData('Basic Attention Token', '10.52%', '0 BAT', '$4.06M'),
-    createData('Dai', '3.03%', '0 DAI', '$189.48M'),
-    createData('Ether', '0.20%', '0 ETH', '$375.54M'),
-    createData('USD Coin', '1.89%', '0 USDC', '$127.10M'),
-    createData('Tether', '2.75%', '0 USDT', '$4.63M'),
-    createData('Wrapped BTC', '0.97%', '0 WBTC', '$13.11M'),
-    createData('0x', '1.92%', '0 ZRX', '$52.67M'),
+    createData(<img src={"bat.png"} alt="" />, 'Basic Attention Token', '10.52%', '0 BAT', '$4.06M'),
+    createData(<img src={"dai.png"} alt="" />, 'Dai', '3.03%', '0 DAI', '$189.48M'),
+    createData(<img src={"favicon32x32.png"} alt="" />, 'Ether', '0.20%', '0 ETH', '$375.54M'),
+    createData(<img src={"usdc.png"} alt="" />, 'USD Coin', '1.89%', '0 USDC', '$127.10M'),
+    createData(<img src={"tether.png"} alt="" />, 'Tether', '2.75%', '0 USDT', '$4.63M'),
+    createData(<img src={"wbtc.png"} alt="" />, 'Wrapped BTC', '0.97%', '0 WBTC', '$13.11M'),
+    createData(<img src={"zrx.png"} alt="" />, '0x', '1.92%', '0 ZRX', '$52.67M'),
 ];
 
 export function BorrowMarketTable() {
@@ -47,7 +49,15 @@ export function BorrowMarketTable() {
                     {rows.map((row) => (
                         <TableRow key={row.asset}>
                             <TableCell component="th" scope="row">
-                                {row.asset}
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="flex-start"
+                                    alignItems="center"
+                                >
+                                    {row.icon}
+                                    <Typography>{row.asset}</Typography>
+                                </Grid>
                             </TableCell>
                             <TableCell align="right">{row.apy}</TableCell>
                             <TableCell align="right">{row.wallet}</TableCell>

@@ -55,7 +55,7 @@ export function BorrowMarketTable() {
                                     justify="flex-start"
                                     alignItems="center"
                                 >
-                                    {row.icon}
+                                    {row.icon} &nbsp;
                                     <Typography>{row.asset}</Typography>
                                 </Grid>
                             </TableCell>

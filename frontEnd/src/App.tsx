@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { Grid, Typography } from "@material-ui/core";
 // prettier-ignore
 import { Route, Router } from "react-router-dom";
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -33,7 +34,7 @@ const outerTheme = createMuiTheme({
 	},
 	overrides: {
 		MuiTableCell: {
-			root: {  
+			root: {
 				padding: '4px 8px',
 				lineHeight: '40px',
 			},
@@ -49,6 +50,19 @@ function Routes() {
 			<CssBaseline>
 				<div className={classes.content}>
 					<Route exact={true} path="/" component={HomePage} />
+					<Grid
+						style={{ padding: 10 }}
+						container
+						direction="column"
+						justify="flex-end"
+						alignItems="center"
+					>
+						<Grid item xs={12}>
+							<Typography variant="body2">
+								Copyright © 2020 Askobar Network. All rights reserved.
+							</Typography>
+						</Grid>
+					</Grid>
 				</div>
 			</CssBaseline>
 		</ThemeProvider>

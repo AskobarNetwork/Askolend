@@ -24,16 +24,25 @@ export function HomeBox(props: Props) {
 				alignItems="flex-start"
 			>
 				<Grid>
-					<Typography>
-						Supply Markets
-					</Typography>
-					<MarketTable />
+					<Grid
+						direction="column"
+					>
+						<Typography variant="h6" >
+							Supply Markets
+						</Typography>
+						<MarketTable />
+					</Grid>
 				</Grid>
 				<Grid>
-					<Typography>
-						Borrow Markets
-					</Typography>
-					<MarketTable />
+					<Grid
+						alignItems="center"
+						direction="column"
+					>
+						<Typography variant="h6" >
+							Borrow Markets
+						</Typography>
+						<MarketTable />
+					</Grid>
 				</Grid>
 			</Grid>
 		</Paper>

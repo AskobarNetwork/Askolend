@@ -32,12 +32,12 @@ export function Bar() {
                         alignItems="center"
                     >
                         <Grid>
-                            <Typography variant="h6" className={classes.title}>
-                                Askolend
+                            <Typography variant="h4" className={classes.title}>
+                                <img src={"favicon32x32.png"} /> Askolend
                             </Typography>
                         </Grid>
                         <Grid>
-                            <Button color="inherit" variant="outlined">
+                            <Button color="secondary" variant="contained">
                                 Connect Wallet
                             </Button>
                         </Grid>

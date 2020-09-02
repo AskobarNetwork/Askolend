@@ -2,20 +2,48 @@ import * as React from "react";
 
 // prettier-ignore
 import { Route, Router } from "react-router-dom";
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { HomePage } from "./pages";
 import { Theme } from "@material-ui/core/styles";
 import { history } from "./configureStore";
 import { makeStyles } from "@material-ui/styles";
 import { withRoot } from "./withRoot";
 
+const outerTheme = createMuiTheme({
+	palette: {
+		primary: {
+			main: "#1a202c"
+		},
+		secondary: {
+			main: "#00c6aa"
+		},
+		type: 'dark',
+		background: {
+			default: "#1a202c",
+			paper: "#1e2430",
+		}
+	},
+	props: {
+		MuiPaper: {
+			elevation: 2,
+			variant: 'outlined'
+		},
+	}
+});
+
 function Routes() {
 	const classes = useStyles();
 
 	return (
-		<div className={classes.content}>
-			<Route exact={true} path="/" component={HomePage} />
-		</div>
+		<ThemeProvider theme={outerTheme}>
+			<CssBaseline>
+				<div className={classes.content}>
+					<Route exact={true} path="/" component={HomePage} />
+				</div>
+			</CssBaseline>
+		</ThemeProvider>
 	);
 }
 

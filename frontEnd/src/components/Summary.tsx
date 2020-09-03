@@ -15,7 +15,6 @@ export function Summary() {
                 alignItems="center"
             >
                 <Grid
-                    direction="column"
                 >
                     <Typography variant="h5" gutterBottom>
                         Supply Balance
@@ -31,7 +30,6 @@ export function Summary() {
                     </Typography>
                 </Grid>
                 <Grid
-                    direction="column"
                 >
                     <Typography variant="h5" gutterBottom>
                         Borrow Balance

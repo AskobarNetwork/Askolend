@@ -1,10 +1,13 @@
 import { Avatar, Grid } from '@material-ui/core';
+import { IWeb3Connection, IWeb3ConnectionParameters } from "../model"
 import React, { ReactElement } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import { connect } from "react-redux"
+import { makeWeb3Connection } from "../actions"
 import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
@@ -26,6 +29,8 @@ const walletDisplay = <Button color="secondary" variant="contained">
 
 interface IBarProps {
     classes: any,
+    makeWeb3Connection: any,
+    web3Connection: IWeb3Connection,
 }
 
 interface IBarState {
@@ -36,7 +41,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     constructor(props: any) {
         super(props);
         this.state = {
-            button: this.walletButton()
+            button: this.walletButton(),
         };
     }
 
@@ -51,11 +56,17 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     }
 
     walletDisplay = () => {
-        const { classes } = this.props;
+        var params: IWeb3ConnectionParameters = {
+            network: "mainnet",
+            cacheProvider: true,
+            providerOptions: {},
+        }
+        this.props.makeWeb3Connection(params);
+        
         return (
             <React.Fragment>
                 <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
-                    0.0000 &nbsp; <Avatar src={"favicon32x32.png"} alt="" className={classes.small} />
+                    0.0000 &nbsp; <Avatar src={"favicon32x32.png"} alt="" className={this.props.classes.small} />
                 </Button>
                 &nbsp;
                 <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
@@ -66,9 +77,8 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     }
 
     render() {
-        const { classes } = this.props;
         return (
-            <div className={classes.root}>
+            <div className={this.props.classes.root}>
                 <AppBar position="static">
                     <Toolbar>
                         <Grid
@@ -78,7 +88,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
                             justify="space-between"
                         >
                             <Grid>
-                                <Typography variant="h4" className={classes.title} noWrap display={"block"}>
+                                <Typography variant="h4" className={this.props.classes.title} noWrap display={"block"}>
                                     <img src={"favicon32x32.png"} alt="" /> Askolend
                                 </Typography>
                             </Grid>
@@ -94,5 +104,22 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
 }
 
 
-var Bar: any = withStyles(styles)(BarClass);
+
+const mapStateToProps = (state: any) => {
+    return {
+        web3Connection: state.web3Connection
+    }
+}
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        makeWeb3Connection: (web3ConnectionParameters: IWeb3ConnectionParameters) => {
+            dispatch(makeWeb3Connection(web3ConnectionParameters))
+        }
+    }
+}
+
+const UnconnectedBar: any = withStyles(styles)(BarClass);
+const Bar = connect(mapStateToProps, mapDispatchToProps)(UnconnectedBar)
+
 export { Bar };

@@ -16,7 +16,7 @@ const initialState: IState = {
     web3: undefined,
 }
 
-export default function web3(state: IState = initialState, action: any) {
+export function web3(state: IState = initialState, action: any) {
     switch (action.type) {
         case WEB3_CONNECT:
             return Object.assign({}, state, {

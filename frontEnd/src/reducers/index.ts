@@ -1,13 +1,8 @@
 import { History } from "history";
 import { combineReducers } from "redux";
-import { Todo } from "../model";
-import * as todoReducer from "./todo";
-
-export interface RootState {
-	todoList: Todo[];
-}
+import web3 from "./web3"
 
 export default (history: History) =>
 	combineReducers({
-		...todoReducer,
+		web3
 	});

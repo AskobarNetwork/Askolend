@@ -1,31 +1,18 @@
-import { WEB3_CONNECT, WEB3_DISCONNECT } from "../actions"
+import { WEB3_CONNECT, WEB3_CONNECTED, WEB3_DISCONNECTED } from "../actions"
 
-import Web3Modal from "web3modal";
-
-interface IState {
-    provider: any,
-    providerOptions: any,
-    web3Modal: Web3Modal,
-    web3: any,
+const initialState: any = {
+    web3Connection: undefined,
 }
 
-const initialState: IState = {
-    providerOptions: undefined,
-    web3Modal: new Web3Modal(),
-    provider: undefined,
-    web3: undefined,
-}
-
-export function web3(state: IState = initialState, action: any) {
+export function web3(state = initialState, action: any) {
     switch (action.type) {
         case WEB3_CONNECT:
+            return state
+        case WEB3_CONNECTED:
             return Object.assign({}, state, {
-                provider: state.provider,
-                providerOptions: state.providerOptions,
-                web3Modal: state.web3Modal,
-                web3: state.web3,
+                web3Connection: state.web3Connection,
             })
-        case WEB3_DISCONNECT:
+        case WEB3_DISCONNECTED:
             return Object.assign({}, state, initialState)
         default:
             return state

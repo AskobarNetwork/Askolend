@@ -1,11 +1,15 @@
-import { createBrowserHistory } from "history";
+import * as actions from "./actions"
 import * as localforage from "localforage";
-import { applyMiddleware, createStore } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import { createLogger } from "redux-logger";
+
 import { PersistConfig, persistReducer, persistStore } from "redux-persist";
-import thunk from "redux-thunk";
+import { applyMiddleware, createStore } from "redux";
+
+import { IWeb3Connection } from "./model"
+import { composeWithDevTools } from "redux-devtools-extension";
+import { createBrowserHistory } from "history";
+import { createLogger } from "redux-logger";
 import rootReducer from "./reducers";
+import thunk from "redux-thunk";
 
 const persistConfig: PersistConfig<any> = {
 	key: "root",
@@ -30,6 +34,15 @@ const persistedReducer = persistReducer(persistConfig, rootReducer(history));
 export default () => {
 	const store = createStore(persistedReducer, {}, middleware) as any;
 	const persistor = persistStore(store);
+	var initialState: IWeb3Connection = {
+		network: "mainnet",
+		cacheProvider: true,
+		providerOptions: {},
+		web3Modal: undefined,
+		provider: {},
+		web3: undefined,
+	}
+	store.dispatch(actions.makeWeb3Connection(initialState))
 	return { store, persistor };
 };
 

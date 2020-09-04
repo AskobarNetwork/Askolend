@@ -1,19 +1,27 @@
 import * as localforage from "localforage";
 
-import { PersistConfig, persistReducer, persistStore } from "redux-persist";
+import { PersistConfig, createTransform, persistReducer, persistStore } from "redux-persist";
 import { applyMiddleware, createStore } from "redux";
 
+// @ts-ignore
+import JSOG from 'jsog'
 import { composeWithDevTools } from "redux-devtools-extension";
 import { createBrowserHistory } from "history";
 import { createLogger } from "redux-logger";
 import rootReducer from "./reducers";
 import thunk from "redux-thunk";
 
+export const JSOGTransform = createTransform(
+	(inboundState: any, key: any) => JSOG.encode(inboundState),
+	(outboundState: any, key: any) => JSOG.decode(outboundState),
+)
+
 const persistConfig: PersistConfig<any> = {
 	key: "root",
 	version: 1,
 	storage: localforage,
 	blacklist: [],
+	transforms: [JSOGTransform]
 };
 
 const logger = (createLogger as any)();

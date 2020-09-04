@@ -1,11 +1,14 @@
 import { Avatar, Grid } from '@material-ui/core';
-import { IWeb3Connection, IWeb3ConnectionParameters } from "../model"
 import React, { ReactElement } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
+import { IProviderInfo } from 'web3modal';
+import { IWeb3ConnectionParameters } from "../model"
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Web3 from "web3";
+import Web3Modal from "web3modal";
 import { connect } from "react-redux"
 import { makeWeb3Connection } from "../actions"
 import { withStyles } from '@material-ui/styles';
@@ -29,8 +32,10 @@ const walletDisplay = <Button color="secondary" variant="contained">
 
 interface IBarProps {
     classes: any,
-    makeWeb3Connection: any,
-    web3Connection: IWeb3Connection,
+    makeWeb3Connection: Function,
+    web3Modal: Web3Modal,
+    provider: IProviderInfo,
+    web3: Web3,
 }
 
 interface IBarState {
@@ -61,8 +66,9 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
             cacheProvider: true,
             providerOptions: {},
         }
+        // TO-DO: Make action async so that this.props.web3Connection.web3 is not undefined
         this.props.makeWeb3Connection(params);
-        
+
         return (
             <React.Fragment>
                 <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
@@ -107,7 +113,9 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
 
 const mapStateToProps = (state: any) => {
     return {
-        web3Connection: state.web3Connection
+        web3Modal: state.web3Modal,
+        provider: state.provider,
+        web3: state.web3
     }
 }
 

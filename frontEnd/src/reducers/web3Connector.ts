@@ -1,15 +1,18 @@
 import { WEB3_CONNECTED, WEB3_DISCONNECTED } from "../actions"
 
 const initialState: any = {
-    web3Connection: undefined,
+    connected: false,
+    web3Modal: undefined,
+    provider: undefined,
+    web3: undefined
 }
 
 export function web3Connector(state = initialState, action: any) {
     switch (action.type) {
         case WEB3_CONNECTED:
-            console.log(action.web3)
             return Object.assign({}, state, {
-                web3Modal: action.web3Modal, 
+                connected: action.connected,
+                web3Modal: action.web3Modal,
                 provider: action.provider,
                 web3: action.web3
             });

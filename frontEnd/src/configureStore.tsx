@@ -21,7 +21,8 @@ const persistConfig: PersistConfig<any> = {
 	version: 1,
 	storage: localforage,
 	blacklist: [],
-	transforms: [JSOGTransform]
+	transforms: [JSOGTransform],
+	timeout: 0,
 };
 
 const logger = (createLogger as any)();

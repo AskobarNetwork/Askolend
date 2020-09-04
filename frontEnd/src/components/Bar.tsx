@@ -1,10 +1,10 @@
 import { Avatar, Grid } from '@material-ui/core';
-import React, { ReactElement } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import { IProviderInfo } from 'web3modal';
 import { IWeb3ConnectionParameters } from "../model"
+import React from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Web3 from "web3";
@@ -26,63 +26,74 @@ const styles = (theme: any) => ({
     },
 });
 
-const walletDisplay = <Button color="secondary" variant="contained">
-    walletDisplay
-</Button>
-
 interface IBarProps {
     classes: any,
     makeWeb3Connection: Function,
+    connected: boolean,
     web3Modal: Web3Modal,
     provider: IProviderInfo,
     web3: Web3,
 }
 
 interface IBarState {
-    button: ReactElement,
+    account: String,
+    balance: String
 }
 
 class BarClass extends React.Component<IBarProps, IBarState>  {
     constructor(props: any) {
         super(props);
         this.state = {
-            button: this.walletButton(),
+            account: this.props?.web3?.givenProvider?.selectedAddress || "",
+            balance: "0"
         };
     }
 
-    swapButtons = () => {
-        this.setState({ button: walletDisplay });
+
+    componentDidUpdate = () => {
+        var account = this.props.web3.givenProvider.selectedAddress;
+        if (this.state.account !== account) {
+            this.setState({
+                account: account,
+            });
+        }
+        // TO-DO: web3.eth is always undefined, need to fix
+        this.props.web3.eth?.getBalance(account).then((balance) => {
+            if (this.state.balance !== balance && balance !== undefined) {
+                this.setState({
+                    balance: balance,
+                });
+            }
+        })
+
     }
 
-    walletButton = () => {
-        return <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletDisplay() })}>
-            Connect Wallet
-        </Button>;
-    }
+    truncate = (str: String, n: number) => {
+        return (str.length > n) ? str.substr(0, n) + '...' : str;
+    };
 
-    walletDisplay = () => {
+    render() {
         var params: IWeb3ConnectionParameters = {
             network: "mainnet",
             cacheProvider: true,
             providerOptions: {},
         }
-        // TO-DO: Make action async so that this.props.web3Connection.web3 is not undefined
-        this.props.makeWeb3Connection(params);
 
-        return (
+        const button = this.props.connected === true ?
             <React.Fragment>
-                <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
-                    0.0000 &nbsp; <Avatar src={"favicon32x32.png"} alt="" className={this.props.classes.small} />
+                <Button color="secondary" variant="contained">
+                    {this.state.balance} &nbsp; <Avatar src={"favicon32x32.png"} alt="" className={this.props.classes.small} />
                 </Button>
                 &nbsp;
-                <Button color="secondary" variant="contained" onClick={() => this.setState({ button: this.walletButton() })}>
-                    0x00...0000
+                <Button color="secondary" variant="contained">
+                    {this.truncate(this.state.account, 10)}
                 </Button>
             </React.Fragment>
-        );
-    }
+            : <Button color="secondary" variant="contained" onClick={() =>
+                this.props.makeWeb3Connection(params)}>
+                Connect Wallet
+        </Button>;
 
-    render() {
         return (
             <div className={this.props.classes.root}>
                 <AppBar position="static">
@@ -99,7 +110,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
                                 </Typography>
                             </Grid>
                             <Grid>
-                                {this.state.button}
+                                {button}
                             </Grid>
                         </Grid>
                     </Toolbar>
@@ -113,9 +124,10 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
 
 const mapStateToProps = (state: any) => {
     return {
-        web3Modal: state.web3Modal,
-        provider: state.provider,
-        web3: state.web3
+        connected: state.web3Connector.connected,
+        web3Modal: state.web3Connector.web3Modal,
+        provider: state.web3Connector.provider,
+        web3: state.web3Connector.web3
     }
 }
 

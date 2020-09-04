@@ -10,11 +10,11 @@ export const WEB3_CONNECTED = 'WEB3_CONNECTED'
 export const WEB3_DISCONNECTED = 'WEB3_DISCONNECTED'
 
 function web3Connect() {
-  return { type: WEB3_CONNECT, web3Connection: undefined }
+  return { type: WEB3_CONNECT, connected: false }
 }
 
 function web3Connected(web3Modal: Web3Modal, provider: IProviderInfo, web3: Web3) {
-  return { type: WEB3_CONNECTED, web3Modal, provider, web3 }
+  return { type: WEB3_CONNECTED, connected: true, web3Modal, provider, web3 }
 }
 
 export function makeWeb3Connection(web3ConnectionParameters: IWeb3ConnectionParameters) {

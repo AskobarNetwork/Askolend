@@ -13,7 +13,7 @@ export function SupplyMarket() {
 
     return (
         <Card className={classes.SupplyMarket}>
-            <TabPanel />
+          
 
            <Typography>test</Typography>
            <Typography>to supply or repay Dai to the compound protocol, you need to enable it first </Typography>
@@ -23,7 +23,7 @@ export function SupplyMarket() {
         image={"dai.png"}
         title="Dai"
       />
-    
+      <TabPanel />
         </Card>
     );
 }

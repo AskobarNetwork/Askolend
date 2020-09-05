@@ -5,7 +5,7 @@ import { Grid, Paper, Typography } from "@material-ui/core";
 import { BorrowMarketTable } from "./BorrowMarketTable";
 import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
-
+import {SupplyMarket} from "./SupplyMarket"
 interface Props {
 	size: number;
 	color: "red" | "blue" | string;
@@ -25,7 +25,6 @@ export function HomeBox(props: Props) {
 				alignItems="flex-start"
 			>
 				<Grid>
-
 					<Typography variant="h6" >
 						Supply Markets
 						</Typography>

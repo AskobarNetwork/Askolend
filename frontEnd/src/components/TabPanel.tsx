@@ -6,7 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-
+import {SupplyTab} from './SupplyTab'
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -19,7 +19,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={3}>
+        <Box p={2}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width:400,
     backgroundColor: theme.palette.background.paper,
-    marginTop:275,
+    marginTop:50,
   },
 }));
 
@@ -65,7 +65,7 @@ export default function SimpleTabs() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        Item One
+        <SupplyTab />
       </TabPanel>
       <TabPanel value={value} index={1}>
         Item Two

@@ -9,12 +9,12 @@ import Tab from '@material-ui/core/Tab';
 import TabPanel from './TabPanel'
 import Divider from '@material-ui/core/Divider';
 
-export function SupplyTab() {
+export function WithdrawTab() {
 const classes = useStyles();
 
     return (
         <Card className={classes.SupplyTab}>
-        <Typography>Supply Rates </Typography>
+        <Typography>(Withdraw) </Typography>
         <Container className={classes.container}>
           
         <Container>  <Typography className={classes.greytext}>Supply APY</Typography></Container>
@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
       container:{
           display:'inline-block',
           verticalAlign:'top',
+          
       },
       left:{
           width:50,

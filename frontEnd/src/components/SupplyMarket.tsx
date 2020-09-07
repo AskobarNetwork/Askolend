@@ -5,19 +5,22 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CardMedia} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import TabPanel from './TabPanel'
+import AppBar from '@material-ui/core/AppBar'
 export function SupplyMarket() {
     const classes = useStyles();
 
     return (
         <Card className={classes.SupplyMarket}>
-          
+             <AppBar position="static">
+             <Typography className={classes.AppBar}>Dai</Typography>
 
-           <Typography>test</Typography>
-           <Typography>to supply or repay Dai to the compound protocol, you need to enable it first </Typography>
+</AppBar>
+
+           <Typography className={classes.greytext}>to supply or repay Dai to the compound protocol, you need to enable it first </Typography>
 
            <CardMedia
         className={classes.media}
-        image={"dai.png"}
+        image={'dai.png'}
         title="Dai"
       />
       <TabPanel />
@@ -31,11 +34,11 @@ const useStyles = makeStyles((theme) => ({
     },
     SupplyMarket: {
         flexGrow: 1,
-        padding: '30px',
         height: 600,
         width: 400,
-        background:'white',
-        color:'black',
+        color:'white',
+        border:'1px solid black',
+        background:'#f9fafb'
     },
     TabPanel: {
         flexGrow: 1,
@@ -46,7 +49,18 @@ const useStyles = makeStyles((theme) => ({
         color:'black',
     },
     media: {
-       height:0
+        flex:1,
+       height:10
         
       },
+      AppBar:{
+          justifyContent:'center',
+          textAlign:'center',
+          background:'#f9fafb',
+          color:'black',
+
+      },
+      greytext:{
+        color:'#b2bcc8',
+    },
 }));

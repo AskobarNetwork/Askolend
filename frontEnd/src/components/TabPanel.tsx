@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import {SupplyTab} from './SupplyTab'
+import {WithdrawTab} from './WithdrawTab'
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -41,10 +42,18 @@ function a11yProps(index) {
 }
 
 const useStyles = makeStyles((theme) => ({
+    Tab:{
+        backgroud:'#f9fafb'
+    },
+    AppBar:{
+        backgroundColor:'#f9fafb',
+        color:'	#00d395'
+    },
   root: {
     width:400,
-    backgroundColor: theme.palette.background.paper,
-    marginTop:50,
+    color:'white',
+    backgroundColor:'#f9fafb'
+
   },
 }));
 
@@ -58,18 +67,18 @@ export default function SimpleTabs() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
-        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-          <Tab label="Supply" {...a11yProps(0)} />
-          <Tab label="Withdraw" {...a11yProps(1)} />
-        </Tabs>
-      </AppBar>
-      <TabPanel value={value} index={0}>
-        <SupplyTab />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
-      </TabPanel>
+   <AppBar className={classes.AppBar}position="static">
+     <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+        <Tab className={classes.Tab}label="Supply" {...a11yProps(0)} />
+        <Tab label="Withdraw" {...a11yProps(1)} />
+      </Tabs>
+    </AppBar>
+    <TabPanel value={value} index={0}>
+      <SupplyTab />
+    </TabPanel>
+    <TabPanel value={value} index={1}>
+    <WithdrawTab />
+   </TabPanel>
      
     </div>
   );

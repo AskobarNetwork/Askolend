@@ -14,21 +14,39 @@ const classes = useStyles();
 
     return (
         <Card className={classes.SupplyTab}>
-        <Typography>(Withdraw) </Typography>
+        <Typography>Supply Rates </Typography>
         <Container className={classes.container}>
           
-        <Container>  <Typography className={classes.greytext}>Supply APY</Typography></Container>
-        <Container> <Typography className={classes.blacktext}>3.03%</Typography></Container>
+         <Typography className={classes.greytext} >Supply APY</Typography>
+         <Typography className={classes.blacktext} >3.03%</Typography>
 
         </Container>
         <hr />
-        <Container>
+        <Container className={classes.container}>
         <Typography className={classes.greytext} >Distribution APY</Typography>
         <Typography className={classes.blacktext}>6.05%</Typography>
 
         </Container>
-<Button className={classes.Button}>Enable</Button>
-<Typography className={classes.greytext}>Wallet Balance</Typography>
+<Typography className={classes.blacktext}>Borrow Limit</Typography>
+
+<Container className={classes.container}>
+          
+         <Typography className={classes.greytext} >Borrow Limit</Typography>
+         <Typography className={classes.blacktext} >$0.00</Typography>
+
+        </Container>
+        <hr />
+
+        <Container className={classes.container}>
+          
+         <Typography className={classes.greytext} >Borrow Limit Used 0</Typography>
+         <Typography className={classes.blacktext} >0%</Typography>
+
+        </Container>
+        <hr />
+
+        <Button className={classes.Button}>No Balance To Withdraw</Button>
+
         </Card>
     );
 }
@@ -57,26 +75,19 @@ const useStyles = makeStyles((theme) => ({
         
       },
       container:{
-          display:'inline-block',
+          display:'flex',
           verticalAlign:'top',
-          
-      },
-      left:{
-          width:50,
-      },
-      right:{
-        width:50,
 
       },
       greytext:{
           color:'#b2bcc8',
-          textAlign:'left'
+          textAlign:'left',
       },
       blacktext:{
         color:'black',
-        fontWeight:200,
+        fontWeight:1000,
         fontsize:10,
-        textAlign:'right'
+        marginLeft:'auto',
       },
       Divider:{
         color:'black'

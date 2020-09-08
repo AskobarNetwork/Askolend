@@ -17,12 +17,12 @@ const classes = useStyles();
         <Typography>Supply Rates </Typography>
         <Container className={classes.container}>
           
-        <Container>  <Typography className={classes.greytext}>Supply APY</Typography></Container>
-        <Container> <Typography className={classes.blacktext}>3.03%</Typography></Container>
+         <Typography className={classes.greytext} >Supply APY</Typography>
+         <Typography className={classes.blacktext} >3.03%</Typography>
 
         </Container>
         <hr />
-        <Container>
+        <Container className={classes.container}>
         <Typography className={classes.greytext} >Distribution APY</Typography>
         <Typography className={classes.blacktext}>6.05%</Typography>
 
@@ -57,25 +57,20 @@ const useStyles = makeStyles((theme) => ({
         
       },
       container:{
-          display:'inline-block',
+          display:'flex',
           verticalAlign:'top',
-      },
-      left:{
-          width:50,
-      },
-      right:{
-        width:50,
 
       },
       greytext:{
           color:'#b2bcc8',
-          textAlign:'left'
+          textAlign:'left',
       },
       blacktext:{
         color:'black',
-        fontWeight:200,
+        fontWeight:1000,
         fontsize:10,
-        textAlign:'right'
+        textAlign:'right',
+        marginLeft:'auto',
       },
       Divider:{
         color:'black'

@@ -9,11 +9,11 @@ import Tab from '@material-ui/core/Tab';
 import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
-export function WithdrawTab() {
+export function RepayTab() {
 const classes = useStyles();
 
     return (
-        <Card className={classes.SupplyTab}>
+        <Card className={classes.RepayTab}>
         <Typography>Supply Rates </Typography>
         <Container className={classes.container}>
           
@@ -27,26 +27,8 @@ const classes = useStyles();
         <Typography className={classes.blacktext}>6.05%</Typography>
 
         </Container>
-<Typography className={classes.blacktext}>Borrow Limit</Typography>
-
-<Container className={classes.container}>
-          
-         <Typography className={classes.greytext} >Borrow Limit</Typography>
-         <Typography className={classes.blacktext} >$0.00</Typography>
-
-        </Container>
-        <hr />
-
-        <Container className={classes.container}>
-          
-         <Typography className={classes.greytext} >Borrow Limit Used 0</Typography>
-         <Typography className={classes.blacktext} >0%</Typography>
-
-        </Container>
-        <hr />
-
-        <Button className={classes.Button}>No Balance To Withdraw</Button>
-
+<Button className={classes.Button}>Enable</Button>
+<Typography className={classes.greytext}>Wallet Balance</Typography>
         </Card>
     );
 }
@@ -55,14 +37,14 @@ const useStyles = makeStyles((theme) => ({
     Header:{
      
     },
-    SupplyTab: {
+    RepayTab: {
         height: 600,
         width: 400,
         color:'black',
         backgroundColor:'white',
         marginTop:0,
     },
-    TabPanel: {
+    SupplyTabPanel: {
         flexGrow: 1,
         padding: '30px',
         height: 325,
@@ -87,13 +69,14 @@ const useStyles = makeStyles((theme) => ({
         color:'black',
         fontWeight:1000,
         fontsize:10,
+        textAlign:'right',
         marginLeft:'auto',
       },
       Divider:{
         color:'black'
       },
       Button:{
-        backgroundColor:'#00d395',
+        backgroundColor:'#a981ef',
         color:'white',
         width:350,
         height:50,

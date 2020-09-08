@@ -4,9 +4,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { CardMedia} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
-import SupplyTabPanel from './SupplyTabPanel'
+import BorrowTabPanel from './BorrowTabPanel'
 import AppBar from '@material-ui/core/AppBar'
-export function SupplyMarket() {
+export function BorrowMarketPanel() {
     const classes = useStyles();
 
     return (
@@ -23,7 +23,7 @@ export function SupplyMarket() {
         image={'dai.png'}
         title="Dai"
       />
-      <SupplyTabPanel />
+      <BorrowTabPanel />
         </Card>
     );
 }

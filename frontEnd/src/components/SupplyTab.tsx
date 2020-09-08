@@ -6,7 +6,7 @@ import { CardHeader , CardMedia, Button, Container} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import TabPanel from './TabPanel'
+import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
 export function SupplyTab() {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:'white',
         marginTop:0,
     },
-    TabPanel: {
+    SupplyTabPanel: {
         flexGrow: 1,
         padding: '30px',
         height: 325,

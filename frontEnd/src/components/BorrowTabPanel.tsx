@@ -7,8 +7,9 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import {SupplyTab} from './SupplyTab'
-import {WithdrawTab} from './WithdrawTab'
-function TabPanel(props) {
+import { BorrowTab } from './BorrowTab';
+import {RepayTab} from './RepayTab'
+function BorrowTabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -28,7 +29,7 @@ function TabPanel(props) {
   );
 }
 
-TabPanel.propTypes = {
+BorrowTabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired,
@@ -43,11 +44,12 @@ function a11yProps(index) {
 
 const useStyles = makeStyles((theme) => ({
     Tab:{
-        backgroud:'#f9fafb'
+        backgroud:'#f9fafb',
+        color:'#a981ef'
     },
     AppBar:{
         backgroundColor:'#f9fafb',
-        color:'	#00d395'
+        color:'	#a981ef'
     },
   root: {
     width:400,
@@ -69,16 +71,16 @@ export default function SimpleTabs() {
     <div className={classes.root}>
    <AppBar className={classes.AppBar}position="static">
      <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-        <Tab className={classes.Tab}label="Supply" {...a11yProps(0)} />
-        <Tab label="Withdraw" {...a11yProps(1)} />
+        <Tab className={classes.Tab}label="Borrow" {...a11yProps(0)} />
+        <Tab label="Repay" {...a11yProps(1)} />
       </Tabs>
     </AppBar>
-    <TabPanel value={value} index={0}>
-      <SupplyTab />
-    </TabPanel>
-    <TabPanel value={value} index={1}>
-    <WithdrawTab />
-   </TabPanel>
+    <BorrowTabPanel value={value} index={0}>
+      <BorrowTab />
+    </BorrowTabPanel>
+    <BorrowTabPanel value={value} index={1}>
+    <RepayTab />
+   </BorrowTabPanel>
      
     </div>
   );

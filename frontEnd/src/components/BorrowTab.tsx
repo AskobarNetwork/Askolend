@@ -1,4 +1,3 @@
-import { Grid } from '@material-ui/core';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,11 +8,11 @@ import Tab from '@material-ui/core/Tab';
 import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
-export function WithdrawTab() {
+export function BorrowTab() {
 const classes = useStyles();
 
     return (
-        <Card className={classes.SupplyTab}>
+        <Card className={classes.BorrowTab}>
         <Typography>Supply Rates </Typography>
         <Container className={classes.container}>
           
@@ -45,8 +44,13 @@ const classes = useStyles();
         </Container>
         <hr />
 
-        <Button className={classes.Button}>No Balance To Withdraw</Button>
-
+        <Button className={classes.Button}>Borrowing Limit Reached</Button>
+        <Container className={classes.container}>
+          
+          <Typography className={classes.greytext} >Protocol Balance</Typography>
+          <Typography className={classes.blacktext} >0 BAT</Typography>
+ 
+         </Container>
         </Card>
     );
 }
@@ -55,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     Header:{
      
     },
-    SupplyTab: {
+    BorrowTab: {
         height: 600,
         width: 400,
         color:'black',
@@ -93,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
         color:'black'
       },
       Button:{
-        backgroundColor:'#00d395',
+        backgroundColor:'#a981ef',
         color:'white',
         width:350,
         height:50,

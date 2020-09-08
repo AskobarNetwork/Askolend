@@ -7,6 +7,7 @@ import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
 import {SupplyMarket} from "./SupplyMarket"
 import {BorrowMarketPanel} from './BorrowMarketPanel'
+import {Collateral} from './Collateral'
 interface Props {
 	size: number;
 	color: "red" | "blue" | string;
@@ -19,7 +20,6 @@ export function HomeBox(props: Props) {
 	return (
 		<Paper  {...other}>
 			<Summary />
-			
 			<Grid
 				container
 				direction="row"

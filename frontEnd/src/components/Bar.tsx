@@ -57,7 +57,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
                 account: account,
             });
         }
-        // TO-DO: web3.eth is always undefined, need to fix
+
         this.props.web3.eth?.getBalance(account).then((balance) => {
             if (this.state.balance !== balance && balance !== undefined) {
                 this.setState({
@@ -75,6 +75,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     render() {
         var params: IWeb3ConnectionParameters = {
             network: "mainnet",
+            disableInjectedProvider: false,
             cacheProvider: true,
             providerOptions: {},
         }

@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./AskoHighRisk.sol";
 import "./AskoLowRisk.sol";
-import "./UniswapOracle.sol";
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketInstance
 /// @author Christopher Dixon
@@ -31,13 +31,8 @@ contract MoneyMarketInstance is Ownable {
 
   constructor (
     address _assetContractAdd,
+    address _owner,
 		uint _depositAmount,
-    uint _collateralizationRatio,
-    uint _baseRate,
-    uint _multiplierM,
-    uint  _multiplierN,
-    uint _optimal,
-    uint _fee,
 		string memory _assetName,
 		string memory _assetSymbol
   )
@@ -45,72 +40,119 @@ contract MoneyMarketInstance is Ownable {
   {
     asset = IERC20(_assetContractAdd);
 
+    bytes memory ahrname = abi.encodePacked("AHR-");
+    ahrname = abi.encodePacked(ahrname, _assetName);
+
+    bytes memory ahrsymbol = abi.encodePacked("AHR-");
+    ahrsymbol = abi.encodePacked(ahrsymbol, _assetSymbol);
+
+    string memory assetNameAHR = string(ahrname);
+    string memory assetSymbolAHR = string(ahrsymbol);
+
     AHR = AskoHighRisk(address(new AskoHighRisk(
-      _assetName,
-      _assetSymbol
+      assetNameAHR,
+      assetSymbolAHR
     )));
+
+    bytes memory alrname = abi.encodePacked("AlR-");
+    alrname = abi.encodePacked(ahrname, _assetName);
+
+    bytes memory alrsymbol = abi.encodePacked("AlR-");
+    alrsymbol = abi.encodePacked(ahrsymbol, _assetSymbol);
+
+    string memory assetNameALR = string(alrname);
+    string memory assetSymbolALR = string(alrsymbol);
 
     ALR = AskoLowRisk(address(new AskoLowRisk(
-      _assetName,
-      _assetSymbol
+      assetNameALR,
+      assetSymbolALR
     )));
+
+  transferOwnership(_owner);
   }
 
 /**
 
 **/
-  function mintAHR(uint _amount) internal {
-
+function setUp(
+    uint _collateralizationRatio,
+    uint _baseRate,
+    uint _multiplierM,
+    uint  _multiplierN,
+    uint _optimal,
+    uint _fee
+  )
+  public
+  onlyOwner
+  {
+  collateralizationRatio;
+  baseRate = _collateralizationRatio;
+  multiplierM = _multiplierM;
+  multiplierN = _multiplierN;
+  optimal = _optimal;
+  fee = _fee;
   }
-
 /**
-
-**/
-	function	mintALR(uint _amount)internal {
-
-  }
-
-/**
-
+@notice setCollateralizationRatio allows the owner of this contract to set the collateralizationRatio
+@param  _ratio is a % number 1-100 representing the ratio
 **/
   function setCollateralizationRatio(uint _ratio) public onlyOwner {
+    collateralizationRatio = _ratio;
+  }
+
+/**
+@notice setBaseRate allows the owner of this contract to set the baseRate
+@param  _rate is the input number representing the rate
+**/
+  function setBaseRate(uint _rate) public onlyOwner {
+      baseRate = _rate;
+  }
+
+/**
+@notice setMultiplierM allows the owner of this contract to set the multiplierM
+@param  _multiplierM is the input number representing the multiplierM
+**/
+  function setMultiplierM(uint _multiplierM) public onlyOwner {
+      multiplierM = _multiplierM;
+  }
+
+/**
+@notice setMultiplierM allows the owner of this contract to set the multiplierN
+@param  _multiplierN is the input number representing the multiplierN
+**/
+  function setMultiplierN(uint _multiplierN) public onlyOwner {
+    multiplierN = _multiplierN;
+  }
+
+/**
+@notice setOptimal allows the owner of this contract to set the optimal
+@param  _optimal is the input number representing the optimal
+**/
+  function setOptimal(uint _optimal) public onlyOwner {
+      optimal = _optimal;
+  }
+
+/**
+@notice setFee allows the owner of this contract to set the fee
+@param  _fee is the input number representing the fee
+**/
+  function setFee(uint _fee) public onlyOwner {
+      fee = _fee;
+  }
+
+/**
+
+**/
+  function lendToAHRpool() public {
 
   }
 
 /**
 
 **/
-  function setBaseRate(uint _ratio) public onlyOwner {
+    function lendToALRpool() public {
 
-  }
-
-/**
-
-**/
-  function setMultiplierM(uint _ratio) public onlyOwner {
-
-  }
-
-/**
-
-**/
-  function setMultiplierN(uint _ratio) public onlyOwner {
-
-  }
-
-/**
-
-**/
-  function setOptimal(uint _ratio) public onlyOwner {
-
-  }
-
-/**
-
-**/
-  function setFee(uint _ratio) public onlyOwner {
-
-  }
+    }
 
 /**
 

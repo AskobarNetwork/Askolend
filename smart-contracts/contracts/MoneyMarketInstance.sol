@@ -23,22 +23,33 @@ contract MoneyMarketInstance is Ownable {
   uint256 public multiplierN;
   uint256 public optimal;
   uint256 public fee;
+  uint256 public assetPoolBalance;
 
   IERC20 public asset;
   AskoHighRisk public AHR;
   AskoLowRisk public ALR;
 
-
+/**
+@notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
+        is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts
+@param _assetContractAdd is the address of the ERC20 asset being whitelisted
+@param _owner is the address that will own this contract(The AskoDAO)
+@param _assetName is the name of the asset(e.x: ChainLink)
+@param _assetSymbol is the symbol of the asset(e.x: LINK)
+@dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
+      before creating each token.
+**/
   constructor (
     address _assetContractAdd,
     address _owner,
-		uint _depositAmount,
 		string memory _assetName,
 		string memory _assetSymbol
   )
   public
   {
     asset = IERC20(_assetContractAdd);
+
+
 
     bytes memory ahrname = abi.encodePacked("AHR-");
     ahrname = abi.encodePacked(ahrname, _assetName);
@@ -72,7 +83,14 @@ contract MoneyMarketInstance is Ownable {
   }
 
 /**
-
+@notice setUp is called by the owner after a contract is created to set up the initial variables.
+        This is split from the constructor function to keep from reaching the gas block limit
+@param  _collateralizationRatio is used to set collateralizationRatio
+@param  _baseRate used to set baseRate
+@param  _multiplierM used to set multiplierM
+@param  _multiplierN used to set multiplierN
+@param  _optimal used to set optimal
+@param  _fee used to set fee
 **/
 function setUp(
     uint _collateralizationRatio,
@@ -85,8 +103,8 @@ function setUp(
   public
   onlyOwner
   {
-  collateralizationRatio;
-  baseRate = _collateralizationRatio;
+  collateralizationRatio  = _collateralizationRatio;
+  baseRate = _baseRate;
   multiplierM = _multiplierM;
   multiplierN = _multiplierN;
   optimal = _optimal;

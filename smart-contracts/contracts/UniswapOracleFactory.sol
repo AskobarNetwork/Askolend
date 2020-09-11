@@ -16,9 +16,9 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
 
 contract UniswapOracleFactory is Ownable {
 
-  uint public instanceCount;
+  uint public //tracks the number of instances;
 
-  mapping(uint => address) public instanceTracker;
+  mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
 
   /**
   @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
@@ -42,7 +42,7 @@ contract UniswapOracleFactory is Ownable {
        tokenA,
        tokenB
     ));
-    instanceTracker[instanceCount] = _oracle;
+    instanceTracker[tokenA] = _oracle;
   }
 
 

@@ -40,15 +40,14 @@ constructor (address _usdc, address _factoryU, address _oracle) public {
 
 /**
 @notice whitelistAsset is an onlyOwner function designed to be called by the AskoDAO.
-        This function creates a new MoneyMarketInstancecontract for an input asset.
+        This function creates a new MoneyMarketInstancecontract for an input asset as well
+        as a UniswapOracleInstance for the asset.
 @param _assetContractAdd is the address of the ERC20 asset being whitelisted
-@param _depositAmount is the amount of the asset being deposited during creation
 @param _assetName is the name of the asset(e.x: ChainLink)
 @param _assetSymbol is the symbol of the asset(e.x: LINK)
 **/
   function whitelistAsset(
     address _assetContractAdd,
-		uint _depositAmount,
 		string memory _assetName,
 		string memory _assetSymbol
   )
@@ -60,7 +59,6 @@ constructor (address _usdc, address _factoryU, address _oracle) public {
     address _MMinstance = address(new MoneyMarketInstance (
        _assetContractAdd,
        msg.sender,
-  		 _depositAmount,
   		 _assetName,
   		 _assetSymbol
     ));

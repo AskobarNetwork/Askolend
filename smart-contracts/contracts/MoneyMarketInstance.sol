@@ -41,7 +41,9 @@ contract MoneyMarketInstance is Ownable {
   mapping(address => uint) public lentToALRpool;
   mapping(address => uint) public amountBorrowed;
 
-
+/**
+@notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Factory
+**/
   modifier onlyMMFactory()  {
     require(msg.sender == address(MMF), "Only Money Market Factory: caller is not the Money Market Factory");
     _;
@@ -191,25 +193,39 @@ function getALRadd() public view returns(address) {
 /**
 
 **/
-function factoryBurn(address _account, uint _amount) public onlyMMFactory {
+function factoryBurn(address _account, uint _amount) external onlyMMFactory {
   ALR.burn(_account, _amount);
 }
 
-
 /**
-@notice calculateAHRInterest is used to calculate the interest for the High Risk pool
 
 **/
-function calculateAHRInterest() public view returns(uint) {
+function factoryMint(address _account, uint _amount) external onlyMMFactory {
+  ALR.mint(_account, _amount);
+}
+
+/**
+@notice calculateAHRInterest is used to calculate the earned interest for the High Risk pool
+
+**/
+function calculateAHRexchangeRate(uint _amount) public view returns(uint) {
 
 }
 
 /**
-@notice calculateALRInterest is used to calculate the interest for the Low Risk pool
+@notice calculateALRInterest is used to calculate the earned interest for the Low Risk pool
 **/
-function calculateALRexchangeRate() public view returns(uint){
+function calculateALRexchangeRate(uint _amount) public view returns(uint){
 
 }
+
+/**
+@notice calculateLoanInterest is used to calculate the interest for a loan
+**/
+function calculateLoanInterest(uint _amount) public view returns(uint){
+
+}
+
 /**
 @notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool
 @param _amount is the amount of the asset being lent
@@ -234,18 +250,24 @@ function calculateALRexchangeRate() public view returns(uint){
 
 /**
 @notice redeemAHR is used to redeem AHR toke for its underlying asset + interest
-@param _amount is the amount of AHR being exchanged
+@param _amount is the amount of AHR being redeemed
 **/
 	function	redeemAHR(uint _amount)public {
-
+    AHR.burn(msg.sender, _amount);
+    uint interestAmount = calculateAHRexchangeRate(_amount);
+    uint totalVal = _amount.add(interestAmount);
+    asset.transfer(msg.sender, totalVal);
   }
 
 /**
 @notice redeemALR is used to redeem ALR toke for its underlying asset + interest
-@param _amount is the amount of ALR being exchanged
+@param _amount is the amount of ALR being redeemed
 **/
 	function	redeemALR(uint _amount)public {
-
+    ALR.burn(msg.sender, _amount);
+    uint interestAmount = calculateALRexchangeRate(_amount);
+    uint totalVal = _amount.add(interestAmount);
+    asset.transfer(msg.sender, totalVal);
   }
 
 /**
@@ -256,7 +278,7 @@ function calculateALRexchangeRate() public view returns(uint){
       uint half = _amount.div(2);
       require(lentToAHRpool[msg.sender] >= half, "Not enough AHR liquidity");
       require(lentToALRpool[msg.sender] >= half, "Not enough ALR liquidity");
-      uint stakedValue = MMF.getStakeValue(msg.sender);
+      uint stakedValue = MMF.getTotalStakeValue(msg.sender);
       require(stakedValue > _amount, "Not Enough Collateral");
       amountBorrowed[msg.sender] = amountBorrowed[msg.sender].add(_amount);
       asset.transfer(msg.sender, _amount);
@@ -264,11 +286,17 @@ function calculateALRexchangeRate() public view returns(uint){
 
 /**
 @notice repay is used to repay a loan
-@param _amount is the amount of asset being repayed
+@dev this function
 **/
-	function repay(uint _amount) public {
-
+	function repay() public {
+    uint amountOwed = calculateLoanInterest(amountBorrowed[msg.sender]);
+    uint userAssetBal = asset.balanceOf(msg.sender);
+    require(userAssetBal >= amountOwed, "Balance too low to pay off loan");
+    asset.transferFrom(msg.sender, address(this), amountOwed);
+    amountBorrowed[msg.sender] = 0;
+    MMF._repay(address(this), msg.sender);
   }
+
 
 
 }

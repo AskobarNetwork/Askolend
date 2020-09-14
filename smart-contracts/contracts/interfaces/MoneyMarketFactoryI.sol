@@ -18,6 +18,11 @@ abstract contract MoneyMarketFactoryI {
   @param _usersAdd is the address of the user whos stake value is being looked up
   @return is the uint amount of USDC value for all of a users staked ALR
   **/
-function getStakeValue(address _usersAdd) public view virtual returns(uint);
+function getTotalStakeValue(address _usersAdd) public view virtual returns(uint);
 
+function getMMStakeValue(address _MMadd, address _usersAdd) public view virtual returns(uint);
+
+function getMMStakeAmount(address _MMadd, address _usersAdd) public view virtual returns(uint);
+
+function _repay(address _MMinstance, address _userAdd) public virtual;
 }

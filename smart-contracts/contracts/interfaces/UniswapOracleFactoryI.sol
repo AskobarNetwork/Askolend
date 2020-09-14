@@ -19,7 +19,7 @@ abstract contract UniswapOracleFactoryI {
 @param factory is the address of the uniswap factory
 @param tokenA is the address of the first token in the token pair for this oracle
 @param tokenB is the addresss of the second token in the token pair for this oracle
-@dev this function is marked as virtual as it is an abstracted function 
+@dev this function is marked as virtual as it is an abstracted function
 **/
 
     function createNewOracle(
@@ -28,5 +28,6 @@ abstract contract UniswapOracleFactoryI {
       address tokenB
     )
     public
-    virtual;
+    virtual
+    returns(address);
 }

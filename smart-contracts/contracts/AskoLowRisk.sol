@@ -44,8 +44,8 @@ is used to set up the name, symbol, and decimal variables for the AskoHighRisk c
 @param _account is the account the ALR is being minted to
 @param _amount is the amount of ALR being minted
 **/
-  function mint(address account, uint256 amount) public onlyOwner {
-    _mint(account, amount);
+  function mint(address _account, uint256 _amount) public onlyOwner {
+    _mint(_account, _amount);
   }
 
 /**
@@ -54,8 +54,8 @@ is used to set up the name, symbol, and decimal variables for the AskoHighRisk c
 @param _account is the account the ALR is being burned from
 @param _amount is the amount of ALR being burned
 **/
-  function burn(address account, uint256 value) public onlyOwner{
-    _burn(account, value);
+  function burn(address _account, uint256 _amount) public onlyOwner{
+    _burn(_account, _amount);
   }
 
 

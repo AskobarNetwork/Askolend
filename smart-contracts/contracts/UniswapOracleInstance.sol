@@ -28,8 +28,15 @@ contract UniswapOracleInstance is Ownable {
       FixedPoint.uq112x112 public price0Average;
       FixedPoint.uq112x112 public price1Average;
 
-      constructor(address factory, address tokenA, address tokenB) public {
-          IUniswapV2Pair _pair = IUniswapV2Pair(UniswapV2Library.pairFor(factory, tokenA, tokenB));
+/**
+@notice the constructor function is fired once during token creation to initialize the oracle contract to a specific token pair
+@param _factory is the address of the Uniswap factory contract
+@param _tokenA is the address of the asset being looked up
+@param _tokenB is the address of the USDC token
+**/
+
+      constructor(address _factory, address _tokenA, address _tokenB) public {
+          IUniswapV2Pair _pair = IUniswapV2Pair(UniswapV2Library.pairFor(_factory, _tokenA, _tokenB));
           pair = _pair;
           token0 = _pair.token0();
           token1 = _pair.token1();
@@ -41,7 +48,11 @@ contract UniswapOracleInstance is Ownable {
           require(reserve0 != 0 && reserve1 != 0, 'ExampleOracleSimple: NO_RESERVES'); // ensure that there's liquidity in the pair
       }
 
-      function update() external {
+/**
+@notice update updates the prices for the input token pair over a set 24hour period
+@dev this is an internal function called by consult if the timeElapsed is greater than 24 hours
+**/
+      function update() internal {
           (uint price0Cumulative, uint price1Cumulative, uint32 blockTimestamp) =
               UniswapV2OracleLibrary.currentCumulativePrices(address(pair));
           uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
@@ -59,13 +70,17 @@ contract UniswapOracleInstance is Ownable {
           blockTimestampLast = blockTimestamp;
       }
 
-      // note this will always return 0 before update has been called successfully for the first time.
-      function consult(address token, uint amountIn) external view returns (uint amountOut) {
-          if (token == token0) {
-              amountOut = price0Average.mul(amountIn).decode144();
-          } else {
-              require(token == token1, 'ExampleOracleSimple: INVALID_TOKEN');
-              amountOut = price1Average.mul(amountIn).decode144();
-          }
+/**
+@notice consult returns the price of a token in USDC
+@param _amountIn is the amount of token0 being consulted
+@return amountOut is the price of the asset amount in USDC
+**/
+      function consult(uint _amountIn) external returns (uint amountOut) {
+        uint32 timeElapsed = uint32(now) - blockTimestampLast; // overflow is desired
+        if(timeElapsed >= PERIOD) {
+          update();
+        }
+        amountOut = price0Average.mul(_amountIn).decode144();
       }
-  }
+
+    }

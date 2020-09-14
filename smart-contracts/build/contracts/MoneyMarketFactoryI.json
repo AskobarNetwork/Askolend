@@ -1,0 +1,339 @@
+{
+  "contractName": "MoneyMarketFactoryI",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_usersAdd",
+          "type": "address"
+        }
+      ],
+      "name": "getStakeValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_usersAdd\",\"type\":\"address\"}],\"name\":\"getStakeValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"getStakeValue(address)\":{\"params\":{\"_usersAdd\":\"is the address of the user whos stake value is being looked up\"},\"returns\":{\"_0\":\"is the uint amount of USDC value for all of a users staked ALR*\"}}}},\"userdoc\":{\"methods\":{\"getStakeValue(address)\":{\"notice\":\"getStakeValue calculates the total USDC value of all of the ALR tokens a user has staked\"}},\"notice\":\"The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface with the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/smart-contracts/contracts/interfaces/MoneyMarketFactoryI.sol\":\"MoneyMarketFactoryI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/smart-contracts/contracts/interfaces/MoneyMarketFactoryI.sol\":{\"keccak256\":\"0xdc2204af43ec02d1f7ac45765874130b91ef7fa982d90e5f172980f17300f132\",\"urls\":[\"bzz-raw://b9a390e8028f4918f87b89e3a993d5500afd87cbc9256adcdc6a093a7a0cda13\",\"dweb:/ipfs/QmXoFM3Jnksnqhwf4iCJLjmxLdup5aj3E5W7vAc5vRBZnA\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.6.2;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title MoneyMarketFactoryI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface\n    with the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\n    truffle compiler error due when imported into the same contract due to the use of two seperate\n    SafeMath instances\n**/\n\nabstract contract MoneyMarketFactoryI {\n\n  /**\n  @notice getStakeValue calculates the total USDC value of all of the ALR tokens a user has staked\n  @param _usersAdd is the address of the user whos stake value is being looked up\n  @return is the uint amount of USDC value for all of a users staked ALR\n  **/\nfunction getStakeValue(address _usersAdd) public view virtual returns(uint);\n\n}\n",
+  "sourcePath": "/home/stan36/repos/Askolend/smart-contracts/contracts/interfaces/MoneyMarketFactoryI.sol",
+  "ast": {
+    "absolutePath": "/home/stan36/repos/Askolend/smart-contracts/contracts/interfaces/MoneyMarketFactoryI.sol",
+    "exportedSymbols": {
+      "MoneyMarketFactoryI": [
+        1171
+      ]
+    },
+    "id": 1172,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1161,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:7"
+      },
+      {
+        "abstract": true,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 1162,
+          "nodeType": "StructuredDocumentation",
+          "src": "272:326:7",
+          "text": "The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface\nwith the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*"
+        },
+        "fullyImplemented": false,
+        "id": 1171,
+        "linearizedBaseContracts": [
+          1171
+        ],
+        "name": "MoneyMarketFactoryI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 1163,
+              "nodeType": "StructuredDocumentation",
+              "src": "643:263:7",
+              "text": "@notice getStakeValue calculates the total USDC value of all of the ALR tokens a user has staked\n@param _usersAdd is the address of the user whos stake value is being looked up\n@return is the uint amount of USDC value for all of a users staked ALR*"
+            },
+            "functionSelector": "96802374",
+            "id": 1170,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getStakeValue",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1166,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1165,
+                  "mutability": "mutable",
+                  "name": "_usersAdd",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1170,
+                  "src": "930:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1164,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "930:7:7",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "929:19:7"
+            },
+            "returnParameters": {
+              "id": 1169,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1168,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1170,
+                  "src": "977:4:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1167,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "977:4:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "976:6:7"
+            },
+            "scope": 1171,
+            "src": "907:76:7",
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1172,
+        "src": "600:386:7"
+      }
+    ],
+    "src": "0:987:7"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/stan36/repos/Askolend/smart-contracts/contracts/interfaces/MoneyMarketFactoryI.sol",
+    "exportedSymbols": {
+      "MoneyMarketFactoryI": [
+        1171
+      ]
+    },
+    "id": 1172,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1161,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:7"
+      },
+      {
+        "abstract": true,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 1162,
+          "nodeType": "StructuredDocumentation",
+          "src": "272:326:7",
+          "text": "The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface\nwith the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*"
+        },
+        "fullyImplemented": false,
+        "id": 1171,
+        "linearizedBaseContracts": [
+          1171
+        ],
+        "name": "MoneyMarketFactoryI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 1163,
+              "nodeType": "StructuredDocumentation",
+              "src": "643:263:7",
+              "text": "@notice getStakeValue calculates the total USDC value of all of the ALR tokens a user has staked\n@param _usersAdd is the address of the user whos stake value is being looked up\n@return is the uint amount of USDC value for all of a users staked ALR*"
+            },
+            "functionSelector": "96802374",
+            "id": 1170,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getStakeValue",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1166,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1165,
+                  "mutability": "mutable",
+                  "name": "_usersAdd",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1170,
+                  "src": "930:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1164,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "930:7:7",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "929:19:7"
+            },
+            "returnParameters": {
+              "id": 1169,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1168,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1170,
+                  "src": "977:4:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1167,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "977:4:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "976:6:7"
+            },
+            "scope": 1171,
+            "src": "907:76:7",
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1172,
+        "src": "600:386:7"
+      }
+    ],
+    "src": "0:987:7"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.4",
+  "updatedAt": "2020-09-14T21:29:25.836Z",
+  "devdoc": {
+    "methods": {
+      "getStakeValue(address)": {
+        "params": {
+          "_usersAdd": "is the address of the user whos stake value is being looked up"
+        },
+        "returns": {
+          "_0": "is the uint amount of USDC value for all of a users staked ALR*"
+        }
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {
+      "getStakeValue(address)": {
+        "notice": "getStakeValue calculates the total USDC value of all of the ALR tokens a user has staked"
+      }
+    },
+    "notice": "The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface with the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*"
+  }
+}

@@ -56,8 +56,8 @@ is used to set up the name, symbol, and decimal variables for the AskoHighRisk c
 @param _account is the account the AHR is being burned from
 @param _amount is the amount of AHR being burned
 **/
-  function burn(address _account, uint256 _value) public onlyOwner{
-    _burn(_account, _value);
+  function burn(address _account, uint256 _amount) public onlyOwner{
+    _burn(_account, _amount);
   }
 
 

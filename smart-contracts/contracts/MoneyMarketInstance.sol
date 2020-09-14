@@ -2,10 +2,11 @@ pragma solidity ^0.6.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./AskoHighRisk.sol";
 import "./AskoLowRisk.sol";
-
+import "./interfaces/MoneyMarketFactoryI.sol";
+import "./interfaces/UniswapOracleInstanceI.sol";
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketInstance
 /// @author Christopher Dixon
@@ -16,6 +17,8 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
   Ownable.sol && IRC20.sol
 **/
 contract MoneyMarketInstance is Ownable {
+    using SafeMath for uint256;
+
 
   uint256 public collateralizationRatio;
   uint256 public baseRate;
@@ -23,11 +26,27 @@ contract MoneyMarketInstance is Ownable {
   uint256 public multiplierN;
   uint256 public optimal;
   uint256 public fee;
-  uint256 public assetPoolBalance;
+  uint256 public assetAHRPoolBalance;
+  uint256 public assetALRPoolBalance;
+  address public factoryMM;
+
 
   IERC20 public asset;
   AskoHighRisk public AHR;
   AskoLowRisk public ALR;
+  UniswapOracleInstanceI public oracle;
+  MoneyMarketFactoryI public MMF;
+
+  mapping(address => uint) public lentToAHRpool;
+  mapping(address => uint) public lentToALRpool;
+  mapping(address => uint) public amountBorrowed;
+
+
+  modifier onlyMMFactory()  {
+    require(msg.sender == address(MMF), "Only Money Market Factory: caller is not the Money Market Factory");
+    _;
+  }
+
 
 /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
@@ -42,6 +61,7 @@ contract MoneyMarketInstance is Ownable {
   constructor (
     address _assetContractAdd,
     address _owner,
+    address _oracle,
 		string memory _assetName,
 		string memory _assetSymbol
   )
@@ -79,7 +99,10 @@ contract MoneyMarketInstance is Ownable {
       assetSymbolALR
     )));
 
+  oracle = UniswapOracleInstanceI(_oracle);
+  MMF = MoneyMarketFactoryI(msg.sender);
   transferOwnership(_owner);
+
   }
 
 /**
@@ -161,42 +184,89 @@ function setUp(
 /**
 
 **/
-  function lendToAHRpool() public {
-
-  }
+function getALRadd() public view returns(address) {
+  return address(ALR);
+}
 
 /**
 
 **/
-    function lendToALRpool() public {
+function factoryBurn(address _account, uint _amount) public onlyMMFactory {
+  ALR.burn(_account, _amount);
+}
 
+
+/**
+@notice calculateAHRInterest is used to calculate the interest for the High Risk pool
+
+**/
+function calculateAHRInterest() public view returns(uint) {
+
+}
+
+/**
+@notice calculateALRInterest is used to calculate the interest for the Low Risk pool
+**/
+function calculateALRexchangeRate() public view returns(uint){
+
+}
+/**
+@notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool
+@param _amount is the amount of the asset being lent
+@dev the user will need to first approve the transfer of the underlying asset
+**/
+  function lendToAHRpool(uint _amount) public {
+        asset.transferFrom(msg.sender, address(this), _amount);
+        assetAHRPoolBalance = assetAHRPoolBalance.add(_amount);
+        lentToAHRpool[msg.sender] = _amount;
+  }
+
+/**
+@notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's Low Risk pool
+@param _amount is the amount of the asset being lent
+@dev the user will need to first approve the transfer of the underlying asset
+**/
+    function lendToALRpool(uint _amount) public {
+        asset.transferFrom(msg.sender, address(this), _amount);
+        assetALRPoolBalance = assetALRPoolBalance.add(_amount);
+        lentToALRpool[msg.sender] = _amount;
     }
 
 /**
-
+@notice redeemAHR is used to redeem AHR toke for its underlying asset + interest
+@param _amount is the amount of AHR being exchanged
 **/
 	function	redeemAHR(uint _amount)public {
 
   }
 
 /**
-
+@notice redeemALR is used to redeem ALR toke for its underlying asset + interest
+@param _amount is the amount of ALR being exchanged
 **/
 	function	redeemALR(uint _amount)public {
 
   }
 
 /**
-
+@notice borrow is used to take out a loan from in MoneyMarketInstance's underlying asset
+@param _amount is the amount of asset being barrowed
 **/
   function borrow(uint _amount) public {
-
+      uint half = _amount.div(2);
+      require(lentToAHRpool[msg.sender] >= half, "Not enough AHR liquidity");
+      require(lentToALRpool[msg.sender] >= half, "Not enough ALR liquidity");
+      uint stakedValue = MMF.getStakeValue(msg.sender);
+      require(stakedValue > _amount, "Not Enough Collateral");
+      amountBorrowed[msg.sender] = amountBorrowed[msg.sender].add(_amount);
+      asset.transfer(msg.sender, _amount);
   }
 
 /**
-
+@notice repay is used to repay a loan
+@param _amount is the amount of asset being repayed
 **/
-	function repay(uint _amount, uint _type) public {
+	function repay(uint _amount) public {
 
   }
 

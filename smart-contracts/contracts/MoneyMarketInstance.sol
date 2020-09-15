@@ -25,7 +25,8 @@ contract MoneyMarketInstance is Ownable {
   uint256 public multiplierM;
   uint256 public multiplierN;
   uint256 public optimal;
-  uint256 public fee;
+  uint256 public feePercent;
+  uint256 public divisor;
   uint256 public assetAHRPoolBalance;
   uint256 public assetALRPoolBalance;
   address public factoryMM;
@@ -101,6 +102,7 @@ contract MoneyMarketInstance is Ownable {
       assetSymbolALR
     )));
 
+  divisor = 10000;
   oracle = UniswapOracleInstanceI(_oracle);
   MMF = MoneyMarketFactoryI(msg.sender);
   transferOwnership(_owner);
@@ -115,7 +117,7 @@ contract MoneyMarketInstance is Ownable {
 @param  _multiplierM used to set multiplierM
 @param  _multiplierN used to set multiplierN
 @param  _optimal used to set optimal
-@param  _fee used to set fee
+@param  _fee used to set feePercent
 **/
 function setUp(
     uint _collateralizationRatio,
@@ -133,7 +135,7 @@ function setUp(
   multiplierM = _multiplierM;
   multiplierN = _multiplierN;
   optimal = _optimal;
-  fee = _fee;
+  feePercent = _fee;
   }
 /**
 @notice setCollateralizationRatio allows the owner of this contract to set the collateralizationRatio
@@ -180,7 +182,7 @@ function setUp(
 @param  _fee is the input number representing the fee
 **/
   function setFee(uint _fee) public onlyOwner {
-      fee = _fee;
+      feePercent = _fee;
   }
 
 /**
@@ -202,6 +204,15 @@ function factoryBurn(address _account, uint _amount) external onlyMMFactory {
 **/
 function factoryMint(address _account, uint _amount) external onlyMMFactory {
   ALR.mint(_account, _amount);
+}
+
+/**
+@notice calculateFee is used to calculate the fee earned
+@param _payedAmount is a uint representing the full amount of an ERC20 asset payed
+**/
+function calculateFee(uint256 _payedAmount) public view returns(uint) {
+  uint256 fee = _payedAmount.mul(percent).div(divisor);
+  return fee;
 }
 
 /**

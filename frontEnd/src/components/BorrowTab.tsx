@@ -8,7 +8,7 @@ import Tab from '@material-ui/core/Tab';
 import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
-export function BorrowTab() {
+export default function BorrowTab() {
 const classes = useStyles();
 
     return (

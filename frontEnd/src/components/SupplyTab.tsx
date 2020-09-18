@@ -14,7 +14,7 @@ const classes = useStyles();
 
     return (
         <Card className={classes.SupplyTab}>
-        <Typography>Supply Rates </Typography>
+        <Typography>Supply Rates</Typography>
         <Container className={classes.container}>
           
          <Typography className={classes.greytext} >Supply APY</Typography>

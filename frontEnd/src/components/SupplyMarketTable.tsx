@@ -10,6 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
 import SimpleModal from './modal'
+import SupplyMarket from './SupplyMarket'
 const useStyles = makeStyles({
     table: {
         maxHeight: 650,
@@ -39,7 +40,6 @@ export function SupplyMarketTable() {
             <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <SimpleModal />
                         <TableCell>Asset</TableCell>
                         <TableCell align="right">APY</TableCell>
                         <TableCell align="right">Wallet</TableCell>
@@ -63,7 +63,7 @@ export function SupplyMarketTable() {
                             <TableCell align="right">{row.apy}</TableCell>
                             <TableCell align="right">{row.wallet}</TableCell>
                             <TableCell align="right">
-                                <SimpleModal asset={row.asset}/>
+                                <SimpleModal asset={row.asset} icon={row.icon}/>
                             </TableCell>
                         </TableRow>
                     ))}

@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { Switch } from '@material-ui/core';
-
+import SupplyMarket from './SupplyMarket'
 
 
 function getModalStyle() {
@@ -44,10 +44,8 @@ export default function SimpleModal(props:any) {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <h2 id="simple-modal-title">Test </h2>
-      <p id="simple-modal-description">
-       {props.asset}
-      </p>
+    
+      <SupplyMarket asset ={props.asset} icon={props.icon}/>
     </div>
   );
 

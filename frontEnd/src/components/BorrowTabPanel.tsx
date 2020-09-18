@@ -7,7 +7,6 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import {SupplyTab} from './SupplyTab'
-import { BorrowTab } from './BorrowTab';
 import {RepayTab} from './RepayTab'
 function BorrowTabPanel(props:any) {
   const { children, value, index, ...other } = props;
@@ -76,7 +75,7 @@ export default function SimpleTabs() {
       </Tabs>
     </AppBar>
     <BorrowTabPanel value={value} index={0}>
-      <BorrowTab />
+      <RepayTab />
     </BorrowTabPanel>
     <BorrowTabPanel value={value} index={1}>
     <RepayTab />

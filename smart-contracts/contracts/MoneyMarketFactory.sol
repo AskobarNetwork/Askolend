@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./MoneyMarketInstance.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/UniswapOracleInstanceI.sol";
-
+import "./interestTools/JumpRateModelV2.sol";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketFactory
@@ -64,6 +64,7 @@ constructor (address _usdc, address _factoryU, address _oracle) public {
     instanceCount++;
     address oracle = address(Oracle.createNewOracle(factoryU, _assetContractAdd, usdc));
 
+
     address _MMinstance = address(new MoneyMarketInstance (
        _assetContractAdd,
        msg.sender,
@@ -73,6 +74,42 @@ constructor (address _usdc, address _factoryU, address _oracle) public {
     ));
     instanceTracker[_assetContractAdd] = _MMinstance;
     oracleTracker[_MMinstance] = oracle;
+  }
+
+/**
+@notice setUpMoneyMarket
+**/
+  function setUpMoneyMarket(
+    uint _collateralizationRatio,
+    uint _baseRatePerYear,
+    uint _multiplierPerYear,
+    uint _jumpMultiplierPerYear,
+    uint _optimal,
+    uint _fee,
+    address _owner,
+    address _assetContractAdd
+  )
+  public
+  {
+    MoneyMarketInstance _MMI = MoneyMarketInstance(instanceTracker[_assetContractAdd]);
+
+    address interestRateModel = address( new JumpRateModelV2(
+      _baseRatePerYear,
+      _multiplierPerYear,
+      _jumpMultiplierPerYear,
+      _optimal,
+      _owner
+    ));
+
+_MMI.setUp(
+  _collateralizationRatio,
+  _baseRatePerYear,
+  _multiplierPerYear,
+  _jumpMultiplierPerYear,
+  _optimal,
+  _fee,
+  interestRateModel
+);
   }
 
 /**
@@ -110,7 +147,7 @@ function getTotalStakeValue(address _usersAdd) public view returns(uint) {
 
 /**
 @notice addCollateral is used to add collateral to
-@param _MMinstance is the address of the MoneyMarketInstance where the collateral is being added 
+@param _MMinstance is the address of the MoneyMarketInstance where the collateral is being added
 @param _amount is the amount of asset being repayed
 **/
   	function addCollateral(address _MMinstance, uint _amount) public {

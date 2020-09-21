@@ -7,7 +7,12 @@ https://hardcore-shockley-ee14d3.netlify.app/
 
 ## Quickstart
 
-Run:
+Add the following .env file to this directory and set the value to your local [Fortmatic](https://dashboard.fortmatic.com/login) test key.
+```bash
+FORTMATIC_API_KEY=yourfortmatickey
+```
+
+Then, run:
 
 ```bash
 yarn install

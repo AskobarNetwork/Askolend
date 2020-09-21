@@ -4,7 +4,6 @@ import { Grid, Typography } from "@material-ui/core";
 // prettier-ignore
 import { Route, Router } from "react-router-dom";
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { HomePage } from "./pages";
 import { Theme } from "@material-ui/core/styles";

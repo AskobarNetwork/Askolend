@@ -10,7 +10,7 @@ import Tab from '@material-ui/core/Tab';
 import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
-export function Collateral() {
+export default function Collateral(props:any) {
 const classes = useStyles();
 
     return (
@@ -38,7 +38,7 @@ const classes = useStyles();
          <Typography className={classes.blacktext}>$0</Typography>
          </Container>
          </Container>
-<Button className={classes.Button}>Enable</Button>
+    <Button className={classes.Button}>Use {props.asset} as collateral</Button>
 <Typography className={classes.greytext}>Wallet Balance</Typography>
         </Card>
     );
@@ -91,5 +91,7 @@ const useStyles = makeStyles((theme) => ({
         color:'white',
         width:350,
         height:50,
+        textAlign:'center',
+        marginLeft:25,
       },
 }));

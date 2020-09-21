@@ -9,8 +9,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
-import SimpleModal from './modal'
+import ColatModal from './ColatModal'
 import SupplyMarket from './SupplyMarket'
+import SupplyAssetModal from './SupplyAssetModal';
+
 const useStyles = makeStyles({
     table: {
         maxHeight: 650,
@@ -48,7 +50,7 @@ export function SupplyMarketTable() {
                 </TableHead>
                 <TableBody>
                     {rows.map((row) => (
-                        <TableRow key={row.asset }>
+                            <TableRow key={row.asset}>
                             <TableCell component="th" scope="row">
                                 <Grid
                                     container
@@ -57,15 +59,15 @@ export function SupplyMarketTable() {
                                     alignItems="center"
                                 >
                                     {row.icon} &nbsp;
-                                    <Typography>{row.asset}</Typography>
+                                    <SupplyAssetModal asset={row.asset}/>
                                 </Grid>
                             </TableCell>
                             <TableCell align="right">{row.apy}</TableCell>
                             <TableCell align="right">{row.wallet}</TableCell>
                             <TableCell align="right">
-                                <SimpleModal asset={row.asset} icon={row.icon}/>
+                                <ColatModal asset={row.asset} icon={row.icon}/>
                             </TableCell>
-                        </TableRow>
+                            </TableRow>
                     ))}
                 </TableBody>
             </Table>

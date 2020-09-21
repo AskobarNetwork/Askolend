@@ -1,9 +1,10 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import { Switch } from '@material-ui/core';
+import { Switch, Typography } from '@material-ui/core';
 import SupplyMarket from './SupplyMarket'
-
+import Collateral from './Collateral'
+import TableRow from '@material-ui/core'
 
 function getModalStyle() {
   const top = 50;
@@ -27,9 +28,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimpleModal(props:any) {
+export default function SupplyAssetModal(props:any) {
   const classes = useStyles();
-  // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = React.useState(getModalStyle);
   const [open, setOpen] = React.useState(false);
 
@@ -51,8 +51,10 @@ export default function SimpleModal(props:any) {
 
   return (
     <div>
-      <Switch onClick={handleOpen}/>
-      
+        <Typography
+      onClick={handleOpen}>
+      {props.asset} 
+</Typography>
       <Modal
         open={open}
         onClose={handleClose}

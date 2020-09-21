@@ -9,7 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
-
+import BorrowMarketModal from './BorrowMarketModal'
 const useStyles = makeStyles({
     table: {
         maxHeight: 650,
@@ -56,7 +56,7 @@ export function BorrowMarketTable() {
                                     alignItems="center"
                                 >
                                     {row.icon} &nbsp;
-                                    <Typography>{row.asset}</Typography>
+                                    <BorrowMarketModal asset={row.asset}/>
                                 </Grid>
                             </TableCell>
                             <TableCell align="right">{row.apy}</TableCell>

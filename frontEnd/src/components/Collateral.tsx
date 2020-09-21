@@ -16,7 +16,7 @@ const classes = useStyles();
     return (
         <Card className={classes.Collateral}>
         <Typography className={classes.blacktext} align={'center'}>Enable as Collateral</Typography>
-        <Typography className={classes.greytext}  >Each asset used as collateral increases your borrowing limit
+        <Typography className={classes.greytext} align={'center'} >Each asset used as collateral increases your borrowing limit
         Be careful, this can subject the asset to being seized in liquidation. <Link>Learn more</Link></Typography>
 
         <Container className={classes.container}>
@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
       greytext:{
           color:'#b2bcc8',
           
+          
       },
       blacktext:{
         color:'black',
@@ -76,12 +77,13 @@ const useStyles = makeStyles((theme) => ({
 
       },
       arrow:{
-          justifyContent:'center',
+          justifyContent:'right',
         color:'#b2bcc8',
         display:'flex',
         verticalAlign:'top',
         marginLeft:'auto',
-        textAlign:'left',
+        textAlign:'right',
+        width:50,
       },
       Divider:{
         color:'black'
@@ -89,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
       Button:{
         backgroundColor:'#a981ef',
         color:'white',
-        width:350,
+        width:'90%',
         height:50,
         textAlign:'center',
         marginLeft:25,

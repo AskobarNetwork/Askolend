@@ -1,4 +1,4 @@
-import { Grid } from '@material-ui/core';
+import { Container, Grid } from '@material-ui/core';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,8 +13,9 @@ export default function BorrowMarket(props:any) {
     return (
         <Card className={classes.SupplyMarket}>
              <AppBar position="static">
-    <Typography className={classes.AppBar}>{props.asset}{props.icon}</Typography>
-
+             <Container className={classes.AppBar}>
+    {props.icon}{props.asset}
+        </Container>
 </AppBar>
 
            <Typography className={classes.greytext}>to supply or repay Dai to the compound protocol, you need to enable it first </Typography>

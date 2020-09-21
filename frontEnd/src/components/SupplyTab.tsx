@@ -27,6 +27,7 @@ const classes = useStyles();
         <Typography className={classes.blacktext}>6.05%</Typography>
 
         </Container>
+        
 <Button className={classes.Button}>Enable</Button>
 <Typography className={classes.greytext}>Wallet Balance</Typography>
         </Card>
@@ -39,16 +40,17 @@ const useStyles = makeStyles((theme) => ({
     },
     SupplyTab: {
         height: 600,
-        width: 400,
         color:'black',
         backgroundColor:'white',
-        marginTop:0,
+        marginTop:50,
+    },
+    Test: {
+marginTop:50,
     },
     SupplyTabPanel: {
         flexGrow: 1,
         padding: '30px',
         height: 325,
-        width: 400,
         background:'white',
         color:'black',
     },
@@ -78,7 +80,8 @@ const useStyles = makeStyles((theme) => ({
       Button:{
         backgroundColor:'#00d395',
         color:'white',
-        width:350,
+        width:'100%',
+
         height:50,
       },
 }));

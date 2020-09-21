@@ -44,20 +44,21 @@ function a11yProps(index:any) {
 const useStyles = makeStyles((theme) => ({
     Tab:{
         backgroud:'#f9fafb'
+        
     },
     AppBar:{
         backgroundColor:'#f9fafb',
         color:'	#00d395'
     },
   root: {
-    width:400,
+    width:600,
     color:'white',
     backgroundColor:'#f9fafb'
 
   },
 }));
 
-export default function SimpleTabs() {
+export default function SimpleTabs(props:any) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -68,9 +69,9 @@ export default function SimpleTabs() {
   return (
     <div className={classes.root}>
    <AppBar className={classes.AppBar}position="static">
-     <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-        <Tab className={classes.Tab}label="Supply" {...a11yProps(0)} />
-        <Tab label="Withdraw" {...a11yProps(1)} />
+     <Tabs variant ='fullWidth' value={value} onChange={handleChange} aria-label="simple tabs example">
+        <Tab fullWidth={true} className={classes.Tab}label="Supply" {...a11yProps(0)} />
+        <Tab fullWidth={true} label="Withdraw" {...a11yProps(1)} />
       </Tabs>
     </AppBar>
     <SupplyTabPanel value={value} index={0}>

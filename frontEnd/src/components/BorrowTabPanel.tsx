@@ -69,9 +69,9 @@ export default function SimpleTabs() {
   return (
     <div className={classes.root}>
    <AppBar className={classes.AppBar}position="static">
-     <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-        <Tab className={classes.Tab}label="Borrow" {...a11yProps(0)} />
-        <Tab label="Repay" {...a11yProps(1)} />
+     <Tabs variant ='fullWidth' value={value} onChange={handleChange} aria-label="simple tabs example">
+        <Tab fullWidth={true} className={classes.Tab}label="Borrow" {...a11yProps(0)} />
+        <Tab  fullWidth={true} label="Repay" {...a11yProps(1)} />
       </Tabs>
     </AppBar>
     <BorrowTabPanel value={value} index={0}>

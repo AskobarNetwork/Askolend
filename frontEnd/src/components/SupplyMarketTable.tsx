@@ -59,7 +59,7 @@ export function SupplyMarketTable() {
                                     alignItems="center"
                                 >
                                     {row.icon} &nbsp;
-                                    <SupplyAssetModal asset={row.asset}/>
+                                    <SupplyAssetModal asset={row.asset} icon={row.icon}/>
                                 </Grid>
                             </TableCell>
                             <TableCell align="right">{row.apy}</TableCell>

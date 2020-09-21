@@ -2,40 +2,34 @@ import { Grid } from '@material-ui/core';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { Container, CardMedia} from '@material-ui/core';
+import { CardMedia, Container} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import AppBar from '@material-ui/core/AppBar'
 import SupplyTabPanel from './SupplyTabPanel'
-import SupplyTabHeader from './SupplyTabHeader'
-export default function SupplyMarket(props:any) {
+export default function SupplyTabHeader(props:any) {
     const classes = useStyles();
 
     return (
-        <Card className={classes.SupplyMarket}>
-           
-    <Container className={classes.AppBar}>
-    {props.icon}{props.asset}
-        </Container>
+    
+<>
+           <Typography className={classes.greytext}>to supply or repay {props.asset} to the compound protocol, you need to enable it first </Typography>
+           <Container>{props.icon}</Container>
 
-
-           <SupplyTabHeader asset={props.asset}/>
       <SupplyTabPanel />
-        </Card>
+      </>
     );
 }
 
 const useStyles = makeStyles((theme) => ({
     Header:{
-     justifyContent:'center'
-    },
-    Icon:{
-        marginLeft:'auto',
+     
     },
     SupplyMarket: {
         flexGrow: 1,
         height: 800,
         width: 600,
         color:'white',
+        border:'1px solid black',
         background:'#f9fafb'
     },
     TabPanel: {
@@ -56,11 +50,7 @@ const useStyles = makeStyles((theme) => ({
           textAlign:'center',
           background:'#f9fafb',
           color:'black',
-          height:50,
-          fontSize:25,
-          display:'flex',
-          borderBottom:'solid 1px grey',
-          position:'static',
+
       },
       greytext:{
         color:'#b2bcc8',

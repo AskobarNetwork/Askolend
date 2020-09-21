@@ -46,21 +46,26 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
 
 
     componentDidUpdate = () => {
-        var account = this.props?.web3?.givenProvider?.selectedAddress;
-        if (this.state.account !== account) {
-            this.setState({
-                account: account,
-            });
-        }
+        try {
+            var account = this.props.web3.givenProvider.selectedAddress;
+            if (this.state.account !== account) {
+                this.setState({
+                    account: account,
+                });
+            }
 
-        if (account !== undefined) {
-            this.props.web3.eth?.getBalance(account).then((balance) => {
-                if (this.state.balance !== balance && balance !== undefined) {
-                    this.setState({
-                        balance: balance,
-                    });
-                }
-            })
+            if (account !== undefined) {
+                this.props.web3.eth.getBalance(account).then((balance) => {
+                    if (this.state.balance !== balance && balance !== undefined) {
+                        this.setState({
+                            balance: balance,
+                        });
+                    }
+                })
+            }
+        }
+        catch (err) {
+            console.log(err);
         }
     }
 
@@ -69,7 +74,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     };
 
     render() {
-        const button = this.props.connected === true && this.state.account !== undefined?
+        const button = this.props.connected === true && this.state.account !== undefined ?
             <React.Fragment>
                 <Button color="secondary" variant="contained">
                     {this.state.balance} &nbsp; <Avatar src={"favicon32x32.png"} alt="" className={this.props.classes.small} />

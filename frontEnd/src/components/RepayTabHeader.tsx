@@ -6,39 +6,34 @@ import { CardMedia, Container} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import AppBar from '@material-ui/core/AppBar'
 import SupplyTabPanel from './SupplyTabPanel'
-import TextField from '@material-ui/core/TextField';
-import Input from '@material-ui/core/Input';
-
-export default function WithdrawTabHeader(props:any) {
+import BorrowTabPanel from './BorrowTabPanel'
+export default function RepayTabHeader(props:any) {
     const classes = useStyles();
 
     return (
     
 <>
-<Container className={classes.Header}>
-<Input className={classes.Text} placeholder='0'/>
-
+           <Container className={classes.Header}>
+               <Container className={classes.Icon}>
+        {props.icon}
+               </Container>
+           <Typography className={classes.greytext}>To supply or repay {props.asset} to the compound protocol, you need to enable it first </Typography>
 </Container>
-      <SupplyTabPanel className={classes.TabPanel} asset={props.asset}icon={props.icon} />
-
-      <SupplyTabPanel />
+      <BorrowTabPanel className={classes.TabPanel} asset={props.asset}icon={props.icon} />
       </>
     );
 }
 
 const useStyles = makeStyles((theme) => ({
     Header:{
-     color:'black',
-     height:100,
-
+     textAlign:'center',
+     justifyContent:'center',
     },
-    Text:{
-        marginTop:25,
-        color:'black',
-        fontSize:50,
-        width:325,
-        textAlign:'center',
-        borderBottom:'none',
+     Icon:{
+        align:'center',
+        marginTop:50,
+        marginBottom:25,
+        width:100,
     },
     SupplyMarket: {
         flexGrow: 1,
@@ -48,19 +43,8 @@ const useStyles = makeStyles((theme) => ({
         border:'1px solid black',
         background:'#f9fafb'
     },
-    Icon:{
-        align:'center',
-        marginTop:50,
-        marginBottom:25,
-        width:100,
-    },
     TabPanel: {
-        flexGrow: 1,
-        padding: '30px',
-        height: 325,
-        width: 600,
-        background:'white',
-        color:'black',
+       height:100,
     },
     media: {
         flex:1,

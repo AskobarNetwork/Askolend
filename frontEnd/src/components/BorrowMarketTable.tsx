@@ -56,7 +56,7 @@ export function BorrowMarketTable() {
                                     alignItems="center"
                                 >
                                     {row.icon} &nbsp;
-                                    <BorrowMarketModal asset={row.asset}/>
+                                    <BorrowMarketModal asset={row.asset} icon={row.icon}/>
                                 </Grid>
                             </TableCell>
                             <TableCell align="right">{row.apy}</TableCell>

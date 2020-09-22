@@ -16,21 +16,21 @@ const classes = useStyles();
     return (
         <Card className={classes.Collateral}>
         <Typography className={classes.blacktext} align={'center'}>Enable as Collateral</Typography>
-        <Typography className={classes.greytext} align={'center'} >Each asset used as collateral increases your borrowing limit
+        <Typography className={classes.Header} align={'center'} >Each asset used as collateral increases your borrowing limit
         Be careful, this can subject the asset to being seized in liquidation. <Link>Learn more</Link></Typography>
 
         <Container className={classes.container}>
           
          <Typography className={classes.greytext} align={'left'}>Borrow Limit</Typography>
          <Container className={classes.arrow}>
-         <Typography className={classes.blacktext}>$0.00</Typography>
+         <Typography align='right'className={classes.blacktext}>$0.00</Typography>
          <ArrowForwardIcon />
-         <Typography className={classes.blacktext}>$0</Typography>
+         <Typography align='right'className={classes.blacktext}>$0</Typography>
          </Container>
 
         </Container>
         <hr />
-        <Container className={classes.container}>
+        <Container className={classes.Holder}>
         <Typography className={classes.greytext} align={'left'}>Borrow Limit Used</Typography>
          <Container className={classes.arrow}>
          <Typography className={classes.blacktext}>$0.00</Typography>
@@ -39,14 +39,19 @@ const classes = useStyles();
          </Container>
          </Container>
     <Button className={classes.Button}>Use {props.asset} as collateral</Button>
+         <Container className={classes.container}>
+
 <Typography className={classes.greytext}>Wallet Balance</Typography>
+    <Typography className={classes.WalletBal} align='right'>{props.asset}</Typography>
+</Container>
         </Card>
     );
 }
 
 const useStyles = makeStyles((theme) => ({
     Header:{
-     
+      color:'#b2bcc8',
+      marginBottom:50,
     },
     Collateral: {
         height: 400,
@@ -55,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:'white',
         marginTop:0,
     },
-  
+   
     media: {
        height:0
         
@@ -69,6 +74,13 @@ const useStyles = makeStyles((theme) => ({
           color:'#b2bcc8',
           
           
+      },
+      WalletBal:{
+        color:'black',
+        fontWeight:1000,
+        fontsize:10,
+        textAlign:'right',
+        marginLeft:'auto',
       },
       blacktext:{
         color:'black',
@@ -87,6 +99,11 @@ const useStyles = makeStyles((theme) => ({
       },
       Divider:{
         color:'black'
+      },
+      Holder:{
+        marginBottom:50,
+        display:'flex',
+        verticalAlign:'top',
       },
       Button:{
         backgroundColor:'#a981ef',

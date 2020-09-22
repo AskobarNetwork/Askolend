@@ -1,29 +1,29 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { CardHeader , CardMedia, Button, Container} from '@material-ui/core';
+import { CardHeader , CardMedia, Button, Container, Avatar} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
-export default function BorrowTab() {
+export default function BorrowTab(props:any) {
 const classes = useStyles();
 
     return (
         <Card className={classes.BorrowTab}>
-        <Typography>Supply Rates </Typography>
-        <Container className={classes.container}>
-          
-         <Typography className={classes.greytext} >Supply APY</Typography>
-         <Typography className={classes.blacktext} >3.03%</Typography>
+        <Typography className={classes.blacktext}>Supply Rates </Typography>
+        <Container className={classes.BorrowApy}>{props.icon}
+    <Typography className={classes.greytext} >Supply APY</Typography>
+         <Typography align='right'className={classes.blacktext} >3.03%</Typography>
 
         </Container>
         <hr />
         <Container className={classes.container}>
+        <Avatar src={"dai.png"} alt="" />
         <Typography className={classes.greytext} >Distribution APY</Typography>
-        <Typography className={classes.blacktext}>6.05%</Typography>
+        <Typography align='right'className={classes.blacktext}>6.05%</Typography>
 
         </Container>
 <Typography className={classes.blacktext}>Borrow Limit</Typography>
@@ -61,10 +61,17 @@ const useStyles = makeStyles((theme) => ({
     },
     BorrowTab: {
         height: 600,
-        width: 400,
         color:'black',
         backgroundColor:'white',
         marginTop:0,
+    },
+    BorrowApy: {
+      display:'flex',
+      verticalAlign:'top',
+      width:375,
+      marginRight:'auto',
+      align:'left',
+      
     },
     TabPanel: {
         flexGrow: 1,
@@ -97,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
         color:'black'
       },
       Button:{
-        backgroundColor:'#a981ef',
+        backgroundColor:'',
         color:'white',
         width:350,
         height:50,

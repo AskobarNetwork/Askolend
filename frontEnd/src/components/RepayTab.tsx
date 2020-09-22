@@ -9,7 +9,7 @@ import Tab from '@material-ui/core/Tab';
 import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
-export function RepayTab() {
+export function RepayTab(props:any) {
 const classes = useStyles();
 
     return (

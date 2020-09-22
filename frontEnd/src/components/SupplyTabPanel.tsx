@@ -77,7 +77,7 @@ export default function SimpleTabs(props:any) {
       <SupplyTab asset={props.asset}icon={props.icon}/>
     </SupplyTabPanel>
     <SupplyTabPanel value={value} index={1}>
-    <WithdrawTab />
+    <WithdrawTab asset={props.asset} icon={props.icon}/>
    </SupplyTabPanel>
      
     </div>

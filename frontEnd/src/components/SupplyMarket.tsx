@@ -7,6 +7,7 @@ import Card from '@material-ui/core/Card';
 import AppBar from '@material-ui/core/AppBar'
 import SupplyTabPanel from './SupplyTabPanel'
 import SupplyTabHeader from './SupplyTabHeader'
+import WithdrawTabHeader from './WithdrawTabHeader'
 export default function SupplyMarket(props:any) {
     const classes = useStyles();
 
@@ -18,7 +19,7 @@ export default function SupplyMarket(props:any) {
         </Container>
 
 
-           <SupplyTabHeader asset={props.asset} icon={props.icon}/>
+           <SupplyTabHeader className={classes.Header} asset={props.asset} icon={props.icon}/>
       <SupplyTabPanel asset ={props.asset} icon={props.icon}/>
         </Card>
     );
@@ -26,8 +27,10 @@ export default function SupplyMarket(props:any) {
 
 const useStyles = makeStyles((theme) => ({
     Header:{
-     justifyContent:'center'
+     justifyContent:'center',
+     width:375,
     },
+    
     Icon:{
         marginLeft:'auto',
     },

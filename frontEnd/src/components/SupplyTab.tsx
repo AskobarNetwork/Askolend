@@ -14,22 +14,25 @@ const classes = useStyles();
 
     return (
         <Card className={classes.SupplyTab}>
-        <Typography>Supply Rates</Typography>
+        <Typography className={classes.blacktext}>Supply Rates</Typography>
         <Container className={classes.SupplyApy}>{props.icon}
     <Typography className={classes.greytext} >Supply APY</Typography>
-         <Typography className={classes.blacktext} >3.03%</Typography>
+         <Typography align='right'className={classes.blacktext} >3.03%</Typography>
 
         </Container>
         <hr />
         <Container className={classes.container}>
         <Avatar src={"dai.png"} alt="" />
         <Typography className={classes.greytext} >Distribution APY</Typography>
-        <Typography className={classes.blacktext}>6.05%</Typography>
+        <Typography align='right'className={classes.blacktext}>6.05%</Typography>
 
         </Container>
-        
+        <Container className={classes.container}>
+    <Typography className={classes.greytext} >Wallet Balance</Typography>
+    <Typography align='right' className={classes.blacktext} >0 {props.asset}</Typography>
+
+        </Container>
 <Button className={classes.Button}>Enable</Button>
-    <Typography className={classes.greytext}>Wallet Balance {props.asset}</Typography>
         </Card>
     );
 }
@@ -73,7 +76,6 @@ const useStyles = makeStyles((theme) => ({
         color:'black',
         fontWeight:1000,
         fontsize:10,
-        textAlign:'right',
         marginLeft:'auto',
         padding:10,
       },

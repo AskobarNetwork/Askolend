@@ -1,7 +1,5 @@
-import Web3Modal, { IProviderInfo } from "web3modal";
-
-import { IWeb3ConnectionParameters } from "../model"
-import Web3 from "web3";
+import Fortmatic from 'fortmatic';
+import Web3 from 'web3';
 
 export const WEB3_ACCOUNTS_CHANGED = 'WEB3_ACCOUNTS_CHANGED'
 export const WEB3_CHAIN_CHANGED = 'WEB3_CHAIN_CHANGED'
@@ -14,32 +12,47 @@ function web3Connect() {
   return { type: WEB3_CONNECT, connected: false }
 }
 
-function web3Connected(web3Modal: Web3Modal, provider: IProviderInfo, web3: Web3) {
-  return { type: WEB3_CONNECTED, connected: true, web3Modal, provider, web3 }
+function web3Connected(web3: Web3) {
+  return { type: WEB3_CONNECTED, connected: true, web3 }
 }
 
-function web3ModalShown() {
-  return { type: WEB3_MODAL_TOGGLE }
-}
-
-export function makeWeb3Connection(web3ConnectionParameters: IWeb3ConnectionParameters) {
+export function makeWeb3Connection(fortmaticApiKey: string) {
   return function (dispatch: any) {
     dispatch(web3Connect());
-    var web3Modal = new Web3Modal({
-      cacheProvider: web3ConnectionParameters.cacheProvider,
-      disableInjectedProvider: web3ConnectionParameters.disableInjectedProvider,
-      network: web3ConnectionParameters.network,
-      providerOptions: web3ConnectionParameters.providerOptions
-    });
+    console.log(process.env)
+    const fm = new Fortmatic(fortmaticApiKey);
+    // Post EIP-1102 update which MetaMask no longer injects web3
+    // @ts-ignore
+    if (window.ethereum) {
+      // Use MetaMask provider
+      // @ts-ignore
+      window.web3 = new Web3(window.ethereum);
+    } else {
+      // Use Fortmatic provider
+      // @ts-ignore
+      window.web3 = new Web3(fm.getProvider());
+      // @ts-ignore
+      window.web3.currentProvider.enable();
+    }
 
-    web3Modal.connect().then((provider) => {
-      var web3 = new Web3(provider);
-      dispatch(web3Connected(web3Modal, provider, web3));
-      if (web3ConnectionParameters.disableInjectedProvider === true) {
-        web3Modal.toggleModal().then(() => {
-          dispatch(web3ModalShown());
-        })
-      }
-    });
+    // Legacy dApp browsers which web3 is still being injected
+    // @ts-ignore
+    if (typeof web3 !== "undefined") {
+      // Use injected provider
+      // @ts-ignore
+      window.web3 = new Web3(web3.currentProvider);
+    } else {
+      // Use Fortmatic provider
+      // @ts-ignore
+      window.web3 = new Web3(fm.getProvider());
+      // @ts-ignore
+      window.web3.currentProvider.enable();
+    }
+
+    // @ts-ignore
+    if (window.web3 !== undefined || window.web3 !== null) {
+      // @ts-ignore
+      dispatch(web3Connected(window.web3));
+    }
   }
 }

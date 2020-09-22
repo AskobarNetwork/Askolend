@@ -51,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
         color:'	#00d395'
     },
   root: {
-    width:600,
     color:'white',
     backgroundColor:'#f9fafb'
 

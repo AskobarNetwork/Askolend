@@ -42,11 +42,9 @@ const useStyles = makeStyles((theme) => ({
         height: 600,
         color:'black',
         backgroundColor:'white',
-        marginTop:50,
+        marginTop:0,
     },
-    Test: {
-marginTop:50,
-    },
+  
     SupplyTabPanel: {
         flexGrow: 1,
         padding: '30px',

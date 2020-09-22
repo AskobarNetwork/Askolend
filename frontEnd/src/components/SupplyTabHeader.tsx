@@ -12,17 +12,27 @@ export default function SupplyTabHeader(props:any) {
     return (
     
 <>
-           <Typography className={classes.greytext}>to supply or repay {props.asset} to the compound protocol, you need to enable it first </Typography>
-           <Container>{props.icon}</Container>
-
-      <SupplyTabPanel />
+           <Container className={classes.Header}>
+               <Container className={classes.Icon}>
+        {props.icon}
+               </Container>
+           <Typography className={classes.greytext}>To supply or repay {props.asset} to the compound protocol, you need to enable it first </Typography>
+</Container>
+      <SupplyTabPanel className={classes.TabPanel} />
       </>
     );
 }
 
 const useStyles = makeStyles((theme) => ({
     Header:{
-     
+     textAlign:'center',
+     justifyContent:'center',
+    },
+     Icon:{
+        align:'center',
+        marginTop:50,
+        marginBottom:25,
+        width:100,
     },
     SupplyMarket: {
         flexGrow: 1,
@@ -33,12 +43,7 @@ const useStyles = makeStyles((theme) => ({
         background:'#f9fafb'
     },
     TabPanel: {
-        flexGrow: 1,
-        padding: '30px',
-        height: 325,
-        width: 600,
-        background:'white',
-        color:'black',
+       height:100,
     },
     media: {
         flex:1,

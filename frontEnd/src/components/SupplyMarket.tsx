@@ -18,7 +18,7 @@ export default function SupplyMarket(props:any) {
         </Container>
 
 
-           <SupplyTabHeader asset={props.asset}/>
+           <SupplyTabHeader asset={props.asset} icon={props.icon}/>
       <SupplyTabPanel />
         </Card>
     );
@@ -33,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
     },
     SupplyMarket: {
         flexGrow: 1,
-        height: 800,
-        width: 600,
+        height: 600,
+        width: 400,
         color:'white',
         background:'#f9fafb'
     },
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         padding: '30px',
         height: 325,
-        width: 600,
+        width: 400,
         background:'white',
         color:'black',
     },

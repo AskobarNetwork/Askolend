@@ -104,7 +104,8 @@ const useStyles = makeStyles((theme) => ({
         color:'black'
       },
       Button:{
-        backgroundColor:'',
+        backgroundColor:'#a981ef',
+
         color:'white',
         width:350,
         height:50,

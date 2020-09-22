@@ -21,7 +21,7 @@ const classes = useStyles();
 
         <Container className={classes.container}>
           
-         <Typography className={classes.greytext} align={'left'}>Borrow Limit</Typography>
+         <Typography className={classes.greytext} align='left'>Borrow Limit</Typography>
          <Container className={classes.arrow}>
          <Typography align='right'className={classes.blacktext}>$0.00</Typography>
          <ArrowForwardIcon />
@@ -86,15 +86,15 @@ const useStyles = makeStyles((theme) => ({
         color:'black',
         fontWeight:1000,
         fontsize:10,
-
+      
       },
       arrow:{
           justifyContent:'right',
         color:'#b2bcc8',
         display:'flex',
         verticalAlign:'top',
-        marginLeft:'auto',
         textAlign:'right',
+        marginLeft:'auto',
         width:50,
       },
       Divider:{

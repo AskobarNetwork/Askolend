@@ -25,7 +25,6 @@ export function HomeBox(props: Props) {
 				alignItems="flex-start"
 			>
 				<Grid>
-
 					<Typography variant="h6" >
 						Supply Markets
 						</Typography>

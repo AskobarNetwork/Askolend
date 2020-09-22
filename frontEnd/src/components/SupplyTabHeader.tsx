@@ -18,7 +18,7 @@ export default function SupplyTabHeader(props:any) {
                </Container>
            <Typography className={classes.greytext}>To supply or repay {props.asset} to the compound protocol, you need to enable it first </Typography>
 </Container>
-      <SupplyTabPanel className={classes.TabPanel} />
+      <SupplyTabPanel className={classes.TabPanel} asset={props.asset}icon={props.icon} />
       </>
     );
 }

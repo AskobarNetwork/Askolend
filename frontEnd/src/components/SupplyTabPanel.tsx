@@ -74,7 +74,7 @@ export default function SimpleTabs(props:any) {
       </Tabs>
     </AppBar>
     <SupplyTabPanel value={value} index={0}>
-      <SupplyTab />
+      <SupplyTab asset={props.asset}icon={props.icon}/>
     </SupplyTabPanel>
     <SupplyTabPanel value={value} index={1}>
     <WithdrawTab />

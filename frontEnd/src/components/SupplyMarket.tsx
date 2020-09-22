@@ -19,7 +19,7 @@ export default function SupplyMarket(props:any) {
 
 
            <SupplyTabHeader asset={props.asset} icon={props.icon}/>
-      <SupplyTabPanel />
+      <SupplyTabPanel asset ={props.asset} icon={props.icon}/>
         </Card>
     );
 }

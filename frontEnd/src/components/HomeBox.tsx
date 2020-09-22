@@ -1,22 +1,14 @@
 import * as React from "react";
 
-import { Grid, Paper, Typography } from "@material-ui/core";
+import { Box, Grid, Paper, Typography } from "@material-ui/core";
 
 import { BorrowMarketTable } from "./BorrowMarketTable";
 import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
 
-interface Props {
-	size: number;
-	color: "red" | "blue" | string;
-}
-
-export function HomeBox(props: Props) {
-	const { size, ...other } = props;
-	// const classes = useStyles(props);
-
+export function HomeBox() {
 	return (
-		<Paper  {...other}>
+		<Paper>
 			<Summary />
 			<Grid
 				container
@@ -24,26 +16,23 @@ export function HomeBox(props: Props) {
 				justify="space-evenly"
 				alignItems="flex-start"
 			>
-				<Grid>
-					<Typography variant="h6" >
-						Supply Markets
+				<Grid item md={6}>
+					<Box padding={4}>
+						<Typography variant="h6" >
+							Supply Markets
 						</Typography>
-					<SupplyMarketTable />
+						<SupplyMarketTable />
+					</Box>
 				</Grid>
-				<Grid>
-					<Typography variant="h6" >
-						Borrow Markets
+				<Grid item md={6}>
+					<Box padding={4}>
+						<Typography variant="h6" >
+							Borrow Markets
 						</Typography>
-					<BorrowMarketTable />
+						<BorrowMarketTable />
+					</Box>
 				</Grid>
 			</Grid>
 		</Paper>
 	);
 }
-
-/*
-const styledBy = (property: string, props: any, mapping: any): string =>
-	mapping[props[property]];
-const useStyles = makeStyles((theme: Theme) => (
-}));
-*/

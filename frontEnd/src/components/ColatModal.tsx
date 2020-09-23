@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { Switch } from '@material-ui/core';
-import SupplyMarket from './SupplyMarket'
 import Collateral from './Collateral'
 
 function getModalStyle() {

@@ -6,8 +6,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import {SupplyTab} from './SupplyTab'
-import {WithdrawTab} from './WithdrawTab'
 import {RepayTab} from './RepayTab'
 import BorrowTab from './BorrowTab'
 function BorrowTabPanel(props:any) {

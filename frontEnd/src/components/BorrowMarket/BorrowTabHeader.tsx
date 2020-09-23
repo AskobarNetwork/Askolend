@@ -5,35 +5,38 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CardMedia, Container} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import AppBar from '@material-ui/core/AppBar'
-import SupplyTabPanel from './SupplyTabPanel'
 import BorrowTabPanel from './BorrowTabPanel'
-export default function RepayTabHeader(props:any) {
+import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
+import BorrowForm from './BorrowForm'
+export default function BorrowTabHeader(props:any) {
     const classes = useStyles();
 
     return (
     
 <>
-           <Container className={classes.Header}>
-               <Container className={classes.Icon}>
-        {props.icon}
-               </Container>
-           <Typography className={classes.greytext}>To supply or repay {props.asset} to the compound protocol, you need to enable it first </Typography>
+<Container className={classes.Header}>
+<BorrowForm/>
 </Container>
-      <BorrowTabPanel className={classes.TabPanel} asset={props.asset}icon={props.icon} />
+<BorrowTabPanel asset={props.asset}icon={props.icon} />
+
       </>
     );
 }
 
 const useStyles = makeStyles((theme) => ({
     Header:{
-     textAlign:'center',
-     justifyContent:'center',
+     color:'black',
+     height:100,
+
     },
-     Icon:{
-        align:'center',
-        marginTop:50,
-        marginBottom:25,
-        width:100,
+    Text:{
+        marginTop:25,
+        color:'black',
+        fontSize:50,
+        width:325,
+        textAlign:'center',
+        borderBottom:'none',
     },
     SupplyMarket: {
         flexGrow: 1,
@@ -43,8 +46,19 @@ const useStyles = makeStyles((theme) => ({
         border:'1px solid black',
         background:'#f9fafb'
     },
+    Icon:{
+        align:'center',
+        marginTop:50,
+        marginBottom:25,
+        width:100,
+    },
     TabPanel: {
-       height:100,
+        flexGrow: 1,
+        padding: '30px',
+        height: 325,
+        width: 600,
+        background:'white',
+        Color:'#a981ef',
     },
     media: {
         flex:1,

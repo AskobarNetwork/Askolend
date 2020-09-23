@@ -10,8 +10,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
 import ColatModal from './ColatModal'
-import SupplyMarket from './SupplyMarket'
-import SupplyAssetModal from './SupplyAssetModal';
+import SupplyMarket from './SupplyMarket/SupplyMarket'
+import SupplyAssetModal from './SupplyMarket/SupplyAssetModal';
 
 const useStyles = makeStyles({
     table: {

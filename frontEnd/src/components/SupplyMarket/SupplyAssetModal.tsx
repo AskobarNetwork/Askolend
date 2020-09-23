@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { Switch, Typography } from '@material-ui/core';
 import SupplyMarket from './SupplyMarket'
-import Collateral from './Collateral'
 import TableRow from '@material-ui/core'
 
 function getModalStyle() {

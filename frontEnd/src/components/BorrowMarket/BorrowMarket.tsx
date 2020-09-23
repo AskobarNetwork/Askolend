@@ -5,10 +5,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CardMedia} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import AppBar from '@material-ui/core/AppBar'
-import SupplyTabPanel from './SupplyTabPanel'
 import BorrowTabPanel from './BorrowTabPanel'
 import BorrowTabHeader from './BorrowTabHeader'
 import RepayTabHeader from './RepayTabHeader'
+import BorrowForm from './BorrowForm'
 export default function BorrowMarket(props:any) {
     const classes = useStyles();
 
@@ -20,7 +20,7 @@ export default function BorrowMarket(props:any) {
             </Container>
     
     
-               <BorrowTabHeader className={classes.Header} asset={props.asset} icon={props.icon}/>
+               <BorrowTabHeader className={classes.Text}/>
           <BorrowTabPanel asset ={props.asset} icon={props.icon}/>
             </Card>
     );
@@ -34,6 +34,14 @@ const useStyles = makeStyles((theme) => ({
     
     Icon:{
         marginLeft:'auto',
+    },
+    Text:{
+        marginTop:25,
+        color:'black',
+        fontSize:50,
+        width:325,
+        textAlign:'center',
+        borderBottom:'none',
     },
     SupplyMarket: {
         flexGrow: 1,

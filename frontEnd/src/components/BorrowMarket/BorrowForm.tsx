@@ -5,26 +5,46 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CardMedia, Container} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import AppBar from '@material-ui/core/AppBar'
-import SupplyTabPanel from './SupplyTabPanel'
 import BorrowTabPanel from './BorrowTabPanel'
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
 
-export default function BorrowTabHeader(props:any) {
-    const classes = useStyles();
+export default class BorrowForm extends React.Component<{},{value:string}> {
 
-    return (
-    
-<>
-<Container className={classes.Header}>
-<Input className={classes.Text} placeholder='0'/>
+    constructor(props:any) {
 
-</Container>
-      <BorrowTabPanel asset={props.asset}icon={props.icon} />
+      super(props);
+      this.state = {value: ''};
+      
+      this.handleChange = this.handleChange.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event:any) {
+    //web3 validation stuff here
 
-      </>
-    );
-}
+      this.setState({value: event.target.value});
+      console.log(event.target.value)
+    }
+  
+    handleSubmit(event:any) {
+      alert('A name was submitted: ' + this.state.value);
+      event.preventDefault();
+    }
+  
+    render() {
+        
+      return (
+        <Container>
+      <Input type="text" value={this.state.value} onChange={this.handleChange} placeholder={'0'} />
+
+        <form onSubmit={this.handleSubmit}>
+            <input type="text" value={this.state.value} onChange={this.handleChange} />
+        </form>
+        
+        </Container>
+      );
+    }
+  }
 
 const useStyles = makeStyles((theme) => ({
     Header:{

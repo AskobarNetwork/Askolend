@@ -5,7 +5,6 @@ import { CardHeader , CardMedia, Button, Container, Avatar} from '@material-ui/c
 import Card from '@material-ui/core/Card';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import SupplyTabPanel from './SupplyTabPanel'
 import Divider from '@material-ui/core/Divider';
 
 export default function BorrowTab(props:any) {

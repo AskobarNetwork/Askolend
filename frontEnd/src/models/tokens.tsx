@@ -1,25 +1,25 @@
 export class Token {
+    abbreviation: string;
     address: string;
     asset: string;
-    apy: string;
+    apy: number;
     collateral: boolean;
     githubAssetBaseAddress: URL = new URL('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/')
-    liquidity: string;
-    wallet: string;
+    liquidity: number;
 
-    constructor(address: string, 
-        asset: string, 
-        apy: string, 
-        collateral: boolean, 
-        liquidity: string, 
-        wallet: string,
-        ) {
+    constructor(abbreviation: string,
+        address: string,
+        asset: string,
+        apy: number,
+        collateral: boolean,
+        liquidity: number,
+    ) {
+        this.abbreviation = abbreviation
         this.address = address;
         this.asset = asset;
         this.apy = apy;
         this.collateral = collateral;
         this.liquidity = liquidity;
-        this.wallet = wallet;
     }
 
     infoJsonSrc(): string {
@@ -38,25 +38,22 @@ export class Token {
 export function getTokens() {
     let tokenArray: Token[] = [
         new Token(
-            '0x0D8775F648430679A709E98d2b0Cb6250d2887EF', 'Basic Attention Token', '10.52%', false, '0 BAT', '$4.06M'
+            'BAT', '0x0D8775F648430679A709E98d2b0Cb6250d2887EF', 'Basic Attention Token', 10.52, false, 4.06
         ),
         new Token(
-            '0x6B175474E89094C44Da98b954EedeAC495271d0F', 'Dai', '3.03%', false, '0 DAI', '$189.48M'
+            'DAI', '0x6B175474E89094C44Da98b954EedeAC495271d0F', 'Dai', 3.03, false, 189.48
         ),
         new Token(
-            '6907f29be8f8c377394dee0c2eb473782047be83', 'Ether', '0.20%', false, '0 ETH', '$375.54M'
+            'USDC', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 'USD Coin', 1.89, false, 127.10
         ),
         new Token(
-            '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 'USD Coin', '1.89%', false, '0 USDC', '$127.10M'
+            'USDT', '0xdAC17F958D2ee523a2206206994597C13D831ec7', 'Tether', 2.75, false, 4.63
         ),
         new Token(
-            '0xdAC17F958D2ee523a2206206994597C13D831ec7', 'Tether', '2.75%', false, '0 USDT', '$4.63M'
+            'WBTC', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 'Wrapped BTC', 0.97, false, 13.11
         ),
         new Token(
-            '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 'Wrapped BTC', '0.97%', false, '0 WBTC', '$13.11M'
-        ),
-        new Token(
-            '0xE41d2489571d322189246DaFA5ebDe1F4699F498', '0x', '1.92%', false, '0 ZRX', '$52.67M'
+            'ZRX', '0xE41d2489571d322189246DaFA5ebDe1F4699F498', '0x', 1.92, false, 52.67
         ),
     ];
     return tokenArray;

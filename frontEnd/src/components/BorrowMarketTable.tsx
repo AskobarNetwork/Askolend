@@ -18,7 +18,7 @@ export function BorrowMarketTable() {
                     <TableRow>
                         <TableCell>Asset</TableCell>
                         <TableCell align='right'>APY</TableCell>
-                        <TableCell align='right'>Wallet</TableCell>
+                        <TableCell align='center'>Wallet</TableCell>
                         <TableCell align='right'>Liquidity</TableCell>
                     </TableRow>
                 </TableHead>
@@ -36,10 +36,10 @@ export function BorrowMarketTable() {
                                     <Typography>{token.asset}</Typography>
                                 </Grid>
                             </TableCell>
-                            <TableCell align='right'>{token.apy}</TableCell>
-                            <TableCell align='right'>{token.wallet}</TableCell>
+                            <TableCell align='right'>{token.apy + '%'}</TableCell>
+                            <TableCell align='center'>{0 + ' ' + token.abbreviation}</TableCell>
                             <TableCell align='right'>
-                                {token.liquidity}
+                                {'$' + token.liquidity + 'M'}
                             </TableCell>
                         </TableRow>
                     ))}

@@ -18,8 +18,8 @@ export function SupplyMarketTable() {
                     <TableRow>
                         <TableCell>Asset</TableCell>
                         <TableCell align='right'>APY</TableCell>
-                        <TableCell align='right'>Wallet</TableCell>
-                        <TableCell align='right'>Collateral</TableCell>
+                        <TableCell align='center'>Wallet</TableCell>
+                        <TableCell align='center'>Collateral</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -36,9 +36,9 @@ export function SupplyMarketTable() {
                                     <Typography>{token.asset}</Typography>
                                 </Grid>
                             </TableCell>
-                            <TableCell align='right'>{token.apy}</TableCell>
-                            <TableCell align='right'>{token.wallet}</TableCell>
-                            <TableCell align='right'>
+                            <TableCell align='right'>{token.apy + '%'}</TableCell>
+                            <TableCell align='center'>{0 + ' ' + token.abbreviation}</TableCell>
+                            <TableCell align='center'>
                                 <Switch defaultChecked={token.collateral}></Switch>
                             </TableCell>
                         </TableRow>

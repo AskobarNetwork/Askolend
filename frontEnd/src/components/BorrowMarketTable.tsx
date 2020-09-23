@@ -8,14 +8,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-    table: {
-        maxHeight: 650,
-        minWidth: 650,
-    },
-});
 
 function createData(icon: any, asset: string, apy: string, wallet: string, liquidity: string) {
     return { icon, asset, apy, wallet, liquidity };
@@ -32,11 +24,10 @@ const rows = [
 ];
 
 export function BorrowMarketTable() {
-    const classes = useStyles();
 
     return (
         <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
+            <Table aria-label="simple table">
                 <TableHead>
                     <TableRow>
                         <TableCell>Asset</TableCell>
@@ -48,7 +39,7 @@ export function BorrowMarketTable() {
                 <TableBody>
                     {rows.map((row) => (
                         <TableRow key={row.asset}>
-                            <TableCell component="th" scope="row">
+                            <TableCell align="left">
                                 <Grid
                                     container
                                     direction="row"

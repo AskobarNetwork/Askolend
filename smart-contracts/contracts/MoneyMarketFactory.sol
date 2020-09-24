@@ -64,7 +64,6 @@ constructor (address _usdc, address _factoryU, address _oracle) public {
     instanceCount++;
     address oracle = address(Oracle.createNewOracle(factoryU, _assetContractAdd, usdc));
 
-
     address _MMinstance = address(new MoneyMarketInstance (
        _assetContractAdd,
        msg.sender,
@@ -77,16 +76,21 @@ constructor (address _usdc, address _factoryU, address _oracle) public {
   }
 
 /**
-@notice setUpMoneyMarket
+@notice setUpAHR is used to set up a MoneyMarketInstances Asko High Risk Token as well as its InterestRateModel
+@param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
+@param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
+@param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
+@param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
+@param _fee is a number representing the fee for exchanging an ALR token, as a mantissa (scaled by 1e18)
+@param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
+@dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
 **/
-  function setUpMoneyMarket(
-    uint _collateralizationRatio,
+  function setUpAHR(
     uint _baseRatePerYear,
     uint _multiplierPerYear,
     uint _jumpMultiplierPerYear,
     uint _optimal,
     uint _fee,
-    address _owner,
     address _assetContractAdd
   )
   public
@@ -98,18 +102,49 @@ constructor (address _usdc, address _factoryU, address _oracle) public {
       _multiplierPerYear,
       _jumpMultiplierPerYear,
       _optimal,
-      _owner
+      address(_MMI)
     ));
 
-_MMI.setUp(
-  _collateralizationRatio,
-  _baseRatePerYear,
-  _multiplierPerYear,
-  _jumpMultiplierPerYear,
-  _optimal,
-  _fee,
-  interestRateModel
+_MMI._setUpAHR(
+  interestRateModel,
+  _fee
 );
+  }
+
+/**
+@notice setUpAHR is used to set up a MoneyMarketInstances Asko High Risk Token as well as its InterestRateModel
+@param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
+@param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
+@param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
+@param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
+@param _fee is a number representing the fee for exchanging an ALR token, as a mantissa (scaled by 1e18)
+@param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
+@dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
+**/
+  function setUpALR(
+    uint _baseRatePerYear,
+    uint _multiplierPerYear,
+    uint _jumpMultiplierPerYear,
+    uint _optimal,
+    uint _fee,
+    address _assetContractAdd
+  )
+  public
+  {
+    MoneyMarketInstance _MMI = MoneyMarketInstance(instanceTracker[_assetContractAdd]);
+
+    address interestRateModel = address( new JumpRateModelV2(
+      _baseRatePerYear,
+      _multiplierPerYear,
+      _jumpMultiplierPerYear,
+      _optimal,
+      address(_MMI)
+    ));
+
+    _MMI._setUpALR(
+      interestRateModel,
+      _fee
+    );
   }
 
 /**

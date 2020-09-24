@@ -14,7 +14,7 @@ token represents a Low Risk lending pool in a MoneyMarketInstance contract.
 This contract uses the OpenZeppelin contract Library to inherit functions from
   Ownable.sol && ERC20.sol
 **/
-contract AskoLowRisk is Ownable, ERC20{
+contract AskoLowRisk is Ownable, ERC20 {
 
 address public parentContract;
 

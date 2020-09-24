@@ -43,14 +43,14 @@
     "absolutePath": "/home/stan36/repos/Askolend/smart-contracts/contracts/interfaces/UniswapOracleFactoryI.sol",
     "exportedSymbols": {
       "UniswapOracleFactoryI": [
-        1173
+        2102
       ]
     },
-    "id": 1174,
+    "id": 2103,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1159,
+        "id": 2088,
         "literals": [
           "solidity",
           "^",
@@ -58,7 +58,7 @@
           ".2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:7"
+        "src": "0:23:10"
       },
       {
         "abstract": true,
@@ -66,15 +66,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 1160,
+          "id": 2089,
           "nodeType": "StructuredDocumentation",
-          "src": "274:329:7",
+          "src": "274:329:10",
           "text": "The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface\neith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*"
         },
         "fullyImplemented": false,
-        "id": 1173,
+        "id": 2102,
         "linearizedBaseContracts": [
-          1173
+          2102
         ],
         "name": "UniswapOracleFactoryI",
         "nodeType": "ContractDefinition",
@@ -82,13 +82,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 1161,
+              "id": 2090,
               "nodeType": "StructuredDocumentation",
-              "src": "648:428:7",
+              "src": "648:428:10",
               "text": "@notice createNewOracle allows the owner of this contract to deploy a new oracle contract when\na new asset is whitelisted\n@param factory is the address of the uniswap factory\n@param tokenA is the address of the first token in the token pair for this oracle\n@param tokenB is the addresss of the second token in the token pair for this oracle\n@dev this function is marked as virtual as it is an abstracted function*"
             },
             "functionSelector": "a685cd1b",
-            "id": 1172,
+            "id": 2101,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -96,18 +96,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 1168,
+              "id": 2097,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1163,
+                  "id": 2092,
                   "mutability": "mutable",
                   "name": "factory",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1114:15:7",
+                  "scope": 2101,
+                  "src": "1114:15:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -115,10 +115,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1162,
+                    "id": 2091,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1114:7:7",
+                    "src": "1114:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -130,13 +130,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 1165,
+                  "id": 2094,
                   "mutability": "mutable",
                   "name": "tokenA",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1137:14:7",
+                  "scope": 2101,
+                  "src": "1137:14:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -144,10 +144,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1164,
+                    "id": 2093,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1137:7:7",
+                    "src": "1137:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -159,13 +159,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 1167,
+                  "id": 2096,
                   "mutability": "mutable",
                   "name": "tokenB",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1159:14:7",
+                  "scope": 2101,
+                  "src": "1159:14:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -173,10 +173,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1166,
+                    "id": 2095,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1159:7:7",
+                    "src": "1159:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -187,21 +187,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1106:73:7"
+              "src": "1106:73:10"
             },
             "returnParameters": {
-              "id": 1171,
+              "id": 2100,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1170,
+                  "id": 2099,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1215:7:7",
+                  "scope": 2101,
+                  "src": "1215:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -209,10 +209,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1169,
+                    "id": 2098,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1215:7:7",
+                    "src": "1215:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -223,33 +223,33 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1214:9:7"
+              "src": "1214:9:10"
             },
-            "scope": 1173,
-            "src": "1082:142:7",
+            "scope": 2102,
+            "src": "1082:142:10",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 1174,
-        "src": "605:621:7"
+        "scope": 2103,
+        "src": "605:621:10"
       }
     ],
-    "src": "0:1227:7"
+    "src": "0:1227:10"
   },
   "legacyAST": {
     "absolutePath": "/home/stan36/repos/Askolend/smart-contracts/contracts/interfaces/UniswapOracleFactoryI.sol",
     "exportedSymbols": {
       "UniswapOracleFactoryI": [
-        1173
+        2102
       ]
     },
-    "id": 1174,
+    "id": 2103,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1159,
+        "id": 2088,
         "literals": [
           "solidity",
           "^",
@@ -257,7 +257,7 @@
           ".2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:7"
+        "src": "0:23:10"
       },
       {
         "abstract": true,
@@ -265,15 +265,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 1160,
+          "id": 2089,
           "nodeType": "StructuredDocumentation",
-          "src": "274:329:7",
+          "src": "274:329:10",
           "text": "The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface\neith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*"
         },
         "fullyImplemented": false,
-        "id": 1173,
+        "id": 2102,
         "linearizedBaseContracts": [
-          1173
+          2102
         ],
         "name": "UniswapOracleFactoryI",
         "nodeType": "ContractDefinition",
@@ -281,13 +281,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 1161,
+              "id": 2090,
               "nodeType": "StructuredDocumentation",
-              "src": "648:428:7",
+              "src": "648:428:10",
               "text": "@notice createNewOracle allows the owner of this contract to deploy a new oracle contract when\na new asset is whitelisted\n@param factory is the address of the uniswap factory\n@param tokenA is the address of the first token in the token pair for this oracle\n@param tokenB is the addresss of the second token in the token pair for this oracle\n@dev this function is marked as virtual as it is an abstracted function*"
             },
             "functionSelector": "a685cd1b",
-            "id": 1172,
+            "id": 2101,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -295,18 +295,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 1168,
+              "id": 2097,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1163,
+                  "id": 2092,
                   "mutability": "mutable",
                   "name": "factory",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1114:15:7",
+                  "scope": 2101,
+                  "src": "1114:15:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -314,10 +314,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1162,
+                    "id": 2091,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1114:7:7",
+                    "src": "1114:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -329,13 +329,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 1165,
+                  "id": 2094,
                   "mutability": "mutable",
                   "name": "tokenA",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1137:14:7",
+                  "scope": 2101,
+                  "src": "1137:14:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -343,10 +343,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1164,
+                    "id": 2093,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1137:7:7",
+                    "src": "1137:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -358,13 +358,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 1167,
+                  "id": 2096,
                   "mutability": "mutable",
                   "name": "tokenB",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1159:14:7",
+                  "scope": 2101,
+                  "src": "1159:14:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -372,10 +372,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1166,
+                    "id": 2095,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1159:7:7",
+                    "src": "1159:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -386,21 +386,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1106:73:7"
+              "src": "1106:73:10"
             },
             "returnParameters": {
-              "id": 1171,
+              "id": 2100,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1170,
+                  "id": 2099,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1172,
-                  "src": "1215:7:7",
+                  "scope": 2101,
+                  "src": "1215:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -408,10 +408,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1169,
+                    "id": 2098,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1215:7:7",
+                    "src": "1215:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -422,28 +422,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1214:9:7"
+              "src": "1214:9:10"
             },
-            "scope": 1173,
-            "src": "1082:142:7",
+            "scope": 2102,
+            "src": "1082:142:10",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 1174,
-        "src": "605:621:7"
+        "scope": 2103,
+        "src": "605:621:10"
       }
     ],
-    "src": "0:1227:7"
+    "src": "0:1227:10"
   },
   "compiler": {
     "name": "solc",
     "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.4",
-  "updatedAt": "2020-09-14T21:06:10.951Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-22T22:10:44.404Z",
   "devdoc": {
     "methods": {
       "createNewOracle(address,address,address)": {

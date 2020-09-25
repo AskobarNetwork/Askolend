@@ -8,43 +8,63 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getTokens } from '../models/'
+import { connect } from 'react-redux'
 
-export function SupplyMarketTable() {
-    return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Asset</TableCell>
-                        <TableCell align='right'>APY</TableCell>
-                        <TableCell align='center'>Wallet</TableCell>
-                        <TableCell align='center'>Collateral</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {getTokens().map((token) => (
-                        <TableRow key={token.asset}>
-                            <TableCell align='left'>
-                                <Grid
-                                    container
-                                    direction='row'
-                                    justify='flex-start'
-                                    alignItems='center'
-                                >
-                                    <Avatar src={token.logoPngSrc()} alt={token.logoPngSrcAlt()} /> &nbsp;
-                                    <Typography>{token.asset}</Typography>
-                                </Grid>
-                            </TableCell>
-                            <TableCell align='right'>{token.apy + '%'}</TableCell>
-                            <TableCell align='center'>{0 + ' ' + token.abbreviation}</TableCell>
-                            <TableCell align='center'>
-                                <Switch defaultChecked={token.collateral}></Switch>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
+interface ISupplyMarketTableProps {
+    tokenInfos?: [],
 }
+
+interface ISupplyMarketTableState {
+
+}
+
+class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, ISupplyMarketTableState>  {
+    render() {
+        return (
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Asset</TableCell>
+                            <TableCell align='right'>APY</TableCell>
+                            <TableCell align='center'>Wallet</TableCell>
+                            <TableCell align='center'>Collateral</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {this.props.tokenInfos?.map((token: any) => (
+                            <TableRow key={token.value.asset}>
+                                <TableCell align='left'>
+                                    <Grid
+                                        container
+                                        direction='row'
+                                        justify='flex-start'
+                                        alignItems='center'
+                                    >
+                                        {/* <Avatar src={token.value?.logoPngSrc()} alt={token.value?.logoPngSrcAlt()} /> &nbsp; */}
+                                    <Typography>{token.value.asset}</Typography>
+                                    </Grid>
+                                </TableCell>
+                                <TableCell align='right'>{token.value.apy + '%'}</TableCell>
+                                <TableCell align='center'>{0}</TableCell>
+                                <TableCell align='center'>
+                                    <Switch defaultChecked={token.value.collateral}></Switch>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        );
+    }
+}
+
+const mapStateToProps = (state: any) => {
+    return {
+        tokenInfos: state.tokenInfo.tokenInfos,
+    }
+}
+
+const SupplyMarketTable = connect(mapStateToProps, null)(SupplyMarketTableClass)
+
+export { SupplyMarketTable };

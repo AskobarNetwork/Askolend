@@ -1,1 +1,2 @@
-export * from "./web3Connector"
+export * from './web3Connection'
+export * from './tokenInfo'

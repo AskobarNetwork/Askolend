@@ -8,43 +8,62 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { getTokens } from '../models/'
+import { connect } from 'react-redux'
 
-export function BorrowMarketTable() {
-    return (
-        <TableContainer component={Paper}>
-            <Table aria-label='simple table'>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Asset</TableCell>
-                        <TableCell align='right'>APY</TableCell>
-                        <TableCell align='center'>Wallet</TableCell>
-                        <TableCell align='right'>Liquidity</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {getTokens().map((token) => (
-                        <TableRow key={token.asset}>
-                            <TableCell align='left'>
-                                <Grid
-                                    container
-                                    direction='row'
-                                    justify='flex-start'
-                                    alignItems='center'
-                                >
-                                    <Avatar src={token.logoPngSrc()} alt={token.logoPngSrcAlt()} /> &nbsp;
-                                    <Typography>{token.asset}</Typography>
-                                </Grid>
-                            </TableCell>
-                            <TableCell align='right'>{token.apy + '%'}</TableCell>
-                            <TableCell align='center'>{0 + ' ' + token.abbreviation}</TableCell>
-                            <TableCell align='right'>
-                                {'$' + token.liquidity + 'M'}
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
+interface IBorrowMarketTableProps {
+    tokenInfos?: [],
 }
+
+interface IBorrowMarketTableState {
+}
+
+class BorrowMarketTableClass extends React.Component<IBorrowMarketTableProps, IBorrowMarketTableState>  {    
+    render() {
+        return (
+            <TableContainer component={Paper}>
+                <Table aria-label='simple table'>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Asset</TableCell>
+                            <TableCell align='right'>APY</TableCell>
+                            <TableCell align='center'>Wallet</TableCell>
+                            <TableCell align='right'>Liquidity</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {this.props.tokenInfos?.map((token: any) => (
+                            <TableRow key={token.value.asset}>
+                                <TableCell align='left'>
+                                    <Grid
+                                        container
+                                        direction='row'
+                                        justify='flex-start'
+                                        alignItems='center'
+                                    >
+                                        {/* <Avatar src={token.value?.logoPngSrc()} alt={token.value?.logoPngSrcAlt()} /> &nbsp; */}
+                                        <Typography>{token.value.asset}</Typography>
+                                    </Grid>
+                                </TableCell>
+                                <TableCell align='right'>{token.value.apy + '%'}</TableCell>
+                                <TableCell align='center'>{0}</TableCell>
+                                <TableCell align='right'>
+                                    {'$' + token.value.liquidity + 'M'}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        );
+    }
+}
+
+const mapStateToProps = (state: any) => {
+    return {
+        tokenInfos: state.tokenInfo.tokenInfos,
+    }
+}
+
+const BorrowMarketTable = connect(mapStateToProps, null)(BorrowMarketTableClass)
+
+export { BorrowMarketTable };

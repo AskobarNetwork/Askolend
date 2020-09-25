@@ -20,6 +20,7 @@ export class Token {
 }
 
 export function getTokenAddresses() {
+    // Need case sensitive token addresses for this to work!
     let tokenArray: string[] = [
         '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
         '0x6B175474E89094C44Da98b954EedeAC495271d0F',

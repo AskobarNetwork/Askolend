@@ -21,18 +21,17 @@ contract MoneyMarketInstance is Ownable {
     using SafeMath for uint256;
 
   uint256 public blocksPerYear;
-  uint256 public collateralizationRatio;
-  uint256 public baseRate;
-  uint256 public multiplierM;
-  uint256 public multiplierN;
-  uint256 public optimal;
   uint256 public feePercent;
   uint256 public divisor;
   uint256 public assetAHRPoolBalance;
   uint256 public assetALRPoolBalance;
   uint256 public assetAHRborrowBalance;
   uint256 public assetALRborrowBalance;
+  uint256 public fee_AHR;
+  uint256 public fee_ALR;
   address public factoryMM;
+  string public assetName;
+  string public assetSymbol;
 
 
   IERC20 public asset;
@@ -40,7 +39,8 @@ contract MoneyMarketInstance is Ownable {
   AskoLowRisk public ALR;
   UniswapOracleInstanceI public oracle;
   MoneyMarketFactoryI public MMF;
-  InterestRateModel public IRM;
+  InterestRateModel public IRM_AHR;
+  InterestRateModel public IRM_ALR;
 
   mapping(address => uint) public lentToAHRpool;
   mapping(address => uint) public lentToALRpool;
@@ -82,38 +82,10 @@ contract MoneyMarketInstance is Ownable {
     asset = IERC20(_assetContractAdd);
 
 
-
-    bytes memory ahrname = abi.encodePacked("AHR-");
-    ahrname = abi.encodePacked(ahrname, _assetName);
-
-    bytes memory ahrsymbol = abi.encodePacked("AHR-");
-    ahrsymbol = abi.encodePacked(ahrsymbol, _assetSymbol);
-
-    string memory assetNameAHR = string(ahrname);
-    string memory assetSymbolAHR = string(ahrsymbol);
-
-    AHR = AskoHighRisk(address(new AskoHighRisk(
-      assetNameAHR,
-      assetSymbolAHR
-    )));
-
-    bytes memory alrname = abi.encodePacked("AlR-");
-    alrname = abi.encodePacked(ahrname, _assetName);
-
-    bytes memory alrsymbol = abi.encodePacked("AlR-");
-    alrsymbol = abi.encodePacked(ahrsymbol, _assetSymbol);
-
-    string memory assetNameALR = string(alrname);
-    string memory assetSymbolALR = string(alrsymbol);
-
-    ALR = AskoLowRisk(address(new AskoLowRisk(
-      assetNameALR,
-      assetSymbolALR
-    )));
-
   divisor = 10000;
   blocksPerYear = 2102400;
-
+  assetName = _assetName;
+  assetSymbol = _assetSymbol;
   oracle = UniswapOracleInstanceI(_oracle);
   MMF = MoneyMarketFactoryI(msg.sender);
   transferOwnership(_owner);
@@ -123,72 +95,82 @@ contract MoneyMarketInstance is Ownable {
 /**
 @notice setUp is called by the MoneyMarketFactory after a contract is created to set up the initial variables.
         This is split from the constructor function to keep from reaching the gas block limit
-@param  _collateralizationRatio is used to set collateralizationRatio
-@param  _baseRate used to set baseRate
-@param  _multiplierM used to set multiplierM
-@param  _multiplierN used to set multiplierN
-@param  _optimal used to set optimal
-@param  _fee used to set feePercent
 @param  _InterestRateModel is the address of this MoneyMarketInstances InterestRateModel
+@param _fee is a number representing the fee for exchanging an AHR token, as a mantissa (scaled by 1e18)
+@dev this function will create a token whos name and symbol is concatenated with a "AHR-" in front of it
+      example: AHR-LINK
 **/
-function setUp(
-    uint _collateralizationRatio,
-    uint _baseRate,
-    uint _multiplierM,
-    uint  _multiplierN,
-    uint _optimal,
-    uint _fee,
-    address _InterestRateModel
+function _setUpAHR(
+    address _InterestRateModel,
+    uint256 _fee
   )
   public
   onlyMMFactory
   {
-  collateralizationRatio  = _collateralizationRatio;
-  baseRate = _baseRate;
-  multiplierM = _multiplierM;
-  multiplierN = _multiplierN;
-  optimal = _optimal;
-  feePercent = _fee;
-  IRM = InterestRateModel(_InterestRateModel);
-  }
-/**
-@notice setCollateralizationRatio allows the owner of this contract to set the collateralizationRatio
-@param  _ratio is a % number 1-100 representing the ratio
-**/
-  function setCollateralizationRatio(uint _ratio) public onlyOwner {
-    collateralizationRatio = _ratio;
+  IRM_AHR = InterestRateModel(_InterestRateModel);
+  fee_AHR = _fee;
+  bytes memory ahrname = abi.encodePacked("AHR-");
+  ahrname = abi.encodePacked(ahrname, assetName);
+
+  bytes memory ahrsymbol = abi.encodePacked("AHR-");
+  ahrsymbol = abi.encodePacked(ahrsymbol, assetSymbol);
+
+  string memory assetNameAHR = string(ahrname);
+  string memory assetSymbolAHR = string(ahrsymbol);
+
+  AHR = AskoHighRisk(address(new AskoHighRisk(
+    assetNameAHR,
+    assetSymbolAHR
+  )));
   }
 
 /**
-@notice setBaseRate allows the owner of this contract to set the baseRate
-@param  _rate is the input number representing the rate
+@notice setUp is called by the MoneyMarketFactory after a contract is created to set up the initial variables.
+        This is split from the constructor function to keep from reaching the gas block limit
+@param  _InterestRateModel is the address of this MoneyMarketInstances InterestRateModel
+@param _fee is a number representing the fee for exchanging an ALR token, as a mantissa (scaled by 1e18)
+@dev this function will create a token whos name and symbol is concatenated with a "ALR-" in front of it
+      example: ALR-LINK
 **/
-  function setBaseRate(uint _rate) public onlyOwner {
-      baseRate = _rate;
-  }
+  function _setUpALR(
+      address _InterestRateModel,
+      uint256 _fee
+    )
+    public
+    onlyMMFactory
+    {
+    IRM_ALR = InterestRateModel(_InterestRateModel);
+    fee_ALR = _fee;
+    bytes memory alrname = abi.encodePacked("AlR-");
+    alrname = abi.encodePacked(alrname, assetName);
+
+    bytes memory alrsymbol = abi.encodePacked("AlR-");
+    alrsymbol = abi.encodePacked(alrsymbol, assetSymbol);
+
+    string memory assetNameALR = string(alrname);
+    string memory assetSymbolALR = string(alrsymbol);
+
+    ALR = AskoLowRisk(address(new AskoLowRisk(
+      assetNameALR,
+      assetSymbolALR
+    )));
+    }
+
+
 
 /**
-@notice setMultiplierM allows the owner of this contract to set the multiplierM
-@param  _multiplierM is the input number representing the multiplierM
+@notice setFee allows the owner of this contract to set the fee
+@param  _fee is the input number representing the fee
+@dev the divisor is set to 10,000 in the constructor for this contract. this allows for
+      a fee percentage accounting for two decimal places. feePercent must account for this when being set.
+      The following examples show feePercent amounts and how they equate to percentages:
+              EX:
+                  a 1% fee would be set as feePercent = 100
+                  a .5% fee would be set as feePercent = 50
+                  a 50% fee would be set as feePercent = 5000
 **/
-  function setMultiplierM(uint _multiplierM) public onlyOwner {
-      multiplierM = _multiplierM;
-  }
-
-/**
-@notice setMultiplierM allows the owner of this contract to set the multiplierN
-@param  _multiplierN is the input number representing the multiplierN
-**/
-  function setMultiplierN(uint _multiplierN) public onlyOwner {
-    multiplierN = _multiplierN;
-  }
-
-/**
-@notice setOptimal allows the owner of this contract to set the optimal
-@param  _optimal is the input number representing the optimal
-**/
-  function setOptimal(uint _optimal) public onlyOwner {
-      optimal = _optimal;
+  function setFeeAHR(uint _fee) public onlyOwner {
+      fee_AHR = _fee;
   }
 
 /**
@@ -202,26 +184,33 @@ function setUp(
                   a .5% fee would be set as feePercent = 50
                   a 50% fee would be set as feePercent = 5000
 **/
-  function setFee(uint _fee) public onlyOwner {
-      feePercent = _fee;
+  function setFeeALR(uint _fee) public onlyOwner {
+      fee_ALR = _fee;
   }
 
 /**
-
+@notice getALRadd allows the MoneyMarketFactory contract to easily retrieve the address of a MoneyMakerInstances
+        Asko Low Risk token.
 **/
 function getALRadd() public view returns(address) {
   return address(ALR);
 }
 
 /**
-
+@notice factoryMint allows the MoneyMarketFactory contract to proxy Burn a specific MoneyMarketInstances
+        Asko Low Risk token. This is used during the loan process.
+@param _account is the account being minted to
+@param _amount is the amount being minted
 **/
 function factoryBurn(address _account, uint _amount) external onlyMMFactory {
   ALR.burn(_account, _amount);
 }
 
 /**
-
+@notice factoryMint allows the MoneyMarketFactory contract to proxy mint a specific MoneyMarketInstances
+        Asko Low Risk token. This is used during the loan repayment process.
+@param _account is the account being minted to
+@param _amount is the amount being minted
 **/
 function factoryMint(address _account, uint _amount) external onlyMMFactory {
   ALR.mint(_account, _amount);
@@ -252,7 +241,7 @@ function calculateFee(uint256 _payedAmount) public view returns(uint) {
 @return The utilization rate as a mantissa between [0, 1e18]
 **/
 function calculateAHRexchangeRate(uint _assetBalance, uint _loanBal) public view returns(uint) {
-    IRM.getSupplyRate(_assetBalance, _loanBal, 0, 0);
+    IRM_AHR.getSupplyRate(_assetBalance, _loanBal, 0, 0);
 }
 
 /**
@@ -262,18 +251,19 @@ function calculateAHRexchangeRate(uint _assetBalance, uint _loanBal) public view
 @return The utilization rate as a mantissa between [0, 1e18]
 **/
 function calculateALRexchangeRate(uint _assetBalance, uint _loanBal) public view returns(uint){
-    IRM.getSupplyRate(_assetBalance, _loanBal, 0, 0);
+    IRM_ALR.getSupplyRate(_assetBalance, _loanBal, 0, 0);
 }
 
 /**
 @notice calculateLoanInterest is used to calculate the interest for a loan
 @param _assetBalance The amount of asset held by the Money Market Contract
 @param _loanBal The total value of all asset loans for this money market
-
 **/
 function calculateLoanInterest(uint _assetBalance, uint _loanBal) public view returns(uint){
-    IRM.getBorrowRate(_assetBalance, _loanBal, 0);
+    IRM_ALR.getBorrowRate(_assetBalance, _loanBal, 0);
 }
+
+
 
 /**
 @notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool

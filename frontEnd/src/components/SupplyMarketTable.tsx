@@ -9,6 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { connect } from 'react-redux'
+import { getTokenLogoPngSrc } from '../models'
 
 interface ISupplyMarketTableProps {
     tokenInfos?: [],
@@ -41,7 +42,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                         justify='flex-start'
                                         alignItems='center'
                                     >
-                                        {/* <Avatar src={token.value?.logoPngSrc()} alt={token.value?.logoPngSrcAlt()} /> &nbsp; */}
+                                        <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
                                     <Typography>{token.value.asset}</Typography>
                                     </Grid>
                                 </TableCell>

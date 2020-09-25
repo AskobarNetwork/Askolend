@@ -3,7 +3,6 @@ export class Token {
     asset: string;
     apy: number;
     collateral: boolean;
-    githubAssetBaseAddress: URL = new URL(process.env.REACT_APP_ASSETS_ENDPOINT || '')
     liquidity: number;
 
     constructor(address: string,
@@ -18,18 +17,6 @@ export class Token {
         this.collateral = collateral;
         this.liquidity = liquidity;
     }
-
-    infoJsonSrc(): string {
-        return new URL(this.githubAssetBaseAddress.toString() + this.address + '/info.json').toString();
-    }
-
-    logoPngSrc(): string {
-        return new URL(this.githubAssetBaseAddress.toString() + this.address + '/logo.png').toString();
-    }
-
-    logoPngSrcAlt(): string {
-        return this.asset;
-    }
 }
 
 export function getTokenAddresses() {
@@ -42,4 +29,8 @@ export function getTokenAddresses() {
         '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
     ];
     return tokenArray;
+}
+
+export function getTokenLogoPngSrc(address:string): string {
+    return new URL((process.env.REACT_APP_ASSETS_ENDPOINT || '') + address + '/logo.png').toString();
 }

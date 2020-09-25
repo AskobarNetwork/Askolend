@@ -23,7 +23,7 @@ function tokenInfoObtained(address: string, info: any) {
 
 export function obtainTokenInfo(address: string, initialObtain: boolean) {
     return function (dispatch: any) {
-        if (initialObtain == true) {
+        if (initialObtain === true) {
             dispatch(tokenInfoIntialObtain());
         }
         dispatch(tokenInfoObtaining(address));

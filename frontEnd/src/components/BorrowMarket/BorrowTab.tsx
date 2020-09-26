@@ -47,7 +47,7 @@ const classes = useStyles();
         <Container className={classes.container}>
           
           <Typography className={classes.greytext} >Protocol Balance</Typography>
-          <Typography className={classes.blacktext} >0 BAT</Typography>
+    <Typography className={classes.blacktext} >{props.asset}</Typography>
  
          </Container>
         </Card>

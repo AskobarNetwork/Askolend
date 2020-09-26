@@ -26,7 +26,8 @@ export default class WithdrawForm extends React.Component<{},{value:string}> {
     }
   
     handleSubmit(event:any) {
-      alert('A name was submitted: ' + this.state.value);
+      //submit stuff here
+      console.log('submit' + this.state.value);
       event.preventDefault();
     }
   

@@ -16,7 +16,7 @@ const classes = useStyles();
         <Typography>Supply Rates </Typography>
         <Container className={classes.container}>
           
-         <Typography className={classes.greytext} >Supply APY</Typography>
+    <Typography className={classes.greytext} >{props.asset}Supply APY</Typography>
          <Typography className={classes.blacktext} >3.03%</Typography>
 
         </Container>

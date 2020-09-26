@@ -26,7 +26,7 @@ export default function BorrowTabHeader(props:any) {
 
 const useStyles = makeStyles((theme) => ({
     Header:{
-     color:'black',
+     backgroundColor:'black',
      height:100,
 
     },

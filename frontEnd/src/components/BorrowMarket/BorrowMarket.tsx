@@ -20,7 +20,7 @@ export default function BorrowMarket(props:any) {
             </Container>
     
     
-               <BorrowTabHeader className={classes.Text}/>
+               <BorrowTabHeader className={classes.Text} asset={props.asset}icon={props.icon}/>
           <BorrowTabPanel asset ={props.asset} icon={props.icon}/>
             </Card>
     );

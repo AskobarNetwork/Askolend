@@ -1,0 +1,943 @@
+{
+  "contractName": "LegacyInterestRateModel",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isInterestRateModel",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "cash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "borrows",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "reserves",
+          "type": "uint256"
+        }
+      ],
+      "name": "getBorrowRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "cash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "borrows",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "reserves",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "reserveFactorMantissa",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSupplyRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"cash\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"borrows\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserves\",\"type\":\"uint256\"}],\"name\":\"getBorrowRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"cash\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"borrows\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserves\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveFactorMantissa\",\"type\":\"uint256\"}],\"name\":\"getSupplyRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isInterestRateModel\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Compound (modified by Arr00)\",\"methods\":{\"getBorrowRate(uint256,uint256,uint256)\":{\"params\":{\"borrows\":\"The total amount of borrows the market has outstanding\",\"cash\":\"The total amount of cash the market has\",\"reserves\":\"The total amount of reserves the market has\"},\"return\":\"error code (0 = no error), The borrow rate per block (as a percentage, and scaled by 1e18)\"},\"getSupplyRate(uint256,uint256,uint256,uint256)\":{\"params\":{\"borrows\":\"The total amount of borrows the market has outstanding\",\"cash\":\"The total amount of cash the market has\",\"reserveFactorMantissa\":\"The current reserve factor the market has\",\"reserves\":\"The total amount of reserves the market has\"},\"return\":\"The supply rate per block (as a percentage, and scaled by 1e18)\"}},\"title\":\"Compound's Legacy InterestRateModel Interface\"},\"userdoc\":{\"methods\":{\"getBorrowRate(uint256,uint256,uint256)\":{\"notice\":\"Calculates the current borrow interest rate per block\"},\"getSupplyRate(uint256,uint256,uint256,uint256)\":{\"notice\":\"Calculates the current supply interest rate per block\"}}}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/LegacyInterestRateModel.sol\":\"LegacyInterestRateModel\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":150},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/LegacyInterestRateModel.sol\":{\"keccak256\":\"0x161a2e17aa46c4a2fbd4438f732f22825fddd71330a46200093b16f81b7d4732\",\"urls\":[\"bzz-raw://9e92603101f383cf5ace2a419f500559f2b0554886a6c08ef0db61d07e571b03\",\"dweb:/ipfs/Qma3MeYPWmYQUi4e2Cdu8AUtNJ4ythVqquK7kf66qVzAPC\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.5.16;\n\n/**\n  * @title Compound's Legacy InterestRateModel Interface\n  * @author Compound (modified by Arr00)\n  */\ncontract LegacyInterestRateModel {\n    /// @notice Indicator that this is an InterestRateModel contract (for inspection)\n    bool public constant isInterestRateModel = true;\n\n    /**\n      * @notice Calculates the current borrow interest rate per block\n      * @param cash The total amount of cash the market has\n      * @param borrows The total amount of borrows the market has outstanding\n      * @param reserves The total amount of reserves the market has\n      * @return error code (0 = no error), The borrow rate per block (as a percentage, and scaled by 1e18)\n      */\n    function getBorrowRate(uint cash, uint borrows, uint reserves) external view returns (uint,uint);\n\n    /**\n      * @notice Calculates the current supply interest rate per block\n      * @param cash The total amount of cash the market has\n      * @param borrows The total amount of borrows the market has outstanding\n      * @param reserves The total amount of reserves the market has\n      * @param reserveFactorMantissa The current reserve factor the market has\n      * @return The supply rate per block (as a percentage, and scaled by 1e18)\n      */\n    function getSupplyRate(uint cash, uint borrows, uint reserves, uint reserveFactorMantissa) external view returns (uint);\n\n}\n",
+  "sourcePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/LegacyInterestRateModel.sol",
+  "ast": {
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/LegacyInterestRateModel.sol",
+    "exportedSymbols": {
+      "LegacyInterestRateModel": [
+        27965
+      ]
+    },
+    "id": 27966,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 27935,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:32"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "@title Compound's Legacy InterestRateModel Interface\n@author Compound (modified by Arr00)",
+        "fullyImplemented": false,
+        "id": 27965,
+        "linearizedBaseContracts": [
+          27965
+        ],
+        "name": "LegacyInterestRateModel",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": true,
+            "id": 27938,
+            "name": "isInterestRateModel",
+            "nodeType": "VariableDeclaration",
+            "scope": 27965,
+            "src": "258:47:32",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 27936,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "258:4:32",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "74727565",
+              "id": 27937,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "bool",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "301:4:32",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              },
+              "value": "true"
+            },
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Calculates the current borrow interest rate per block\n@param cash The total amount of cash the market has\n@param borrows The total amount of borrows the market has outstanding\n@param reserves The total amount of reserves the market has\n@return error code (0 = no error), The borrow rate per block (as a percentage, and scaled by 1e18)",
+            "id": 27951,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getBorrowRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 27945,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27940,
+                  "name": "cash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "735:9:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27939,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "735:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27942,
+                  "name": "borrows",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "746:12:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27941,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "746:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27944,
+                  "name": "reserves",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "760:13:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27943,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "760:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "734:40:32"
+            },
+            "returnParameters": {
+              "id": 27950,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27947,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "798:4:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27946,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "798:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27949,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "803:4:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27948,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "803:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "797:11:32"
+            },
+            "scope": 27965,
+            "src": "712:97:32",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Calculates the current supply interest rate per block\n@param cash The total amount of cash the market has\n@param borrows The total amount of borrows the market has outstanding\n@param reserves The total amount of reserves the market has\n@param reserveFactorMantissa The current reserve factor the market has\n@return The supply rate per block (as a percentage, and scaled by 1e18)",
+            "id": 27964,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSupplyRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 27960,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27953,
+                  "name": "cash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1290:9:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27952,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1290:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27955,
+                  "name": "borrows",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1301:12:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27954,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1301:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27957,
+                  "name": "reserves",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1315:13:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27956,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1315:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27959,
+                  "name": "reserveFactorMantissa",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1330:26:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27958,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1330:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1289:68:32"
+            },
+            "returnParameters": {
+              "id": 27963,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27962,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1381:4:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27961,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1381:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1380:6:32"
+            },
+            "scope": 27965,
+            "src": "1267:120:32",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 27966,
+        "src": "133:1257:32"
+      }
+    ],
+    "src": "0:1391:32"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/LegacyInterestRateModel.sol",
+    "exportedSymbols": {
+      "LegacyInterestRateModel": [
+        27965
+      ]
+    },
+    "id": 27966,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 27935,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:32"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "@title Compound's Legacy InterestRateModel Interface\n@author Compound (modified by Arr00)",
+        "fullyImplemented": false,
+        "id": 27965,
+        "linearizedBaseContracts": [
+          27965
+        ],
+        "name": "LegacyInterestRateModel",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": true,
+            "id": 27938,
+            "name": "isInterestRateModel",
+            "nodeType": "VariableDeclaration",
+            "scope": 27965,
+            "src": "258:47:32",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 27936,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "258:4:32",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "74727565",
+              "id": 27937,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "bool",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "301:4:32",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              },
+              "value": "true"
+            },
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Calculates the current borrow interest rate per block\n@param cash The total amount of cash the market has\n@param borrows The total amount of borrows the market has outstanding\n@param reserves The total amount of reserves the market has\n@return error code (0 = no error), The borrow rate per block (as a percentage, and scaled by 1e18)",
+            "id": 27951,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getBorrowRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 27945,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27940,
+                  "name": "cash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "735:9:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27939,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "735:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27942,
+                  "name": "borrows",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "746:12:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27941,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "746:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27944,
+                  "name": "reserves",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "760:13:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27943,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "760:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "734:40:32"
+            },
+            "returnParameters": {
+              "id": 27950,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27947,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "798:4:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27946,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "798:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27949,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27951,
+                  "src": "803:4:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27948,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "803:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "797:11:32"
+            },
+            "scope": 27965,
+            "src": "712:97:32",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Calculates the current supply interest rate per block\n@param cash The total amount of cash the market has\n@param borrows The total amount of borrows the market has outstanding\n@param reserves The total amount of reserves the market has\n@param reserveFactorMantissa The current reserve factor the market has\n@return The supply rate per block (as a percentage, and scaled by 1e18)",
+            "id": 27964,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSupplyRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 27960,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27953,
+                  "name": "cash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1290:9:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27952,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1290:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27955,
+                  "name": "borrows",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1301:12:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27954,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1301:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27957,
+                  "name": "reserves",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1315:13:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27956,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1315:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27959,
+                  "name": "reserveFactorMantissa",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1330:26:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27958,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1330:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1289:68:32"
+            },
+            "returnParameters": {
+              "id": 27963,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27962,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27964,
+                  "src": "1381:4:32",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27961,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1381:4:32",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1380:6:32"
+            },
+            "scope": 27965,
+            "src": "1267:120:32",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 27966,
+        "src": "133:1257:32"
+      }
+    ],
+    "src": "0:1391:32"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-26T04:13:39.306Z",
+  "devdoc": {
+    "author": "Compound (modified by Arr00)",
+    "methods": {
+      "getBorrowRate(uint256,uint256,uint256)": {
+        "params": {
+          "borrows": "The total amount of borrows the market has outstanding",
+          "cash": "The total amount of cash the market has",
+          "reserves": "The total amount of reserves the market has"
+        },
+        "return": "error code (0 = no error), The borrow rate per block (as a percentage, and scaled by 1e18)"
+      },
+      "getSupplyRate(uint256,uint256,uint256,uint256)": {
+        "params": {
+          "borrows": "The total amount of borrows the market has outstanding",
+          "cash": "The total amount of cash the market has",
+          "reserveFactorMantissa": "The current reserve factor the market has",
+          "reserves": "The total amount of reserves the market has"
+        },
+        "return": "The supply rate per block (as a percentage, and scaled by 1e18)"
+      }
+    },
+    "title": "Compound's Legacy InterestRateModel Interface"
+  },
+  "userdoc": {
+    "methods": {
+      "getBorrowRate(uint256,uint256,uint256)": {
+        "notice": "Calculates the current borrow interest rate per block"
+      },
+      "getSupplyRate(uint256,uint256,uint256,uint256)": {
+        "notice": "Calculates the current supply interest rate per block"
+      }
+    }
+  }
+}

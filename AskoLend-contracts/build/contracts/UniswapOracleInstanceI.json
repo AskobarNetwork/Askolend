@@ -1,0 +1,302 @@
+{
+  "contractName": "UniswapOracleInstanceI",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amountIn",
+          "type": "uint256"
+        }
+      ],
+      "name": "consult",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountOut",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amountIn\",\"type\":\"uint256\"}],\"name\":\"consult\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"amountOut\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"consult(uint256)\":{\"params\":{\"_amountIn\":\"is the amount of token0 being consulted\"},\"return\":\"amountOut is the price of the asset amount in USDC*\"}}},\"userdoc\":{\"methods\":{\"consult(uint256)\":{\"notice\":\"consult returns the price of a token in USDC\"}},\"notice\":\"The UniswapOracleInstanceI contract an abstract contract the used to interface with a MoneyMarketInstance's UniswapOracleInstance. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleInstanceI.sol\":\"UniswapOracleInstanceI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":150},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleInstanceI.sol\":{\"keccak256\":\"0x556a6605becabb0942102c627e9bac41fbef9e84014e0ad7d3642699a89ba6b3\",\"urls\":[\"bzz-raw://9421ed5d80f50c0fa3463a86b97af62d58930d6a29c14b5a750026d380436aa3\",\"dweb:/ipfs/QmY2Hxb3kRbuykFAh8VmFUhy6MWbz9p1S2NzUnP5mywEKv\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.5.16;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title UniswapOracleInstanceI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe UniswapOracleInstanceI contract an abstract contract the used to interface\n    with a MoneyMarketInstance's UniswapOracleInstance. This is necissary as the OpenZeppelin and Uniswap libraries cause a\n    truffle compiler error due when imported into the same contract due to the use of two seperate\n    SafeMath instances\n**/\n\n contract UniswapOracleInstanceI {\n\n  /**\n  @notice consult returns the price of a token in USDC\n  @param _amountIn is the amount of token0 being consulted\n  @return amountOut is the price of the asset amount in USDC\n  **/\n\n  function consult(uint _amountIn) external view  returns (uint amountOut);\n\n}\n",
+  "sourcePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleInstanceI.sol",
+  "ast": {
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleInstanceI.sol",
+    "exportedSymbols": {
+      "UniswapOracleInstanceI": [
+        30543
+      ]
+    },
+    "id": 30544,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 30535,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:44"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "The UniswapOracleInstanceI contract an abstract contract the used to interface\nwith a MoneyMarketInstance's UniswapOracleInstance. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*",
+        "fullyImplemented": false,
+        "id": 30543,
+        "linearizedBaseContracts": [
+          30543
+        ],
+        "name": "UniswapOracleInstanceI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@notice consult returns the price of a token in USDC\n@param _amountIn is the amount of token0 being consulted\n@return amountOut is the price of the asset amount in USDC*",
+            "id": 30542,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "consult",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 30538,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30537,
+                  "name": "_amountIn",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30542,
+                  "src": "853:14:44",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 30536,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "853:4:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "852:16:44"
+            },
+            "returnParameters": {
+              "id": 30541,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30540,
+                  "name": "amountOut",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30542,
+                  "src": "893:14:44",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 30539,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "893:4:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "892:16:44"
+            },
+            "scope": 30543,
+            "src": "836:73:44",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 30544,
+        "src": "611:301:44"
+      }
+    ],
+    "src": "0:913:44"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleInstanceI.sol",
+    "exportedSymbols": {
+      "UniswapOracleInstanceI": [
+        30543
+      ]
+    },
+    "id": 30544,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 30535,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:44"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "The UniswapOracleInstanceI contract an abstract contract the used to interface\nwith a MoneyMarketInstance's UniswapOracleInstance. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*",
+        "fullyImplemented": false,
+        "id": 30543,
+        "linearizedBaseContracts": [
+          30543
+        ],
+        "name": "UniswapOracleInstanceI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@notice consult returns the price of a token in USDC\n@param _amountIn is the amount of token0 being consulted\n@return amountOut is the price of the asset amount in USDC*",
+            "id": 30542,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "consult",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 30538,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30537,
+                  "name": "_amountIn",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30542,
+                  "src": "853:14:44",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 30536,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "853:4:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "852:16:44"
+            },
+            "returnParameters": {
+              "id": 30541,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30540,
+                  "name": "amountOut",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30542,
+                  "src": "893:14:44",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 30539,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "893:4:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "892:16:44"
+            },
+            "scope": 30543,
+            "src": "836:73:44",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 30544,
+        "src": "611:301:44"
+      }
+    ],
+    "src": "0:913:44"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-26T04:13:39.356Z",
+  "devdoc": {
+    "methods": {
+      "consult(uint256)": {
+        "params": {
+          "_amountIn": "is the amount of token0 being consulted"
+        },
+        "return": "amountOut is the price of the asset amount in USDC*"
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {
+      "consult(uint256)": {
+        "notice": "consult returns the price of a token in USDC"
+      }
+    },
+    "notice": "The UniswapOracleInstanceI contract an abstract contract the used to interface with a MoneyMarketInstance's UniswapOracleInstance. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*"
+  }
+}

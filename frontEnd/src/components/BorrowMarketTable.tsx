@@ -8,57 +8,63 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { connect } from 'react-redux'
+import { getTokenLogoPngSrc } from '../models'
 
-function createData(icon: any, asset: string, apy: string, wallet: string, liquidity: string) {
-    return { icon, asset, apy, wallet, liquidity };
+interface IBorrowMarketTableProps {
+    tokenInfos?: [],
 }
 
-const rows = [
-    createData(<Avatar src={"bat.png"} alt="" />, 'Basic Attention Token', '10.52%', '0 BAT', '$4.06M'),
-    createData(<Avatar src={"dai.png"} alt="" />, 'Dai', '3.03%', '0 DAI', '$189.48M'),
-    createData(<Avatar src={"ether.png"} alt="" />, 'Ether', '0.20%', '0 ETH', '$375.54M'),
-    createData(<Avatar src={"usdc.png"} alt="" />, 'USD Coin', '1.89%', '0 USDC', '$127.10M'),
-    createData(<Avatar src={"tether.png"} alt="" />, 'Tether', '2.75%', '0 USDT', '$4.63M'),
-    createData(<Avatar src={"wbtc.png"} alt="" />, 'Wrapped BTC', '0.97%', '0 WBTC', '$13.11M'),
-    createData(<Avatar src={"zrx.png"} alt="" />, '0x', '1.92%', '0 ZRX', '$52.67M'),
-];
+interface IBorrowMarketTableState {
+}
 
-export function BorrowMarketTable() {
-
-    return (
-        <TableContainer component={Paper}>
-            <Table aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Asset</TableCell>
-                        <TableCell align="right">APY</TableCell>
-                        <TableCell align="right">Wallet</TableCell>
-                        <TableCell align="right">Liquidity</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.asset}>
-                            <TableCell align="left">
-                                <Grid
-                                    container
-                                    direction="row"
-                                    justify="flex-start"
-                                    alignItems="center"
-                                >
-                                    {row.icon} &nbsp;
-                                    <Typography>{row.asset}</Typography>
-                                </Grid>
-                            </TableCell>
-                            <TableCell align="right">{row.apy}</TableCell>
-                            <TableCell align="right">{row.wallet}</TableCell>
-                            <TableCell align="right">
-                                {row.liquidity}
-                            </TableCell>
+class BorrowMarketTableClass extends React.Component<IBorrowMarketTableProps, IBorrowMarketTableState>  {    
+    render() {
+        return (
+            <TableContainer component={Paper}>
+                <Table aria-label='simple table'>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Asset</TableCell>
+                            <TableCell align='right'>APY</TableCell>
+                            <TableCell align='center'>Wallet</TableCell>
+                            <TableCell align='right'>Liquidity</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
+                    </TableHead>
+                    <TableBody>
+                        {this.props.tokenInfos?.map((token: any) => (
+                            <TableRow key={token.value.asset}>
+                                <TableCell align='left'>
+                                    <Grid
+                                        container
+                                        direction='row'
+                                        justify='flex-start'
+                                        alignItems='center'
+                                    >
+                                        <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
+                                        <Typography>{token.value.asset}</Typography>
+                                    </Grid>
+                                </TableCell>
+                                <TableCell align='right'>{token.value.apy + '%'}</TableCell>
+                                <TableCell align='center'>{0}</TableCell>
+                                <TableCell align='right'>
+                                    {'$' + token.value.liquidity + 'M'}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        );
+    }
 }
+
+const mapStateToProps = (state: any) => {
+    return {
+        tokenInfos: state.tokenInfo.tokenInfos,
+    }
+}
+
+const BorrowMarketTable = connect(mapStateToProps, null)(BorrowMarketTableClass)
+
+export { BorrowMarketTable };

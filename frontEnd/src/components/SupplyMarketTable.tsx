@@ -8,56 +8,64 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { connect } from 'react-redux'
+import { getTokenLogoPngSrc } from '../models'
 
-function createData(icon: any, asset: string, apy: string, wallet: string, collateral: boolean) {
-    return { icon, asset, apy, wallet, collateral };
+interface ISupplyMarketTableProps {
+    tokenInfos?: [],
 }
 
-const rows = [
-    createData(<Avatar src={"bat.png"} alt="" />, 'Basic Attention Token', '10.52%', '0 BAT', false),
-    createData(<Avatar src={"dai.png"} alt="" />, 'Dai', '3.03%', '0 DAI', false),
-    createData(<Avatar src={"ether.png"} alt="" />, 'Ether', '0.20%', '0 ETH', false),
-    createData(<Avatar src={"usdc.png"} alt="" />, 'USD Coin', '1.89%', '0 USDC', false),
-    createData(<Avatar src={"tether.png"} alt="" />, 'Tether', '2.75%', '0 USDT', false),
-    createData(<Avatar src={"wbtc.png"} alt="" />, 'Wrapped BTC', '0.97%', '0 WBTC', false),
-    createData(<Avatar src={"zrx.png"} alt="" />, '0x', '1.92%', '0 ZRX', false),
-];
+interface ISupplyMarketTableState {
 
-export function SupplyMarketTable() {
-    return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Asset</TableCell>
-                        <TableCell align="right">APY</TableCell>
-                        <TableCell align="right">Wallet</TableCell>
-                        <TableCell align="right">Collateral</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.asset}>
-                            <TableCell align="left">
-                                <Grid
-                                    container
-                                    direction="row"
-                                    justify="flex-start"
-                                    alignItems="center"
-                                >
-                                    {row.icon} &nbsp;
-                                    <Typography>{row.asset}</Typography>
-                                </Grid>
-                            </TableCell>
-                            <TableCell align="right">{row.apy}</TableCell>
-                            <TableCell align="right">{row.wallet}</TableCell>
-                            <TableCell align="right">
-                                <Switch defaultChecked={row.collateral}></Switch>
-                            </TableCell>
+}
+
+class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, ISupplyMarketTableState>  {
+    render() {
+        return (
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Asset</TableCell>
+                            <TableCell align='right'>APY</TableCell>
+                            <TableCell align='center'>Wallet</TableCell>
+                            <TableCell align='center'>Collateral</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
+                    </TableHead>
+                    <TableBody>
+                        {this.props.tokenInfos?.map((token: any) => (
+                            <TableRow key={token.value.asset}>
+                                <TableCell align='left'>
+                                    <Grid
+                                        container
+                                        direction='row'
+                                        justify='flex-start'
+                                        alignItems='center'
+                                    >
+                                        <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
+                                    <Typography>{token.value.asset}</Typography>
+                                    </Grid>
+                                </TableCell>
+                                <TableCell align='right'>{token.value.apy + '%'}</TableCell>
+                                <TableCell align='center'>{0}</TableCell>
+                                <TableCell align='center'>
+                                    <Switch defaultChecked={token.value.collateral}></Switch>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        );
+    }
 }
+
+const mapStateToProps = (state: any) => {
+    return {
+        tokenInfos: state.tokenInfo.tokenInfos,
+    }
+}
+
+const SupplyMarketTable = connect(mapStateToProps, null)(SupplyMarketTableClass)
+
+export { SupplyMarketTable };

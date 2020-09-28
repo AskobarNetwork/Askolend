@@ -5,34 +5,70 @@ import { Box, Grid, Paper, Typography } from "@material-ui/core";
 import { BorrowMarketTable } from "./BorrowMarketTable";
 import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
+import { connect } from 'react-redux'
+import { getTokenAddresses } from '../models/'
+import { obtainTokenInfo } from '../actions'
 
-export function HomeBox() {
-	return (
-		<Paper>
-			<Summary />
-			<Grid
-				container
-				direction="row"
-				justify="space-evenly"
-				alignItems="flex-start"
-			>
-				<Grid item md={6}>
-					<Box padding={4}>
-						<Typography variant="h6" >
-							Supply Markets
-						</Typography>
-						<SupplyMarketTable />
-					</Box>
-				</Grid>
-				<Grid item md={6}>
-					<Box padding={4}>
-						<Typography variant="h6" >
-							Borrow Markets
-						</Typography>
-						<BorrowMarketTable />
-					</Box>
-				</Grid>
-			</Grid>
-		</Paper>
-	);
+interface IHomeBoxProps {
+	obtainTokenInfo: Function,
 }
+
+interface IHomeBoxState {
+
+}
+
+class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
+	componentDidMount = () => {
+		let tokenAddresses = getTokenAddresses();
+		tokenAddresses.forEach((address: string, index: number) => {
+			let intialObtain = false;
+			if (index === 0) {
+				intialObtain = true;
+			}
+			this.props.obtainTokenInfo(address, intialObtain);
+		});
+	}
+
+	render() {
+		return (
+			<Paper>
+				<Summary />
+				<Grid
+					container
+					direction="row"
+					justify="space-evenly"
+					alignItems="flex-start"
+				>
+					<Grid item md={6}>
+						<Box padding={4}>
+							<Typography variant="h6" >
+								Supply Markets
+						</Typography>
+							<SupplyMarketTable />
+						</Box>
+					</Grid>
+					<Grid item md={6}>
+						<Box padding={4}>
+							<Typography variant="h6" >
+								Borrow Markets
+						</Typography>
+							<BorrowMarketTable />
+						</Box>
+					</Grid>
+				</Grid>
+			</Paper>
+		);
+	}
+}
+
+const mapDispatchToProps = (dispatch: any) => {
+	return {
+		obtainTokenInfo: (address: string, intialObtain: boolean) => {
+			dispatch(obtainTokenInfo(address, intialObtain))
+		}
+	}
+}
+
+const HomeBox = connect(null, mapDispatchToProps)(HomeBoxClass)
+
+export { HomeBox };

@@ -9,7 +9,8 @@ https://hardcore-shockley-ee14d3.netlify.app/
 
 Add the following .env file to this directory and set the value to your local [Fortmatic](https://dashboard.fortmatic.com/login) test key.
 ```bash
-FORTMATIC_API_KEY=yourfortmatickey
+REACT_APP_FORTMATIC_API_KEY=yourfortmatickey
+REACT_APP_ASSETS_ENDPOINT=https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/
 ```
 
 Then, run:

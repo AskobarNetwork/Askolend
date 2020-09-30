@@ -1,5 +1,6 @@
-import { Button, DialogActions, DialogContent, Table, TableBody, TableCell, TableRow, Tooltip, Typography } from '@material-ui/core';
+import { Button, DialogActions, DialogContent, Grid, IconButton, Table, TableBody, TableCell, TableRow, Tooltip, Typography } from '@material-ui/core';
 
+import CloseIcon from '@material-ui/icons/Close';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import React from 'react';
@@ -61,12 +62,21 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
                 transitionDuration={0}
             >
                 <DialogTitle>
+                    <Grid
+                        container
+                        justify="flex-end"
+                    >
+                        <IconButton onClick={() => this.props.collateralClose()}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Grid>
                     <Typography variant='h6'>{this.state.title}</Typography>
                     <Typography variant='subtitle1'>{this.state.message}</Typography>
                 </DialogTitle>
                 <DialogContent>
-                <Table>
-                    <TableBody>
+                    <Table>
+                        <TableBody>
                             <TableRow>
                                 <TableCell>
                                     Borrow Limit
@@ -83,15 +93,20 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
                                     0% &#x2192; 0%
                                 </TableCell>
                             </TableRow>
-                    </TableBody>
-                </Table>
+                        </TableBody>
+                    </Table>
                 </DialogContent>
                 <DialogActions>
-                    <Tooltip title={this.state.buttonTooltip}>
-                        <Button color='secondary' variant='contained' onClick={() => this.props.collateralClose()}>
-                            {this.state.enable === true ? 'Enable' : 'Disable'}
-                        </Button>
-                    </Tooltip>
+                    <Grid xs={12}>
+                        <Tooltip title={this.state.buttonTooltip}>
+                            <Button color='secondary'
+                                fullWidth={true}
+                                variant='contained'
+                                onClick={() => this.props.collateralClose()}>
+                                {this.state.enable === true ? 'Enable' : 'Disable'}
+                            </Button>
+                        </Tooltip>
+                    </Grid>
                 </DialogActions>
             </Dialog>
         );

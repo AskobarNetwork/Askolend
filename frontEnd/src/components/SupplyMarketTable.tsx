@@ -30,14 +30,14 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
     }
 
     collateralSwitchClick = (event: any) => {
-        this.setState({open: !this.state.open})
+        this.setState({ open: !this.state.open });
+    }
+
+    onCollateralClose = () => {
+        this.setState({ open: false });
     }
 
     render() {
-        const collateralDialogProps: any = {
-            open: this.state.open
-        }
-
         return (
             <TableContainer component={Paper}>
                 <Table>
@@ -66,8 +66,8 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                 <TableCell align='right'>{token.value.apy + '%'}</TableCell>
                                 <TableCell align='center'>{0}</TableCell>
                                 <TableCell align='center'>
-                                    <Switch defaultChecked={token.value.collateral} onChange={(event)=> this.collateralSwitchClick(event)}></Switch>
-                                    <CollateralDialog {...collateralDialogProps}/>
+                                    <Switch checked={token.value.collateral} onClick={(event) => this.collateralSwitchClick(event)}></Switch>
+                                    <CollateralDialog {... {onCollateralClose: this.onCollateralClose, open: this.state.open}}/>
                                 </TableCell>
                             </TableRow>
                         ))}

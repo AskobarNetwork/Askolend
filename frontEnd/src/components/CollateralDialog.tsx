@@ -5,44 +5,37 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
-    backdrop: {
-        backgroundColor: "transparent"
-    },
-
-    paperBackdrop: {
-        backgroundColor: "transparent",
-        boxShadow: "none",
-        overflow: "hidden"
+    dialog: {
+        opacity: 0.5
     },
 });
 
 
 interface ICollateralDialogProps {
-    open?: boolean,
+    onCollateralClose: Function;
+    open: boolean,
     classes?: any,
     tokenInfos?: [],
 }
 
 interface ICollateralDialogState {
-
+    open: boolean,
 }
 
 class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICollateralDialogState>  {
+    constructor(props: ICollateralDialogProps) {
+        super(props);
+        this.state = {
+            open: this.props.open
+        };
+    }
 
     render() {
         return (
-            <Dialog open={this.props.open || false}
-                BackdropProps={{
-                    classes: {
-                        root: this.props.classes.backdrop
-                    }
-                }
-                }
-                PaperProps={{
-                    classes: {
-                        root: this.props.classes.paperBackdrop
-                    }
-                }}
+            <Dialog
+                className={this.props.classes.dialog}
+                open={this.props.open}
+                onClose={() => this.props.onCollateralClose()}
             >
                 <DialogTitle>Collateral</DialogTitle>
             </Dialog>

@@ -1,4 +1,5 @@
 import { Avatar, Grid, Switch, Typography } from '@material-ui/core';
+import { Token, getTokenLogoPngSrc } from '../models'
 
 import { CollateralDialog } from '../components'
 import Paper from '@material-ui/core/Paper';
@@ -10,7 +11,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { connect } from 'react-redux'
-import { getTokenLogoPngSrc } from '../models'
 
 interface ISupplyMarketTableProps {
     tokenInfos?: [],
@@ -29,12 +29,21 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.collateralSwitchClick.bind(this);
     }
 
+    collateralClose = () => {
+        this.setState({ open: false });
+    }
+
     collateralSwitchClick = (event: any) => {
         this.setState({ open: !this.state.open });
     }
 
-    onCollateralClose = () => {
-        this.setState({ open: false });
+    collateralSet = (collateralized: boolean, collateral: Token) => {
+        if (collateralized !== collateral.collateral) {
+            // TO-DO: Implement collateral action in https://github.com/AskobarNetwork/Askolend/issues/22
+        }
+        else {
+            console.warn(`Collateral for ${collateral.address} is already set to ${collateral.collateral}, no action taken`);
+        }
     }
 
     render() {
@@ -67,7 +76,13 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                 <TableCell align='center'>{0}</TableCell>
                                 <TableCell align='center'>
                                     <Switch checked={token.value.collateral} onClick={(event) => this.collateralSwitchClick(event)}></Switch>
-                                    <CollateralDialog {... {onCollateralClose: this.onCollateralClose, open: this.state.open}}/>
+                                    <CollateralDialog {... {
+                                        collateralClose: this.collateralClose,
+                                        collateralSet: this.collateralSet,
+                                        open: this.state.open,
+                                        token: token.value
+                                    }}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}

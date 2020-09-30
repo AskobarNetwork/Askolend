@@ -34,6 +34,10 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
     }
 
     render() {
+        const collateralDialogProps: any = {
+            open: this.state.open
+        }
+
         return (
             <TableContainer component={Paper}>
                 <Table>
@@ -63,7 +67,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                 <TableCell align='center'>{0}</TableCell>
                                 <TableCell align='center'>
                                     <Switch defaultChecked={token.value.collateral} onChange={(event)=> this.collateralSwitchClick(event)}></Switch>
-                                    <CollateralDialog/>
+                                    <CollateralDialog {...collateralDialogProps}/>
                                 </TableCell>
                             </TableRow>
                         ))}

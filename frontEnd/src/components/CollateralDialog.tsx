@@ -1,4 +1,4 @@
-import { Button, DialogActions, DialogContent, DialogContentText, Tooltip } from '@material-ui/core';
+import { Button, DialogActions, DialogContent, Table, TableBody, TableCell, TableRow, Tooltip, Typography } from '@material-ui/core';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -8,9 +8,10 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
-    dialog: {
-        opacity: 0.5
-    },
+    collateralDialog: {
+        opacity: 0.5,
+        textAlign: 'center',
+    }
 });
 
 const disableCollateralMessage =
@@ -54,16 +55,36 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
     render() {
         return (
             <Dialog
-                className={this.props.classes.dialog}
+                className={this.props.classes.collateralDialog}
                 open={this.props.open}
                 onClose={() => this.props.collateralClose()}
                 transitionDuration={0}
             >
-                <DialogTitle>{this.state.title}</DialogTitle>
+                <DialogTitle>
+                    <Typography variant='h6'>{this.state.title}</Typography>
+                    <Typography variant='subtitle1'>{this.state.message}</Typography>
+                </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        {this.state.message}
-                    </DialogContentText>
+                <Table>
+                    <TableBody>
+                            <TableRow>
+                                <TableCell>
+                                    Borrow Limit
+                                </TableCell>
+                                <TableCell>
+                                    $0 &#x2192; $0
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    Borrow Limit Used
+                                </TableCell>
+                                <TableCell>
+                                    0% &#x2192; 0%
+                                </TableCell>
+                            </TableRow>
+                    </TableBody>
+                </Table>
                 </DialogContent>
                 <DialogActions>
                     <Tooltip title={this.state.buttonTooltip}>
@@ -83,6 +104,7 @@ const mapStateToProps = (state: any) => {
     }
 }
 
+// @ts-ignore
 const UnconnectedCollateralDialogClass: any = withStyles(styles)(CollateralDialogClass);
 const CollateralDialog = connect(mapStateToProps, null)(UnconnectedCollateralDialogClass)
 

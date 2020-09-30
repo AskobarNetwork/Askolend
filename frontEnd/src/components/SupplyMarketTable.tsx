@@ -1,5 +1,6 @@
 import { Avatar, Grid, Switch, Typography } from '@material-ui/core';
 
+import { CollateralDialog } from '../components'
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import Table from '@material-ui/core/Table';
@@ -16,10 +17,22 @@ interface ISupplyMarketTableProps {
 }
 
 interface ISupplyMarketTableState {
-
+    open: boolean
 }
 
 class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, ISupplyMarketTableState>  {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            open: false,
+        };
+        this.collateralSwitchClick.bind(this);
+    }
+
+    collateralSwitchClick = (event: any) => {
+        this.setState({open: !this.state.open})
+    }
+
     render() {
         return (
             <TableContainer component={Paper}>
@@ -49,7 +62,8 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                 <TableCell align='right'>{token.value.apy + '%'}</TableCell>
                                 <TableCell align='center'>{0}</TableCell>
                                 <TableCell align='center'>
-                                    <Switch defaultChecked={token.value.collateral}></Switch>
+                                    <Switch defaultChecked={token.value.collateral} onChange={(event)=> this.collateralSwitchClick(event)}></Switch>
+                                    <CollateralDialog/>
                                 </TableCell>
                             </TableRow>
                         ))}

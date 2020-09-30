@@ -36,7 +36,7 @@ interface IBarState {
 }
 
 class BarClass extends React.Component<IBarProps, IBarState>  {
-    constructor(props: any) {
+    constructor(props: IBarProps) {
         super(props);
         this.state = {
             account: this.props?.web3?.givenProvider?.selectedAddress || undefined,

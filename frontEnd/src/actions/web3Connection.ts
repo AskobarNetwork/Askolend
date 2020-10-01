@@ -19,7 +19,6 @@ function web3Connected(web3: Web3) {
 export function makeWeb3Connection(fortmaticApiKey: string) {
   return function (dispatch: any) {
     dispatch(web3Connect());
-    console.log(process.env)
     const fm = new Fortmatic(fortmaticApiKey);
     // Post EIP-1102 update which MetaMask no longer injects web3
     // @ts-ignore

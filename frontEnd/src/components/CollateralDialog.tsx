@@ -24,22 +24,15 @@ const titlePostfix = ' as Collateral';
 interface ICollateralDialogProps {
     collateralClose: Function,
     collateralSet: Function,
-    open: boolean,
+    collateralOpen: boolean,
     token: Token | undefined,
     classes?: any,
 }
 
-interface ICollateralDialogState {
-    buttonTooltip: string,
-    enable: boolean,
-    message: string,
-    open: boolean,
-    title: string,
-}
-
-class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICollateralDialogState>  {
-    collateralSet = () => {
-        this.props.collateralSet(!this.props.token?.collateral, this.props.token);
+class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}>  {
+    collateralSet = (title: string) => {
+        this.props.collateralClose();
+        this.props.collateralSet(!this.props.token?.collateral, this.props.token, title);
     }
 
     render() {
@@ -55,7 +48,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
         return (
             <Dialog
                 className={this.props.classes.collateralDialog}
-                open={this.props.open}
+                open={this.props.collateralOpen}
                 onClose={() => this.props.collateralClose()}
                 transitionDuration={0}
             >
@@ -100,7 +93,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
                             <Button color='secondary'
                                 fullWidth={true}
                                 variant='contained'
-                                onClick={() => this.props.collateralClose()}>
+                                onClick={() => this.collateralSet(title)}>
                                 {enable === true ? 'Enable' : 'Disable'}
                             </Button>
                         </Tooltip>

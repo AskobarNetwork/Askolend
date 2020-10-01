@@ -1,7 +1,7 @@
 import { Avatar, Grid, Switch, Typography } from '@material-ui/core';
+import { CollateralDialog, ConfirmationDialog } from '../components'
 import { Token, getTokenLogoPngSrc } from '../models'
 
-import { CollateralDialog } from '../components'
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import Table from '@material-ui/core/Table';
@@ -17,7 +17,9 @@ interface ISupplyMarketTableProps {
 }
 
 interface ISupplyMarketTableState {
-    open: boolean,
+    collateralopen: boolean,
+    confirmationOpen: boolean,
+    confirmationTitle: string,
     selectedToken: Token | undefined
 }
 
@@ -25,25 +27,29 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
     constructor(props: any) {
         super(props);
         this.state = {
-            open: false,
+            collateralopen: false,
+            confirmationOpen: false,
+            confirmationTitle: '',
             selectedToken: undefined,
         };
         this.collateralSwitchClick.bind(this);
     }
 
     collateralClose = () => {
-        this.setState({ open: false });
+        this.setState({ collateralopen: false });
     }
 
     collateralSwitchClick = (event: any, token: Token) => {
         this.setState({
-            open: !this.state.open,
+            collateralopen: !this.state.collateralopen,
             selectedToken: token
         });
     }
 
-    collateralSet = (collateralized: boolean, collateral: Token) => {
+    collateralSet = (collateralized: boolean, collateral: Token, confirmationMessage: string) => {
         if (collateralized !== collateral.collateral) {
+            console.log(confirmationMessage);
+            this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage});
             // TO-DO: Implement collateral action in https://github.com/AskobarNetwork/Askolend/issues/22
         }
         else {
@@ -51,49 +57,61 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         }
     }
 
+    confirmationClose = () => {
+        this.setState({ confirmationOpen: false });
+    }
+
     render() {
         return (
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Asset</TableCell>
-                            <TableCell align='right'>APY</TableCell>
-                            <TableCell align='center'>Wallet</TableCell>
-                            <TableCell align='center'>Collateral</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {this.props.tokenInfos?.map((token: any) => (
-                            <TableRow key={token.value.asset}>
-                                <TableCell align='left'>
-                                    <Grid
-                                        container
-                                        direction='row'
-                                        justify='flex-start'
-                                        alignItems='center'
-                                    >
-                                        <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
-                                    <Typography>{token.value.asset}</Typography>
-                                    </Grid>
-                                </TableCell>
-                                <TableCell align='right'>{token.value.apy + '%'}</TableCell>
-                                <TableCell align='center'>{0}</TableCell>
-                                <TableCell align='center'>
-                                    <Switch checked={token.value.collateral} onClick={(event) => this.collateralSwitchClick(event, token.value)}></Switch>
-                                    <CollateralDialog {... {
-                                        collateralClose: this.collateralClose,
-                                        collateralSet: this.collateralSet,
-                                        open: this.state.open,
-                                        token: this.state.selectedToken
-                                    }}
-                                    />
-                                </TableCell>
+            <React.Fragment>
+                <ConfirmationDialog {...{
+                    confirmationClose: this.confirmationClose,
+                    confirmationOpen: this.state.confirmationOpen,
+                    title: this.state.confirmationTitle
+                }}
+                />
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Asset</TableCell>
+                                <TableCell align='right'>APY</TableCell>
+                                <TableCell align='center'>Wallet</TableCell>
+                                <TableCell align='center'>Collateral</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {this.props.tokenInfos?.map((token: any) => (
+                                <TableRow key={token.value.asset}>
+                                    <TableCell align='left'>
+                                        <Grid
+                                            container
+                                            direction='row'
+                                            justify='flex-start'
+                                            alignItems='center'
+                                        >
+                                            <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
+                                    <Typography>{token.value.asset}</Typography>
+                                        </Grid>
+                                    </TableCell>
+                                    <TableCell align='right'>{token.value.apy + '%'}</TableCell>
+                                    <TableCell align='center'>{0}</TableCell>
+                                    <TableCell align='center'>
+                                        <Switch checked={token.value.collateral} onClick={(event) => this.collateralSwitchClick(event, token.value)}></Switch>
+                                        <CollateralDialog {... {
+                                            collateralClose: this.collateralClose,
+                                            collateralSet: this.collateralSet,
+                                            collateralOpen: this.state.collateralopen,
+                                            token: this.state.selectedToken
+                                        }}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </React.Fragment>
         );
     }
 }

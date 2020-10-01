@@ -25,7 +25,7 @@ interface ICollateralDialogProps {
     collateralClose: Function,
     collateralSet: Function,
     open: boolean,
-    token: Token,
+    token: Token | undefined,
     classes?: any,
 }
 
@@ -38,24 +38,20 @@ interface ICollateralDialogState {
 }
 
 class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICollateralDialogState>  {
-    constructor(props: ICollateralDialogProps) {
-        super(props);
-        this.state = {
-            buttonTooltip: this.props.token.collateral === false ? `Enable ${this.props.token.asset} as collateral` : `Disable ${this.props.token.asset}`,
-            enable: this.props.token.collateral === false ? true : false,
-            message: this.props.token.collateral === false ? enableCollateralMessage : disableCollateralMessage,
-            open: this.props.open,
-            title: this.props.token.collateral === false ? 'Enable' + titlePostfix : 'Disable' + titlePostfix,
-        };
-    }
-
     collateralSet = () => {
-        this.props.collateralSet(!this.props.token.collateral, this.props.token);
+        this.props.collateralSet(!this.props.token?.collateral, this.props.token);
     }
 
     render() {
+        const buttonTooltip =
+            this.props.token?.collateral === false ? `Enable ${this.props.token?.asset} as collateral` : `Disable ${this.props.token?.asset}`;
+        const enable =
+            this.props.token?.collateral === false ? true : false;
+        const message =
+            this.props.token?.collateral === false ? enableCollateralMessage : disableCollateralMessage;
+        const title =
+            this.props.token?.collateral === false ? 'Enable' + titlePostfix : 'Disable' + titlePostfix;
 
-        console.log(this.props.token)
         return (
             <Dialog
                 className={this.props.classes.collateralDialog}
@@ -73,10 +69,10 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
                             <CloseIcon />
                         </IconButton>
                     </Grid>
-                    {this.state.title}
+                    {title}
                 </DialogTitle>
                 <DialogContent>
-                    <Typography variant='subtitle1'>{this.state.message}</Typography>
+                    <Typography variant='subtitle1'>{message}</Typography>
                     <Table>
                         <TableBody>
                             <TableRow>
@@ -100,12 +96,12 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
                 </DialogContent>
                 <DialogActions>
                     <Grid container item xs={12}>
-                        <Tooltip title={this.state.buttonTooltip}>
+                        <Tooltip title={buttonTooltip}>
                             <Button color='secondary'
                                 fullWidth={true}
                                 variant='contained'
                                 onClick={() => this.props.collateralClose()}>
-                                {this.state.enable === true ? 'Enable' : 'Disable'}
+                                {enable === true ? 'Enable' : 'Disable'}
                             </Button>
                         </Tooltip>
                     </Grid>

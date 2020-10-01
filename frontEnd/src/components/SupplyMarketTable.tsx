@@ -17,7 +17,8 @@ interface ISupplyMarketTableProps {
 }
 
 interface ISupplyMarketTableState {
-    open: boolean
+    open: boolean,
+    selectedToken: Token | undefined
 }
 
 class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, ISupplyMarketTableState>  {
@@ -25,6 +26,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         super(props);
         this.state = {
             open: false,
+            selectedToken: undefined,
         };
         this.collateralSwitchClick.bind(this);
     }
@@ -33,8 +35,11 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.setState({ open: false });
     }
 
-    collateralSwitchClick = (event: any) => {
-        this.setState({ open: !this.state.open });
+    collateralSwitchClick = (event: any, token: Token) => {
+        this.setState({
+            open: !this.state.open,
+            selectedToken: token
+        });
     }
 
     collateralSet = (collateralized: boolean, collateral: Token) => {
@@ -47,7 +52,6 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
     }
 
     render() {
-
         return (
             <TableContainer component={Paper}>
                 <Table>
@@ -76,12 +80,12 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                 <TableCell align='right'>{token.value.apy + '%'}</TableCell>
                                 <TableCell align='center'>{0}</TableCell>
                                 <TableCell align='center'>
-                                    <Switch checked={token.value.collateral} onClick={(event) => this.collateralSwitchClick(event)}></Switch>
+                                    <Switch checked={token.value.collateral} onClick={(event) => this.collateralSwitchClick(event, token.value)}></Switch>
                                     <CollateralDialog {... {
                                         collateralClose: this.collateralClose,
                                         collateralSet: this.collateralSet,
                                         open: this.state.open,
-                                        token: token.value
+                                        token: this.state.selectedToken
                                     }}
                                     />
                                 </TableCell>

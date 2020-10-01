@@ -55,7 +55,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                 <DialogTitle>
                     <Grid
                         container
-                        justify="flex-end"
+                        justify='flex-end'
                     >
                         <IconButton onClick={() => this.props.collateralClose()}
                         >

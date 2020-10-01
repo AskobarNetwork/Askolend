@@ -1,4 +1,4 @@
-import { DialogContent, Grid, IconButton, Typography } from '@material-ui/core';
+import { CircularProgress, DialogContent, Grid, IconButton, Typography } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
 import Dialog from '@material-ui/core/Dialog';
@@ -31,7 +31,7 @@ class ConfirmationDialogClass extends React.Component<IConfirmationDialogProps, 
                 <DialogTitle>
                     <Grid
                         container
-                        justify="flex-end"
+                        justify='flex-end'
                     >
                         <IconButton onClick={() => this.props.confirmationClose()}
                         >
@@ -41,6 +41,7 @@ class ConfirmationDialogClass extends React.Component<IConfirmationDialogProps, 
                     {this.props.title}
                 </DialogTitle>
                 <DialogContent>
+                    <CircularProgress color='secondary' />
                     <Typography variant='subtitle1'>Confirm the transaction</Typography>
                 </DialogContent>
             </Dialog>

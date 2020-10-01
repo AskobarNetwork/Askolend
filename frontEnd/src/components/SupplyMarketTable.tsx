@@ -48,7 +48,6 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
 
     collateralSet = (collateralized: boolean, collateral: Token, confirmationMessage: string) => {
         if (collateralized !== collateral.collateral) {
-            console.log(confirmationMessage);
             this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage});
             // TO-DO: Implement collateral action in https://github.com/AskobarNetwork/Askolend/issues/22
         }

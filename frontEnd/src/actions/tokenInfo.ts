@@ -32,7 +32,7 @@ export function obtainTokenInfo(address: string, initialObtain: boolean) {
                 dispatch(tokenInfoObtained(address, response.data));
             })
             .catch(function (error) {
-                console.log(error);
+                console.error(error);
                 dispatch(tokenInfoObtainingError(address, error));
             })
     }

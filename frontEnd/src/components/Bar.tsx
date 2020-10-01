@@ -5,9 +5,9 @@ import Button from '@material-ui/core/Button';
 import React from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Web3 from "web3";
-import { connect } from "react-redux"
-import { makeWeb3Connection } from "../actions"
+import Web3 from 'web3';
+import { connect } from 'react-redux'
+import { makeWeb3Connection } from '../actions'
 import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
@@ -40,7 +40,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
         super(props);
         this.state = {
             account: this.props?.web3?.givenProvider?.selectedAddress || undefined,
-            balance: "0"
+            balance: '0'
         };
     }
 
@@ -65,7 +65,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
             }
         }
         catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 
@@ -76,32 +76,32 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
     render() {
         const button = this.props.connected === true && this.state.account !== undefined ?
             <React.Fragment>
-                <Button color="secondary" variant="contained">
-                    {this.state.balance} &nbsp; <Avatar src={"favicon32x32.png"} alt="" className={this.props.classes.small} />
+                <Button color='secondary' variant='contained'>
+                    {this.state.balance} &nbsp; <Avatar src={'favicon32x32.png'} alt='' className={this.props.classes.small} />
                 </Button>
                 &nbsp;
-                <Button color="secondary" variant="contained">
+                <Button color='secondary' variant='contained'>
                     {this.truncate(this.state.account, 10)}
                 </Button>
             </React.Fragment>
-            : <Button color="secondary" variant="contained" onClick={() =>
-                this.props.makeWeb3Connection(process.env.REACT_APP_FORTMATIC_API_KEY || "")}>
+            : <Button color='secondary' variant='contained' onClick={() =>
+                this.props.makeWeb3Connection(process.env.REACT_APP_FORTMATIC_API_KEY || '')}>
                 Connect Wallet
         </Button>;
 
         return (
             <div className={this.props.classes.root}>
-                <AppBar position="static">
+                <AppBar position='static'>
                     <Toolbar>
                         <Grid
-                            alignItems="center"
+                            alignItems='center'
                             container
-                            direction="row"
-                            justify="space-between"
+                            direction='row'
+                            justify='space-between'
                         >
                             <Grid>
-                                <Typography variant="h4" className={this.props.classes.title} noWrap display={"block"}>
-                                    <img src={"favicon32x32.png"} alt="" /> Askolend
+                                <Typography variant='h4' className={this.props.classes.title} noWrap display={'block'}>
+                                    <img src={'favicon32x32.png'} alt='' /> Askolend
                                 </Typography>
                             </Grid>
                             <Grid>

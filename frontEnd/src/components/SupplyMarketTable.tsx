@@ -47,6 +47,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
     }
 
     render() {
+
         return (
             <TableContainer component={Paper}>
                 <Table>

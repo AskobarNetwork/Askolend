@@ -54,6 +54,8 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
     }
 
     render() {
+
+        console.log(this.props.token)
         return (
             <Dialog
                 className={this.props.classes.collateralDialog}
@@ -71,10 +73,10 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
                             <CloseIcon />
                         </IconButton>
                     </Grid>
-                    <Typography variant='h6'>{this.state.title}</Typography>
-                    <Typography variant='subtitle1'>{this.state.message}</Typography>
+                    {this.state.title}
                 </DialogTitle>
                 <DialogContent>
+                    <Typography variant='subtitle1'>{this.state.message}</Typography>
                     <Table>
                         <TableBody>
                             <TableRow>
@@ -97,7 +99,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, ICol
                     </Table>
                 </DialogContent>
                 <DialogActions>
-                    <Grid xs={12}>
+                    <Grid container item xs={12}>
                         <Tooltip title={this.state.buttonTooltip}>
                             <Button color='secondary'
                                 fullWidth={true}

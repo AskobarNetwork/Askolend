@@ -46,7 +46,6 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
 
 
     componentDidUpdate = () => {
-        let that = this;
         this.props.web3.eth.requestAccounts().then((accounts) => {
             let account = accounts[0];
             if (account !== null && account !== undefined && account !== '') {
@@ -66,7 +65,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
                 });
             }
             else {
-                console.error('account is ' + account); //web3.eth.requestAccounts([callback])
+                console.error('account is ' + account);
             }
         }).catch((err) => {
             console.error(err);

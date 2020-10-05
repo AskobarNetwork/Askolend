@@ -46,27 +46,31 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
 
 
     componentDidUpdate = () => {
-        try {
-            var account = this.props.web3.givenProvider.selectedAddress;
-            if (this.state.account !== account) {
-                this.setState({
-                    account: account,
-                });
-            }
-
-            if (account !== undefined) {
+        let that = this;
+        this.props.web3.eth.requestAccounts().then((accounts) => {
+            let account = accounts[0];
+            if (account !== null && account !== undefined && account !== '') {
+                if (this.state.account !== account) {
+                    this.setState({
+                        account: account,
+                    });
+                }
                 this.props.web3.eth.getBalance(account).then((balance) => {
                     if (this.state.balance !== balance && balance !== undefined) {
                         this.setState({
                             balance: balance,
                         });
                     }
-                })
+                }).catch((err) => {
+                    console.error(err);
+                });
             }
-        }
-        catch (err) {
+            else {
+                console.error('account is ' + account); //web3.eth.requestAccounts([callback])
+            }
+        }).catch((err) => {
             console.error(err);
-        }
+        });
     }
 
     truncate = (str: String, n: number) => {

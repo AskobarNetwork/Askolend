@@ -1,0 +1,105 @@
+/**
+@notice getALRadd allows the MoneyMarketFactory contract to easily retrieve the address of a MoneyMakerInstances
+Asko Low Risk token.
+**/
+function getALRadd() public view returns(address) {
+  return address(ALR);
+}
+
+/**
+@notice factoryMint allows the MoneyMarketFactory contract to proxy Burn a specific MoneyMarketInstances
+Asko Low Risk token. This is used during the loan process.
+@param _account is the account being minted to
+@param _amount is the amount being minted
+**/
+function factoryBurn(address _account, uint _amount) external onlyMMFactory {
+  ALR.burn(_account, _amount);
+}
+
+/**
+@notice factoryMint allows the MoneyMarketFactory contract to proxy mint a specific MoneyMarketInstances
+Asko Low Risk token. This is used during the loan repayment process.
+@param _account is the account being minted to
+@param _amount is the amount being minted
+**/
+function factoryMint(address _account, uint _amount) external onlyMMFactory {
+  ALR.mint(_account, _amount);
+}
+
+////////////////////////////////////////////////////////
+removed from factory
+////////////////////////////////////////////////////////
+
+/**
+@notice stakeALR allows a user to stake his ALR as collateral so that he can borrow from an Money market
+@param _MMinstance is the address of the instance that owns the ALR token the user wishes to stake
+@param _amount is the amount of ALR token the user wishes to stake
+**/
+  function stakeALR(address _MMinstance, uint _amount) public {
+    MoneyMarketInstance _MMI = MoneyMarketInstance(_MMinstance);
+    AskoLowRisk _ALR = AskoLowRisk(_MMI.getALRadd());
+    require(_ALR.balanceOf(msg.sender) >= _amount, "Insufficeint ALR balance for this asset");
+    _MMI.factoryBurn(msg.sender, _amount);
+    collateralized[msg.sender][_MMinstance] = _amount;
+    stakedALRs[msg.sender].push(_MMinstance);
+  }
+
+/**
+@notice getTotalStakeValue calculates the total USDC value of all of the ALR tokens a user has staked
+@param _usersAdd is the address of the user whos stake value is being looked up
+@return is the uint amount of USDC value for all of a users staked ALR
+**/
+function getTotalStakeValue(address _usersAdd) public view returns(uint) {
+  uint totalAmountStaked;
+
+  for (uint i = 0; i < stakedALRs[_usersAdd].length; i++) {
+           address _MMI = stakedALRs[_usersAdd][i];
+           uint amountStaked = collateralized[_usersAdd][_MMI];
+           UniswapOracleInstanceI oracle = UniswapOracleInstanceI(oracleTracker[_MMI]);
+           uint usdPrice = oracle.consult(amountStaked);
+           totalAmountStaked.add(usdPrice);
+       }
+
+       return totalAmountStaked;
+}
+
+/**
+@notice addCollateral is used to add collateral to
+@param _MMinstance is the address of the MoneyMarketInstance where the collateral is being added
+@param _amount is the amount of asset being repayed
+**/
+  	function addCollateral(address _MMinstance, uint _amount) public {
+      MoneyMarketInstance _MMI = MoneyMarketInstance(_MMinstance);
+      AskoLowRisk _ALR = AskoLowRisk(_MMI.getALRadd());
+      require(_ALR.balanceOf(msg.sender) >= _amount, "Insufficeint ALR balance for this asset");
+      _MMI.factoryBurn(msg.sender, _amount);
+      collateralized[msg.sender][_MMinstance] = collateralized[msg.sender][_MMinstance].add(_amount);
+    }
+
+
+
+/**
+@notice _repay is an external function called by a MoneyMarketInstance to signify that a loan has been repayed by a user
+@param _MMinstance is the address of the MoneyMarketInstance where the loan was payed off
+@param _userAdd is the address of the user who payed this loan off
+**/
+    function _repay(address _MMinstance, address _userAdd) external {
+      MoneyMarketInstance _MMI = MoneyMarketInstance(_MMinstance);
+      uint _amount = collateralized[_userAdd][_MMinstance];
+      _MMI.factoryMint(msg.sender, _amount);
+      collateralized[_userAdd][_MMinstance] = 0;
+    }
+
+/**
+
+**/
+    function markNonCompliant() public {
+
+    }
+
+/**
+
+**/
+    function liquidateBorrower() public {
+
+    }

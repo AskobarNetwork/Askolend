@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.6.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title UniswapOracleInstanceI
@@ -11,7 +11,7 @@ The UniswapOracleInstanceI contract an abstract contract the used to interface
     SafeMath instances
 **/
 
- contract UniswapOracleInstanceI {
+ abstract contract UniswapOracleInstanceI {
 
   /**
   @notice consult returns the price of a token in USDC
@@ -19,6 +19,6 @@ The UniswapOracleInstanceI contract an abstract contract the used to interface
   @return amountOut is the price of the asset amount in USDC
   **/
 
-  function consult(uint _amountIn) external view  returns (uint amountOut);
+  function consult(uint _amountIn) external view virtual returns (uint amountOut);
 
 }

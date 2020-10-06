@@ -26,23 +26,24 @@ contract UniswapOracleFactory is Ownable {
 /**
 @notice constructor function is fired once during contract creation. This constructor initializes uniswapRouter
         as a usable contract instance within the UniswapOracleFactory
+@param usdcAdd is the address of the ERC20 USDC address
+@param _uniFactoryAdd is the address of the uniswap factory contract
 **/
-constructor(address usdcAdd) public {
+constructor(address usdcAdd, address _uniFactoryAdd) public {
   uniswapRouter = IUniswapV2Router02(uniswap_router_add);
   usdc_add = usdcAdd;
+  factory = _uniFactoryAdd;
 }
 
   /**
   @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
           a new asset is whitelisted
   @param MoneyMarketInstance is the address of the MoneyMakerInstance for this asset
-  @param tokenA is the address of the first token in the token pair for this oracle
-  @param tokenB is the addresss of the second token in the token pair for this oracle
+  @param token is the address of the token that this oracle will provide a USDC price feed for
+
   **/
   function createNewOracle(
-    address MoneyMarketInstance,
-    address tokenA,
-    address tokenB
+    address token
   )
   public
   onlyOwner
@@ -51,11 +52,22 @@ constructor(address usdcAdd) public {
 
     address _oracle = address(new UniswapOracleInstance (
        factory,
-       tokenA,
-       tokenB
+       token,
+       usdc_add
     ));
-    instanceTracker[MoneyMarketInstance] = _oracle;
+    instanceTracker[token] = _oracle;
     return _oracle;
+  }
+
+
+/**
+@notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract
+@param _MMI is the address of the MoneyMarketInstance
+@param _asset is the address of the MoneyMarketInstancesunderlying asset
+**/
+  function linkMMI(address _MMI, address _asset) public {
+      address oracle = instanceTracker[token];
+        instanceTracker[_MMI] = oracle;
   }
 
 /**

@@ -1,13 +1,16 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./AskoRiskToken.sol";
-import "./interfaces/MoneyMarketFactoryI.sol";
-import "./interfaces/UniswapOracleInstanceI.sol";
 import "./compound/InterestRateModel.sol";
-import "./compound/ComptrollerInterface.sol";
+import "./compound/Exponential.sol";
+import "./compound/ErrorReporter.sol";
+import "./interfaces/UniswapOracleFactoryI.sol";
+import "./interfaces/UniswapOracleInstanceI.sol";
+import "./interfaces/MoneyMarketFactoryI.sol";
+import "./AskoRiskToken.sol";
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketInstance
@@ -18,19 +21,16 @@ The MoneyMarketInstance contract is designed facilitate a tiered money market fo
 This contract uses the OpenZeppelin contract Library to inherit functions from
   Ownable.sol && IRC20.sol
 **/
-contract MoneyMarketInstance is Ownable {
+contract MoneyMarketInstance is Ownable, Exponential, TokenErrorReporter {
     using SafeMath for uint256;
 
-  uint256 public blocksPerYear;
-  uint256 public feePercent;
-  uint256 public divisor;
-  uint256 public assetAHRPoolBalance;
-  uint256 public assetALRPoolBalance;
-  uint256 public assetAHRborrowBalance;
-  uint256 public assetALRborrowBalance;
-  uint256 public fee_AHR;
-  uint256 public fee_ALR;
-  address public factoryMM;
+  uint public feePercent;
+  uint public divisor;
+  uint public fee_AHR;
+  uint public fee_ALR;
+  uint public liquidationIncentiveMantissa = 1.5e18; // 1.5
+
+
   string public assetName;
   string public assetSymbol;
 
@@ -40,6 +40,10 @@ contract MoneyMarketInstance is Ownable {
   AskoRiskToken public ALR;
   UniswapOracleInstanceI public oracle;
   MoneyMarketFactoryI public MMF;
+  UniswapOracleFactoryI public UOF;
+
+  mapping(address => uint) public nonCompliant;
+
 
 
 
@@ -69,6 +73,7 @@ contract MoneyMarketInstance is Ownable {
     address _assetContractAdd,
     address _owner,
     address _oracle,
+    address _oracleFactory,
 		string memory _assetName,
 		string memory _assetSymbol
   )
@@ -78,9 +83,9 @@ contract MoneyMarketInstance is Ownable {
 
 
   divisor = 10000;
-  blocksPerYear = 2102400;
   assetName = _assetName;
   assetSymbol = _assetSymbol;
+  UOF = UniswapOracleFactoryI(_oracleFactory);
   oracle = UniswapOracleInstanceI(_oracle);
   MMF = MoneyMarketFactoryI(msg.sender);
   transferOwnership(_owner);
@@ -115,17 +120,15 @@ function _setUpAHR(
   string memory assetNameAHR = string(ahrname);
   string memory assetSymbolAHR = string(ahrsymbol);
 
-  AHR = AskoRiskToken(address(new AskoRiskToken(
+  AHR = new AskoRiskToken(
+    _InterestRateModel,
     address(asset),
-    ComptrollerInterface(owner()),
-    InterestRateModel(_InterestRateModel),
-    _initialExchangeRate,
+    address(UOF),
     assetNameAHR,
     assetSymbolAHR,
-    8,
-    address(uint160(address(this))),
-    false
-  )));
+    false,
+    _initialExchangeRate
+  );
 
   address ahr = address(AHR);
 
@@ -160,17 +163,15 @@ function _setUpAHR(
     string memory assetNameALR = string(alrname);
     string memory assetSymbolALR = string(alrsymbol);
 
-    ALR = AskoRiskToken(address(new AskoRiskToken(
+    ALR = new AskoRiskToken(
+      _InterestRateModel,
       address(asset),
-      ComptrollerInterface(owner()),
-      InterestRateModel(_InterestRateModel),
-      _initialExchangeRate,
+      address(UOF),
       assetNameALR,
       assetSymbolALR,
-      8,
-      address(uint160(address(this))),
-      true
-    )));
+      true,
+      _initialExchangeRate
+    );
 
     address alr = address(ALR);
     asset.approve(alr, 1000000000000000000000000000000000000);
@@ -179,60 +180,13 @@ function _setUpAHR(
 
 
 /**
-@notice setFee allows the owner of this contract to set the fee
-@param  _fee is the input number representing the fee
-@dev the divisor is set to 10,000 in the constructor for this contract. this allows for
-      a fee percentage accounting for two decimal places. feePercent must account for this when being set.
-      The following examples show feePercent amounts and how they equate to percentages:
-              EX:
-                  a 1% fee would be set as feePercent = 100
-                  a .5% fee would be set as feePercent = 50
-                  a 50% fee would be set as feePercent = 5000
-**/
-  function setFeeAHR(uint _fee) public onlyOwner {
-      fee_AHR = _fee;
-  }
-
-/**
-@notice setFee allows the owner of this contract to set the fee
-@param  _fee is the input number representing the fee
-@dev the divisor is set to 10,000 in the constructor for this contract. this allows for
-      a fee percentage accounting for two decimal places. feePercent must account for this when being set.
-      The following examples show feePercent amounts and how they equate to percentages:
-              EX:
-                  a 1% fee would be set as feePercent = 100
-                  a .5% fee would be set as feePercent = 50
-                  a 50% fee would be set as feePercent = 5000
-**/
-  function setFeeALR(uint _fee) public onlyOwner {
-      fee_ALR = _fee;
-  }
-
-
-/**
-@notice calculateFee is used to calculate the fee earned
-@param _payedAmount is a uint representing the full amount of an ERC20 asset payed
-@dev the divisor is set to 10,000 in the constructor for this contract. this allows for
-      a fee percentage accounting for two decimal places. feePercent must account for this when being set.
-      The following examples show feePercent amounts and how they equate to percentages:
-              EX:
-                  a 1% fee would be set as feePercent = 100
-                  a .5% fee would be set as feePercent = 50
-                  a 50% fee would be set as feePercent = 5000
-**/
-function calculateFee(uint256 _payedAmount) public view returns(uint) {
-  uint256 fee = _payedAmount.mul(feePercent).div(divisor);
-  return fee;
-}
-
-/**
 @notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool
 @param _amount is the amount of the asset being lent
 @dev the user will need to first approve the transfer of the underlying asset
 **/
   function lendToAHRpool(uint _amount) public {
-        asset.transferFrom(msg.sender, address(this), _amount);
-        AHR.mint(_amount);
+    asset.transferFrom(msg.sender, address(AHR), _amount);
+    AHR.mint(msg.sender, _amount);
   }
 
 /**
@@ -241,8 +195,8 @@ function calculateFee(uint256 _payedAmount) public view returns(uint) {
 @dev the user will need to first approve the transfer of the underlying asset
 **/
     function lendToALRpool(uint _amount) public {
-        asset.transferFrom(msg.sender, address(this), _amount);
-        ALR.mint(_amount);
+    asset.transferFrom(msg.sender, address(ALR), _amount);
+      ALR.mint(msg.sender, _amount);
     }
 
 
@@ -264,7 +218,7 @@ function calculateFee(uint256 _payedAmount) public view returns(uint) {
 @param _repayAmount is the amount of the underlying asset being repayed
 **/
 	function repay(uint _repayAmount) public returns(uint) {
-    uint accountBorrowsALR = ALR.borrowBalanceStored(msg.sender);
+    uint accountBorrowsALR = ALR.borrowBalanceCurrent(msg.sender);
 
     uint err = 0;
 
@@ -283,6 +237,72 @@ function calculateFee(uint256 _payedAmount) public view returns(uint) {
 
     return err;
   }
+
+function markAccountNonCompliant(address borrower) public {
+  require(nonCompliant[borrower] == 0);
+  nonCompliant[borrower] = now;
+}
+
+
+
+/**
+@notice The sender liquidates the borrowers collateral. This function is called on the MoneyMarket the borrower owes to.
+@param borrower The borrower of this cToken to be liquidated
+@param repayAmount The amount of the underlying borrowed asset to repay
+@param _ART is the address of the AskoRiskToken
+ */
+function liquidateAccount(address borrower, uint repayAmount, AskoRiskToken _ART) public {
+
+require(now >= nonCompliant[borrower].add(1800));//checks if its been nonCompliant for more than a half hour
+
+  bool allowed = MMF.liquidateBorrowAllowed(address(this), address(_ART), msg.sender, borrower, repayAmount);
+  if (!allowed) {
+      nonCompliant[borrower] = 0;//resets borrowers compliance timer if its not alloud
+  }
+
+  /* Read oracle prices for borrowed and collateral markets */
+  uint priceBorrowedMantissa = UOF.getUnderlyingPrice(address(asset));
+  uint priceCollateralMantissa = UOF.getUnderlyingPrice(address(_ART));
+  require(priceBorrowedMantissa != 0 && priceCollateralMantissa != 0);
+
+
+  /*
+   * Get the exchange rate and calculate the number of collateral tokens to seize:
+   *  seizeAmount = actualRepayAmount * liquidationIncentive * priceBorrowed / priceCollateral
+   *  seizeTokens = seizeAmount / exchangeRate
+   *   = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
+   */
+  uint exchangeRateMantissa = _ART.exchangeRateCurrent(); // Note: reverts on error
+  uint seizeTokens;
+  Exp memory numerator;
+  Exp memory denominator;
+  Exp memory ratio;
+  MathError mathErr;
+
+  (mathErr, numerator) = mulExp(liquidationIncentiveMantissa, priceBorrowedMantissa);
+  require(mathErr == MathError.NO_ERROR);
+
+
+  (mathErr, denominator) = mulExp(priceCollateralMantissa, exchangeRateMantissa);
+  require(mathErr == MathError.NO_ERROR);
+
+  (mathErr, ratio) = divExp(numerator, denominator);
+  require(mathErr == MathError.NO_ERROR);
+
+  (mathErr, seizeTokens) = mulScalarTruncate(ratio, repayAmount);
+  require(mathErr == MathError.NO_ERROR);
+
+
+
+  _ART._liquidateFor(address(asset), address(this), seizeTokens, repayAmount);
+/**
+this function calls the MoneyMarketInstance where the borrower has collateral staked and has it swap
+its underlying asset on uniswap for the underlying asset borrowed
+**/
+
+    nonCompliant[borrower] = 0;//resets borrowers compliance timer
+
+}
 
 
 

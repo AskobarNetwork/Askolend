@@ -1,12 +1,8 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./MoneyMarketInstance.sol";
-import "./interfaces/UniswapOracleFactoryI.sol";
-import "./interfaces/UniswapOracleInstanceI.sol";
-import "./compound/JumpRateModelV2.sol";
-import "./compound/ComptrollerG2.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,141 +16,39 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
 **/
 
 contract MoneyMarketFactory is Ownable {
-  using SafeMath for uint;
-
-
-
-  uint public instanceCount;//tracks the number of instances
-  address public usdc;//address of stablecoin for $ amounts through the oracle
-  address public factoryU;//address of the uniswap factory to be passed to the oracle factory
-
-  UniswapOracleFactoryI public Oracle;//oracle factory contract interface
-
-  mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
-  mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
-  mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
-  mapping(address => mapping(address => uint)) public collateralized;// maps a users address to MoneyMakerInstance address to the amount of ALR STAKED
-  mapping(address => address[]) public stakedALRs;//tracks which Money Markets a user has ALRs staked in.
 
 
 /**
-@notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
-        is used to set up the usdc, factoryU, and Oracle variables for the MoneyMarketFactory contract.
-@param _usdc is the contract address for the USDC stablecoin contract
-@param _factoryU is the address for the uniswap factory contract
-@param _oracle is the address for the UniswapOracleFactorycontract
-**/
-constructor (address _usdc, address _factoryU, address _oracle) public {
-  usdc = _usdc;
-  factoryU = _factoryU;
-  Oracle = UniswapOracleFactoryI(_oracle);
-}
-
-/**
-@notice whitelistAsset is an onlyOwner function designed to be called by the AskoDAO.
-        This function creates a new MoneyMarketInstancecontract for an input asset as well
-        as a UniswapOracleInstance for the asset.
+@notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts
 @param _assetContractAdd is the address of the ERC20 asset being whitelisted
+@param _owner is the address that will own this contract(The AskoDAO)
 @param _assetName is the name of the asset(e.x: ChainLink)
 @param _assetSymbol is the symbol of the asset(e.x: LINK)
+@dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
+      before creating each token.
 **/
-  function whitelistAsset(
+  function createMMI(
     address _assetContractAdd,
-		string memory _assetName,
-		string memory _assetSymbol
+    address _owner,
+    address _oracle,
+    address _oracleFactory,
+    string memory _assetName,
+    string memory _assetSymbol
   )
   public
-  onlyOwner
+  returns(address)
   {
-    instanceCount++;
-    address oracle = address(Oracle.createNewOracle(factoryU, _assetContractAdd, usdc));
 
     address _MMinstance = address(new MoneyMarketInstance (
        _assetContractAdd,
-       msg.sender,
-       oracle,
+      _owner,
+       _oracle,
+       _oracleFactory,
   		 _assetName,
   		 _assetSymbol
     ));
-    instanceTracker[_assetContractAdd] = _MMinstance;
-    oracleTracker[_MMinstance] = oracle;
+
+    return _MMinstance;
   }
-
-/**
-@notice setUpAHR is used to set up a MoneyMarketInstances Asko High Risk Token as well as its InterestRateModel
-@param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
-@param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
-@param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
-@param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
-@param _fee is a number representing the fee for exchanging an ALR token, as a mantissa (scaled by 1e18)
-@param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
-@dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
-**/
-  function setUpAHR(
-    uint _baseRatePerYear,
-    uint _multiplierPerYear,
-    uint _jumpMultiplierPerYear,
-    uint _optimal,
-    uint _fee,
-    uint _initialExchangeRate,
-    address _assetContractAdd
-  )
-  public
-  {
-    MoneyMarketInstance _MMI = MoneyMarketInstance(instanceTracker[_assetContractAdd]);
-
-    address interestRateModel = address( new JumpRateModelV2(
-      _baseRatePerYear,
-      _multiplierPerYear,
-      _jumpMultiplierPerYear,
-      _optimal,
-      address(_MMI)
-    ));
-
-_MMI._setUpAHR(
-  interestRateModel,
-  _fee,
-  _initialExchangeRate
-);
-  }
-
-/**
-@notice setUpAHR is used to set up a MoneyMarketInstances Asko High Risk Token as well as its InterestRateModel
-@param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
-@param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
-@param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
-@param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
-@param _fee is a number representing the fee for exchanging an ALR token, as a mantissa (scaled by 1e18)
-@param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
-@dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
-**/
-  function setUpALR(
-    uint _baseRatePerYear,
-    uint _multiplierPerYear,
-    uint _jumpMultiplierPerYear,
-    uint _optimal,
-    uint _fee,
-    uint _initialExchangeRate,
-    address _assetContractAdd
-  )
-  public
-  {
-    MoneyMarketInstance _MMI = MoneyMarketInstance(instanceTracker[_assetContractAdd]);
-
-    address interestRateModel = address( new JumpRateModelV2(
-      _baseRatePerYear,
-      _multiplierPerYear,
-      _jumpMultiplierPerYear,
-      _optimal,
-      address(_MMI)
-    ));
-
-    _MMI._setUpALR(
-      interestRateModel,
-      _fee,
-      _initialExchangeRate
-    );
-  }
-
 
 }

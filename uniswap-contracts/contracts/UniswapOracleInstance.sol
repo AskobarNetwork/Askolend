@@ -23,6 +23,7 @@ contract UniswapOracleInstance is Ownable {
 
       uint    public price0CumulativeLast;
       uint    public price1CumulativeLast;
+      uint    public runs;
       uint32  public blockTimestampLast;
       FixedPoint.uq112x112 public price0Average;
       FixedPoint.uq112x112 public price1Average;
@@ -44,7 +45,7 @@ contract UniswapOracleInstance is Ownable {
           uint112 reserve0;
           uint112 reserve1;
           (reserve0, reserve1, blockTimestampLast) = _pair.getReserves();
-          require(reserve0 != 0 && reserve1 != 0, 'ExampleOracleSimple: NO_RESERVES'); // ensure that there's liquidity in the pair
+      ///   require(reserve0 != 0 && reserve1 != 0, 'ExampleOracleSimple: NO_RESERVES'); // ensure that there's liquidity in the pair
       }
 
 /**
@@ -56,8 +57,13 @@ contract UniswapOracleInstance is Ownable {
               UniswapV2OracleLibrary.currentCumulativePrices(address(pair));
           uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
 
-          // ensure that at least one full period has passed since the last update
-          require(timeElapsed >= PERIOD, 'ExampleOracleSimple: PERIOD_NOT_ELAPSED');
+//check if this is the first update
+          if(runs != 0){
+
+            // ensure that at least one full period has passed since the last update
+            require(timeElapsed >= PERIOD, 'ExampleOracleSimple: PERIOD_NOT_ELAPSED');
+
+          }
 
           // overflow is desired, casting never truncates
           // cumulative price is in (uq112x112 price * seconds) units so we simply wrap it after division by time elapsed
@@ -67,14 +73,16 @@ contract UniswapOracleInstance is Ownable {
           price0CumulativeLast = price0Cumulative;
           price1CumulativeLast = price1Cumulative;
           blockTimestampLast = blockTimestamp;
+
+          runs = runs.add(1);
       }
 
 /**
 @notice consult returns the price of a token in USDC
-@return amountOut is the price of the asset in USDC
+@return price is the price of one asset in USDC(example 1WETH in USDC)
 **/
       function consult() external view returns (uint price) {
-        price = price0Average.decode144();
+        price = price0Average.mul(1).decode144();
       }
 
     }

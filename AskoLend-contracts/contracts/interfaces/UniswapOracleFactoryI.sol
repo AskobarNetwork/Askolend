@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.6.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title UniswapOracleFactoryI
@@ -11,24 +11,20 @@ The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory u
     SafeMath instances
 **/
 
- contract UniswapOracleFactoryI {
+ abstract contract UniswapOracleFactoryI {
 
 /**
 @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
         a new asset is whitelisted
-@param factory is the address of the uniswap factory
-@param tokenA is the address of the first token in the token pair for this oracle
-@param tokenB is the addresss of the second token in the token pair for this oracle
+@param token is the address of the first token in the token pair for this oracle
 @dev this function is marked as virtual as it is an abstracted function
 **/
 
     function createNewOracle(
-      address factory,
-      address tokenA,
-      address tokenB
+      address token
     )
     public
-
+    virtual
     returns(address);
 
 /**
@@ -36,7 +32,7 @@ The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory u
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingPrice(address _MMI) public view returns(uint);
+    function getUnderlyingPrice(address _MMI) public virtual view returns(uint);
 
 /**
 @notice swapERC20 is an external function that swaps one ERC20 token for another
@@ -57,6 +53,14 @@ The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory u
     uint _amountIn,
     uint _amountOutMin
   )
+  virtual
   external
   ;
+
+  /**
+  @notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract
+  @param _MMI is the address of the MoneyMarketInstance
+  @param _asset is the address of the MoneyMarketInstancesunderlying asset
+  **/
+    function linkMMI(address _MMI, address _asset) public virtual;
 }

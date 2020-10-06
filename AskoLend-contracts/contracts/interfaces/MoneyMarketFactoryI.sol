@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.6.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketFactoryI
@@ -11,18 +11,37 @@ The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance us
     SafeMath instances
 **/
 
- contract MoneyMarketFactoryI {
+ abstract contract MoneyMarketFactoryI {
 
-  /**
-  @notice getStakeValue calculates the total USDC value of all of the ALR tokens a user has staked
-  @param _usersAdd is the address of the user whos stake value is being looked up
-  @return is the uint amount of USDC value for all of a users staked ALR
-  **/
-function getTotalStakeValue(address _usersAdd) public view  returns(uint);
+   /**
+   @notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts
+   @param _assetContractAdd is the address of the ERC20 asset being whitelisted
+   @param _owner is the address that will own this contract(The AskoDAO)
+   @param _assetName is the name of the asset(e.x: ChainLink)
+   @param _assetSymbol is the symbol of the asset(e.x: LINK)
+   @dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
+         before creating each token.
+   **/
+     function createMMI(
+       address _assetContractAdd,
+       address _owner,
+       address _oracle,
+       address _oracleFactory,
+       string memory _assetName,
+       string memory _assetSymbol
+     )
+     public
+     virtual
+     returns(address);
 
-function getMMStakeValue(address _MMadd, address _usersAdd) public view  returns(uint);
-
-function getMMStakeAmount(address _MMadd, address _usersAdd) public view  returns(uint);
-
-function _repay(address _MMinstance, address _userAdd) public ;
+     function liquidateBorrowAllowed(
+       address _lendedART,
+       address _collateralART,
+       address _liquidater,
+       address _borrower,
+       uint _repayAmount
+     )
+     public
+     virtual
+     returns(bool);
 }

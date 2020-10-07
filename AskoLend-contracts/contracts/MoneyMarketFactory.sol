@@ -30,7 +30,6 @@ contract MoneyMarketFactory is Ownable {
   function createMMI(
     address _assetContractAdd,
     address _owner,
-    address _oracle,
     address _oracleFactory,
     string memory _assetName,
     string memory _assetSymbol
@@ -42,7 +41,6 @@ contract MoneyMarketFactory is Ownable {
     address _MMinstance = address(new MoneyMarketInstance (
        _assetContractAdd,
       _owner,
-       _oracle,
        _oracleFactory,
   		 _assetName,
   		 _assetSymbol

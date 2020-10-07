@@ -44,4 +44,8 @@ The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance us
      public
      virtual
      returns(bool);
+
+     function checkCollateralValue(address _borrower, address _ALR) external virtual returns(uint);
+
+    function trackCollateral(address _borrower, address _ALR, uint _amount) external virtual;
 }

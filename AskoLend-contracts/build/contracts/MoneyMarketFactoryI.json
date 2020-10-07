@@ -83,27 +83,74 @@
       ],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_borrower",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_ALR",
+          "type": "address"
+        }
+      ],
+      "name": "checkCollateralValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_borrower",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_ALR",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "trackCollateral",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.0+commit.26b70077\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_assetContractAdd\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_oracleFactory\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_assetName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_assetSymbol\",\"type\":\"string\"}],\"name\":\"createMMI\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_lendedART\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_collateralART\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_liquidater\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_borrower\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_repayAmount\",\"type\":\"uint256\"}],\"name\":\"liquidateBorrowAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"createMMI(address,address,address,address,string,string)\":{\"details\":\"this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol before creating each token.*\",\"params\":{\"_assetContractAdd\":\"is the address of the ERC20 asset being whitelisted\",\"_assetName\":\"is the name of the asset(e.x: ChainLink)\",\"_assetSymbol\":\"is the symbol of the asset(e.x: LINK)\",\"_owner\":\"is the address that will own this contract(The AskoDAO)\"}}}},\"userdoc\":{\"methods\":{\"createMMI(address,address,address,address,string,string)\":{\"notice\":\"the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts\"}},\"notice\":\"The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface with the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketFactoryI.sol\":\"MoneyMarketFactoryI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketFactoryI.sol\":{\"keccak256\":\"0x7a591428cb47a625ddd74a52c459bdfdf7835d2d9c25ca48a237b1853b2529d0\",\"urls\":[\"bzz-raw://d9283aae5e3d772881cbf13ffa024234f429fdca682e68d14a59f7bbd1408f45\",\"dweb:/ipfs/Qmbvwyyu9X9V4dz7yuAEKcCE8F3VJCvcRvkd4HDtHYNBWR\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.2+commit.bacdbe57\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_borrower\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_ALR\",\"type\":\"address\"}],\"name\":\"checkCollateralValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_assetContractAdd\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_oracleFactory\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_assetName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_assetSymbol\",\"type\":\"string\"}],\"name\":\"createMMI\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_lendedART\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_collateralART\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_liquidater\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_borrower\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_repayAmount\",\"type\":\"uint256\"}],\"name\":\"liquidateBorrowAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_borrower\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_ALR\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"trackCollateral\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"createMMI(address,address,address,address,string,string)\":{\"details\":\"this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol before creating each token.*\",\"params\":{\"_assetContractAdd\":\"is the address of the ERC20 asset being whitelisted\",\"_assetName\":\"is the name of the asset(e.x: ChainLink)\",\"_assetSymbol\":\"is the symbol of the asset(e.x: LINK)\",\"_owner\":\"is the address that will own this contract(The AskoDAO)\"}}}},\"userdoc\":{\"methods\":{\"createMMI(address,address,address,address,string,string)\":{\"notice\":\"the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts\"}},\"notice\":\"The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface with the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketFactoryI.sol\":\"MoneyMarketFactoryI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketFactoryI.sol\":{\"keccak256\":\"0xd04055fa28d22ab2206cbb5493fb82a83e99143e9713a654e5c66161551652fb\",\"urls\":[\"bzz-raw://72dc7bbfce1c366363fe9e366736c3a744f81ac347b24d19b7343f47e0b14ef1\",\"dweb:/ipfs/QmPJLYbFMnoF1BEWC8GJbqNBHBx7AsLi526RpcKQhu8dyS\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.6.0;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title MoneyMarketFactoryI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface\n    with the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\n    truffle compiler error due when imported into the same contract due to the use of two seperate\n    SafeMath instances\n**/\n\n abstract contract MoneyMarketFactoryI {\n\n   /**\n   @notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts\n   @param _assetContractAdd is the address of the ERC20 asset being whitelisted\n   @param _owner is the address that will own this contract(The AskoDAO)\n   @param _assetName is the name of the asset(e.x: ChainLink)\n   @param _assetSymbol is the symbol of the asset(e.x: LINK)\n   @dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol\n         before creating each token.\n   **/\n     function createMMI(\n       address _assetContractAdd,\n       address _owner,\n       address _oracle,\n       address _oracleFactory,\n       string memory _assetName,\n       string memory _assetSymbol\n     )\n     public\n     virtual\n     returns(address);\n\n     function liquidateBorrowAllowed(\n       address _lendedART,\n       address _collateralART,\n       address _liquidater,\n       address _borrower,\n       uint _repayAmount\n     )\n     public\n     virtual\n     returns(bool);\n}\n",
+  "source": "pragma solidity ^0.6.0;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title MoneyMarketFactoryI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface\n    with the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\n    truffle compiler error due when imported into the same contract due to the use of two seperate\n    SafeMath instances\n**/\n\n abstract contract MoneyMarketFactoryI {\n\n   /**\n   @notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts\n   @param _assetContractAdd is the address of the ERC20 asset being whitelisted\n   @param _owner is the address that will own this contract(The AskoDAO)\n   @param _assetName is the name of the asset(e.x: ChainLink)\n   @param _assetSymbol is the symbol of the asset(e.x: LINK)\n   @dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol\n         before creating each token.\n   **/\n     function createMMI(\n       address _assetContractAdd,\n       address _owner,\n       address _oracle,\n       address _oracleFactory,\n       string memory _assetName,\n       string memory _assetSymbol\n     )\n     public\n     virtual\n     returns(address);\n\n     function liquidateBorrowAllowed(\n       address _lendedART,\n       address _collateralART,\n       address _liquidater,\n       address _borrower,\n       uint _repayAmount\n     )\n     public\n     virtual\n     returns(bool);\n\n     function checkCollateralValue(address _borrower, address _ALR) external virtual returns(uint);\n\n    function trackCollateral(address _borrower, address _ALR, uint _amount) external virtual;\n}\n",
   "sourcePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketFactoryI.sol",
   "ast": {
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketFactoryI.sol",
     "exportedSymbols": {
       "MoneyMarketFactoryI": [
-        4111
+        4061
       ]
     },
-    "id": 4112,
+    "id": 4062,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4078,
+        "id": 4010,
         "literals": [
           "solidity",
           "^",
@@ -111,7 +158,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:11"
+        "src": "0:23:10"
       },
       {
         "abstract": true,
@@ -120,9 +167,9 @@
         "contractKind": "contract",
         "documentation": "The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface\nwith the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*",
         "fullyImplemented": false,
-        "id": 4111,
+        "id": 4061,
         "linearizedBaseContracts": [
-          4111
+          4061
         ],
         "name": "MoneyMarketFactoryI",
         "nodeType": "ContractDefinition",
@@ -131,7 +178,7 @@
             "body": null,
             "documentation": "@notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts\n@param _assetContractAdd is the address of the ERC20 asset being whitelisted\n@param _owner is the address that will own this contract(The AskoDAO)\n@param _assetName is the name of the asset(e.x: ChainLink)\n@param _assetSymbol is the symbol of the asset(e.x: LINK)\n@dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol\nbefore creating each token.*",
             "functionSelector": "cc83954d",
-            "id": 4095,
+            "id": 4027,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -139,17 +186,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4091,
+              "id": 4023,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4080,
+                  "id": 4012,
                   "name": "_assetContractAdd",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1249:25:11",
+                  "scope": 4027,
+                  "src": "1249:25:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -157,10 +204,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4079,
+                    "id": 4011,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1249:7:11",
+                    "src": "1249:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -172,12 +219,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4082,
+                  "id": 4014,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1283:14:11",
+                  "scope": 4027,
+                  "src": "1283:14:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -185,10 +232,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4081,
+                    "id": 4013,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1283:7:11",
+                    "src": "1283:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -200,12 +247,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4084,
+                  "id": 4016,
                   "name": "_oracle",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1306:15:11",
+                  "scope": 4027,
+                  "src": "1306:15:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -213,10 +260,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4083,
+                    "id": 4015,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1306:7:11",
+                    "src": "1306:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -228,12 +275,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4086,
+                  "id": 4018,
                   "name": "_oracleFactory",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1330:22:11",
+                  "scope": 4027,
+                  "src": "1330:22:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -241,10 +288,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4085,
+                    "id": 4017,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1330:7:11",
+                    "src": "1330:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -256,12 +303,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4088,
+                  "id": 4020,
                   "name": "_assetName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1361:24:11",
+                  "scope": 4027,
+                  "src": "1361:24:10",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -269,10 +316,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 4087,
+                    "id": 4019,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1361:6:11",
+                    "src": "1361:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -283,12 +330,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4090,
+                  "id": 4022,
                   "name": "_assetSymbol",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1394:26:11",
+                  "scope": 4027,
+                  "src": "1394:26:10",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -296,10 +343,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 4089,
+                    "id": 4021,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1394:6:11",
+                    "src": "1394:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -309,20 +356,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1240:187:11"
+              "src": "1240:187:10"
             },
             "returnParameters": {
-              "id": 4094,
+              "id": 4026,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4093,
+                  "id": 4025,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1466:7:11",
+                  "scope": 4027,
+                  "src": "1466:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -330,10 +377,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4092,
+                    "id": 4024,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1466:7:11",
+                    "src": "1466:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -344,10 +391,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1465:9:11"
+              "src": "1465:9:10"
             },
-            "scope": 4111,
-            "src": "1222:253:11",
+            "scope": 4061,
+            "src": "1222:253:10",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
@@ -356,7 +403,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "5fc7e71e",
-            "id": 4110,
+            "id": 4042,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -364,17 +411,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4106,
+              "id": 4038,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4097,
+                  "id": 4029,
                   "name": "_lendedART",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1522:18:11",
+                  "scope": 4042,
+                  "src": "1522:18:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -382,10 +429,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4096,
+                    "id": 4028,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1522:7:11",
+                    "src": "1522:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -397,12 +444,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4099,
+                  "id": 4031,
                   "name": "_collateralART",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1549:22:11",
+                  "scope": 4042,
+                  "src": "1549:22:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -410,10 +457,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4098,
+                    "id": 4030,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1549:7:11",
+                    "src": "1549:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -425,12 +472,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4101,
+                  "id": 4033,
                   "name": "_liquidater",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1580:19:11",
+                  "scope": 4042,
+                  "src": "1580:19:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -438,10 +485,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4100,
+                    "id": 4032,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1580:7:11",
+                    "src": "1580:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -453,12 +500,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4103,
+                  "id": 4035,
                   "name": "_borrower",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1608:17:11",
+                  "scope": 4042,
+                  "src": "1608:17:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -466,10 +513,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4102,
+                    "id": 4034,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1608:7:11",
+                    "src": "1608:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -481,12 +528,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4105,
+                  "id": 4037,
                   "name": "_repayAmount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1634:17:11",
+                  "scope": 4042,
+                  "src": "1634:17:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -494,10 +541,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4104,
+                    "id": 4036,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1634:4:11",
+                    "src": "1634:4:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -507,20 +554,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1513:145:11"
+              "src": "1513:145:10"
             },
             "returnParameters": {
-              "id": 4109,
+              "id": 4041,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4108,
+                  "id": 4040,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1697:4:11",
+                  "scope": 4042,
+                  "src": "1697:4:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -528,10 +575,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 4107,
+                    "id": 4039,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1697:4:11",
+                    "src": "1697:4:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -541,33 +588,260 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1696:6:11"
+              "src": "1696:6:10"
             },
-            "scope": 4111,
-            "src": "1482:221:11",
+            "scope": 4061,
+            "src": "1482:221:10",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "4750e719",
+            "id": 4051,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "checkCollateralValue",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4047,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4044,
+                  "name": "_borrower",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4051,
+                  "src": "1740:17:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4043,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1740:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4046,
+                  "name": "_ALR",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4051,
+                  "src": "1759:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4045,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1759:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1739:33:10"
+            },
+            "returnParameters": {
+              "id": 4050,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4049,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4051,
+                  "src": "1798:4:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4048,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1798:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1797:6:10"
+            },
+            "scope": 4061,
+            "src": "1710:94:10",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "152eadbb",
+            "id": 4060,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "trackCollateral",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4058,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4053,
+                  "name": "_borrower",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4060,
+                  "src": "1835:17:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4052,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1835:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4055,
+                  "name": "_ALR",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4060,
+                  "src": "1854:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4054,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1854:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4057,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4060,
+                  "src": "1868:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4056,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1868:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1834:47:10"
+            },
+            "returnParameters": {
+              "id": 4059,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1898:0:10"
+            },
+            "scope": 4061,
+            "src": "1810:89:10",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "external"
           }
         ],
-        "scope": 4112,
-        "src": "601:1104:11"
+        "scope": 4062,
+        "src": "601:1300:10"
       }
     ],
-    "src": "0:1706:11"
+    "src": "0:1902:10"
   },
   "legacyAST": {
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketFactoryI.sol",
     "exportedSymbols": {
       "MoneyMarketFactoryI": [
-        4111
+        4061
       ]
     },
-    "id": 4112,
+    "id": 4062,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4078,
+        "id": 4010,
         "literals": [
           "solidity",
           "^",
@@ -575,7 +849,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:11"
+        "src": "0:23:10"
       },
       {
         "abstract": true,
@@ -584,9 +858,9 @@
         "contractKind": "contract",
         "documentation": "The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance uses to interface\nwith the MoneyMarketFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*",
         "fullyImplemented": false,
-        "id": 4111,
+        "id": 4061,
         "linearizedBaseContracts": [
-          4111
+          4061
         ],
         "name": "MoneyMarketFactoryI",
         "nodeType": "ContractDefinition",
@@ -595,7 +869,7 @@
             "body": null,
             "documentation": "@notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts\n@param _assetContractAdd is the address of the ERC20 asset being whitelisted\n@param _owner is the address that will own this contract(The AskoDAO)\n@param _assetName is the name of the asset(e.x: ChainLink)\n@param _assetSymbol is the symbol of the asset(e.x: LINK)\n@dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol\nbefore creating each token.*",
             "functionSelector": "cc83954d",
-            "id": 4095,
+            "id": 4027,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -603,17 +877,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4091,
+              "id": 4023,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4080,
+                  "id": 4012,
                   "name": "_assetContractAdd",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1249:25:11",
+                  "scope": 4027,
+                  "src": "1249:25:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -621,10 +895,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4079,
+                    "id": 4011,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1249:7:11",
+                    "src": "1249:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -636,12 +910,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4082,
+                  "id": 4014,
                   "name": "_owner",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1283:14:11",
+                  "scope": 4027,
+                  "src": "1283:14:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -649,10 +923,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4081,
+                    "id": 4013,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1283:7:11",
+                    "src": "1283:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -664,12 +938,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4084,
+                  "id": 4016,
                   "name": "_oracle",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1306:15:11",
+                  "scope": 4027,
+                  "src": "1306:15:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -677,10 +951,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4083,
+                    "id": 4015,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1306:7:11",
+                    "src": "1306:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -692,12 +966,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4086,
+                  "id": 4018,
                   "name": "_oracleFactory",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1330:22:11",
+                  "scope": 4027,
+                  "src": "1330:22:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -705,10 +979,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4085,
+                    "id": 4017,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1330:7:11",
+                    "src": "1330:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -720,12 +994,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4088,
+                  "id": 4020,
                   "name": "_assetName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1361:24:11",
+                  "scope": 4027,
+                  "src": "1361:24:10",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -733,10 +1007,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 4087,
+                    "id": 4019,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1361:6:11",
+                    "src": "1361:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -747,12 +1021,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4090,
+                  "id": 4022,
                   "name": "_assetSymbol",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1394:26:11",
+                  "scope": 4027,
+                  "src": "1394:26:10",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -760,10 +1034,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 4089,
+                    "id": 4021,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1394:6:11",
+                    "src": "1394:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -773,20 +1047,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1240:187:11"
+              "src": "1240:187:10"
             },
             "returnParameters": {
-              "id": 4094,
+              "id": 4026,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4093,
+                  "id": 4025,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4095,
-                  "src": "1466:7:11",
+                  "scope": 4027,
+                  "src": "1466:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -794,10 +1068,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4092,
+                    "id": 4024,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1466:7:11",
+                    "src": "1466:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -808,10 +1082,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1465:9:11"
+              "src": "1465:9:10"
             },
-            "scope": 4111,
-            "src": "1222:253:11",
+            "scope": 4061,
+            "src": "1222:253:10",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
@@ -820,7 +1094,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "5fc7e71e",
-            "id": 4110,
+            "id": 4042,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -828,17 +1102,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4106,
+              "id": 4038,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4097,
+                  "id": 4029,
                   "name": "_lendedART",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1522:18:11",
+                  "scope": 4042,
+                  "src": "1522:18:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -846,10 +1120,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4096,
+                    "id": 4028,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1522:7:11",
+                    "src": "1522:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -861,12 +1135,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4099,
+                  "id": 4031,
                   "name": "_collateralART",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1549:22:11",
+                  "scope": 4042,
+                  "src": "1549:22:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -874,10 +1148,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4098,
+                    "id": 4030,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1549:7:11",
+                    "src": "1549:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -889,12 +1163,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4101,
+                  "id": 4033,
                   "name": "_liquidater",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1580:19:11",
+                  "scope": 4042,
+                  "src": "1580:19:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -902,10 +1176,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4100,
+                    "id": 4032,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1580:7:11",
+                    "src": "1580:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -917,12 +1191,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4103,
+                  "id": 4035,
                   "name": "_borrower",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1608:17:11",
+                  "scope": 4042,
+                  "src": "1608:17:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -930,10 +1204,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4102,
+                    "id": 4034,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1608:7:11",
+                    "src": "1608:7:10",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -945,12 +1219,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4105,
+                  "id": 4037,
                   "name": "_repayAmount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1634:17:11",
+                  "scope": 4042,
+                  "src": "1634:17:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -958,10 +1232,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4104,
+                    "id": 4036,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1634:4:11",
+                    "src": "1634:4:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -971,20 +1245,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1513:145:11"
+              "src": "1513:145:10"
             },
             "returnParameters": {
-              "id": 4109,
+              "id": 4041,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4108,
+                  "id": 4040,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4110,
-                  "src": "1697:4:11",
+                  "scope": 4042,
+                  "src": "1697:4:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -992,10 +1266,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 4107,
+                    "id": 4039,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1697:4:11",
+                    "src": "1697:4:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1005,28 +1279,255 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1696:6:11"
+              "src": "1696:6:10"
             },
-            "scope": 4111,
-            "src": "1482:221:11",
+            "scope": 4061,
+            "src": "1482:221:10",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "4750e719",
+            "id": 4051,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "checkCollateralValue",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4047,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4044,
+                  "name": "_borrower",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4051,
+                  "src": "1740:17:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4043,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1740:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4046,
+                  "name": "_ALR",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4051,
+                  "src": "1759:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4045,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1759:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1739:33:10"
+            },
+            "returnParameters": {
+              "id": 4050,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4049,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4051,
+                  "src": "1798:4:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4048,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1798:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1797:6:10"
+            },
+            "scope": 4061,
+            "src": "1710:94:10",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "152eadbb",
+            "id": 4060,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "trackCollateral",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4058,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4053,
+                  "name": "_borrower",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4060,
+                  "src": "1835:17:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4052,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1835:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4055,
+                  "name": "_ALR",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4060,
+                  "src": "1854:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4054,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1854:7:10",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4057,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4060,
+                  "src": "1868:12:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4056,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1868:4:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1834:47:10"
+            },
+            "returnParameters": {
+              "id": 4059,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1898:0:10"
+            },
+            "scope": 4061,
+            "src": "1810:89:10",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "external"
           }
         ],
-        "scope": 4112,
-        "src": "601:1104:11"
+        "scope": 4062,
+        "src": "601:1300:10"
       }
     ],
-    "src": "0:1706:11"
+    "src": "0:1902:10"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.0+commit.26b70077.Emscripten.clang"
+    "version": "0.6.2+commit.bacdbe57.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.2.5",
-  "updatedAt": "2020-10-06T18:35:28.074Z",
+  "updatedAt": "2020-10-07T21:06:12.836Z",
   "devdoc": {
     "methods": {
       "createMMI(address,address,address,address,string,string)": {

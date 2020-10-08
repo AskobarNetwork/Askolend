@@ -81,7 +81,7 @@ constructor ( address _oracle, address _MMF) public {
    		 _assetName,
    		 _assetSymbol
      );
-     
+
     isMMI[_MMinstance] = true;
     Oracle.linkMMI(_MMinstance, _assetContractAdd);
     instanceTracker[_assetContractAdd] = _MMinstance;

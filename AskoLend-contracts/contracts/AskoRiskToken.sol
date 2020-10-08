@@ -303,7 +303,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     MintLocalVars memory vars;
 //retrieve exchange rate
     vars.exchangeRateMantissa = exchangeRateCurrent();
-
 //We get the current exchange rate and calculate the number of AHR to be minted:
 //mintTokens = _amount / exchangeRate
     (vars.mathErr, vars.mintTokens) = divScalarByExpTruncate(_amount, Exp({mantissa: vars.exchangeRateMantissa}));
@@ -378,7 +377,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     RepayBorrowLocalVars memory vars;
 //We remember the original borrowerIndex for verification purposes
     vars.borrowerIndex = accountBorrows[msg.sender].interestIndex;
-
 //We fetch the amount the borrower owes, with accumulated interest
     vars.accountBorrows = borrowBalanceCurrent(msg.sender);
 //If repayAmount == -1, repayAmount = accountBorrows
@@ -426,17 +424,10 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     UOF.swapERC20(address(asset), _forAssetAdd, _forMMI, _amountOfThisToken, _minAmount);
   }
 
-/**
-@notice getMMIAdd allows for easy retrieval of an ART's momney market contract.
-**/
-    function getMMIAdd() public view returns (address) {
-      return address(MMI);
-    }
 
 /**
-
+@notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address
 **/
-
     function getAssetAdd() public view returns (address) {
       return address(asset);
     }

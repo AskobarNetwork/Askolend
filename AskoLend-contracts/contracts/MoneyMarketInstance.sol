@@ -7,8 +7,6 @@ import "./compound/Exponential.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";
 import "./AskoRiskToken.sol";
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketInstance
 /// @author Christopher Dixon
@@ -67,15 +65,12 @@ contract MoneyMarketInstance is Ownable, Exponential {
   )
   public
   {
-    asset = IERC20(_assetContractAdd);
-
-
   divisor = 10000;
   assetName = _assetName;
   assetSymbol = _assetSymbol;
   UOF = UniswapOracleFactoryI(_oracleFactory);
   MMF = MoneyMarketFactoryI(_owner);
-
+  asset = IERC20(_assetContractAdd);
   }
 
 /**
@@ -115,10 +110,6 @@ function _setUpAHR(
     false,
     _initialExchangeRate
   );
-
-  address ahr = address(AHR);
-
-  asset.approve(ahr, 1000000000000000000000000000000000000);
   }
 
 /**
@@ -158,9 +149,6 @@ function _setUpAHR(
       true,
       _initialExchangeRate
     );
-
-    address alr = address(ALR);
-    asset.approve(alr, 1000000000000000000000000000000000000);
     }
 
 
@@ -189,7 +177,9 @@ function _setUpAHR(
 @dev the user will need to first approve the transfer of the underlying asset
 **/
     function lendToALRpool(uint _amount) public {
-    asset.transferFrom(msg.sender, address(ALR), _amount);
+      //transfer appropriate amount off the asset from msg.sender to the AHR contract
+      asset.transferFrom(msg.sender, address(ALR), _amount);
+      //call mint function on ALR contract
       ALR.mint(msg.sender, _amount);
     }
 
@@ -199,19 +189,26 @@ function _setUpAHR(
 @param _amount is the amount of asset being barrowed
 **/
   function borrow(uint _amount, address _collateral) public {
-    //check that the user has enough collateral in used
+    //check that the user has enough collateral in input moeny market
     uint collateralValue = MMF.checkCollateralValue(msg.sender, _collateral);
+    //get current borrow balances for each ART
+    uint borrowBalAHR = AHR.borrowBalanceCurrent(msg.sender);
+    uint borrowBalALR = ALR.borrowBalanceCurrent(msg.sender);
+    //calculate the new amount that would be owed if borrow suceeds
+    uint totalFutureAmountOwed = borrowBalAHR.add(borrowBalALR.add(_amount));
     //check current asset price
     uint priceOfAsset = UOF.getUnderlyingPrice(address(asset));
-    //get te usd price value of _amount
-    uint assetAmountVal = priceOfAsset.mul(_amount);
+    //get the usd price value of _amount
+    uint assetAmountValOwed = priceOfAsset.mul(totalFutureAmountOwed);
     //divide amount value by 3
-    uint thirdVal = assetAmountVal.div(3);
+    uint thirdVal = assetAmountValOwed.div(3);
     //add 1/3 value to asset value to get 150% asset value
-    uint collateralNeeded = assetAmountVal.add(thirdVal);
+    uint collateralNeeded = assetAmountValOwed.add(thirdVal);
     //require collateral value to be greater than 150% of the amount value of loan
     require(collateralValue >= collateralNeeded);
+    //cut amount of tokens in half
     uint half = _amount.div(2);
+    //borrow half from each pool
     AHR.borrow(half);
     ALR.borrow(half);
   }
@@ -221,16 +218,17 @@ function _setUpAHR(
 @param _repayAmount is the amount of the underlying asset being repayed
 **/
 	function repay(uint _repayAmount) public {
+    //get their current owed balance of ALR
     uint accountBorrowsALR = ALR.borrowBalanceCurrent(msg.sender);
 
     if(accountBorrowsALR != 0) { //if amount owed to ALR isnt zero
           if(accountBorrowsALR >= _repayAmount) { //check if repay amount is greater than ALR borrow balance
             ALR.repayBorrow(_repayAmount); //if it is repay amount to ALR
           } else { //if not
-            uint amountToALR = _repayAmount.sub(accountBorrowsALR); //calculate aount needed to pay off ALR
+            uint amountToALR = _repayAmount.sub(accountBorrowsALR); //calculate amSount needed to pay off ALR
              ALR.repayBorrow(amountToALR); //pay off ALR
             uint amountToAHR = _repayAmount.sub(amountToALR);//calculate AHR amount
-          AHR.repayBorrow(amountToAHR);
+          AHR.repayBorrow(amountToAHR); //pay off towards AHR
           }
     } else {//if amount owed to ALR IS zero
       AHR.repayBorrow(_repayAmount);//pay towards AHR

@@ -201,9 +201,9 @@ function _setUpAHR(
     //get the usd price value of _amount
     uint assetAmountValOwed = priceOfAsset.mul(totalFutureAmountOwed);
     //divide amount value by 3
-    uint thirdVal = assetAmountValOwed.div(3);
-    //add 1/3 value to asset value to get 150% asset value
-    uint collateralNeeded = assetAmountValOwed.add(thirdVal);
+    uint halfVal = assetAmountValOwed.div(2);
+    //add 1/2 value to asset value to get 150% asset value
+    uint collateralNeeded = assetAmountValOwed.add(halfVal);
     //require collateral value to be greater than 150% of the amount value of loan
     require(collateralValue >= collateralNeeded);
     //cut amount of tokens in half

@@ -418,9 +418,9 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     uint _amountOfThisToken,
     uint _minAmount
   ) external {
-
-//need to add logic to check that this is allowed
-//need to add fee logic and send borrower any left over collateral.
+//require function caller to be the money market factory to ensure liquidation checks are perfomred
+    require(MMI.owner() == msg.sender);
+//swap out collateral for this contracts asset and send it
     UOF.swapERC20(address(asset), _forAssetAdd, _forMMI, _amountOfThisToken, _minAmount);
   }
 

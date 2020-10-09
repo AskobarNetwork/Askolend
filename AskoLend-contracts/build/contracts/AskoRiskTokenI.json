@@ -1,0 +1,892 @@
+{
+  "contractName": "AskoRiskTokenI",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "getAssetAdd",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "borrowBalanceCurrent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "exchangeRateCurrent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_forAssetAdd",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_forMMI",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amountOfThisToken",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "_liquidateFor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_forAssetAdd\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_forMMI\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amountOfThisToken\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_minAmount\",\"type\":\"uint256\"}],\"name\":\"_liquidateFor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"borrowBalanceCurrent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"exchangeRateCurrent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAssetAdd\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{},\"notice\":\"The AskoRiskTokenI contract an abstract contract MoneyMarketControl uses to interface with a AskoRiskToken. This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/AskoRiskTokenI.sol\":\"AskoRiskTokenI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/AskoRiskTokenI.sol\":{\"keccak256\":\"0x897f2bfd1339535edadb182d3f3ffa6d04fa670a67de4e62204dd9563da51a0a\",\"urls\":[\"bzz-raw://d73fc8847cc627b6e9bbd158a52a3d4b00555304db1b7f393ca4d5ce890ccb8f\",\"dweb:/ipfs/QmfPFXMks2rgG4BJWGqCEKwRLbp5dE4JeVSYLu85QfQj7L\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.6.0;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title AskoRiskTokenI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe AskoRiskTokenI contract an abstract contract MoneyMarketControl uses to interface\n    with a AskoRiskToken.\n    This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits\n**/\n\n abstract contract AskoRiskTokenI {\n\n function getAssetAdd() public view virtual returns (address);\n\n function borrowBalanceCurrent(address account) public virtual returns (uint);\n\nfunction exchangeRateCurrent() public virtual returns (uint);\n\n\nfunction _liquidateFor(\n  address _forAssetAdd,\n  address _forMMI,\n  uint _amountOfThisToken,\n  uint _minAmount\n) external\nvirtual;\n}\n",
+  "sourcePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/AskoRiskTokenI.sol",
+  "ast": {
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/AskoRiskTokenI.sol",
+    "exportedSymbols": {
+      "AskoRiskTokenI": [
+        4401
+      ]
+    },
+    "id": 4402,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4371,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:12"
+      },
+      {
+        "abstract": true,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 4372,
+          "nodeType": "StructuredDocumentation",
+          "src": "267:221:12",
+          "text": "The AskoRiskTokenI contract an abstract contract MoneyMarketControl uses to interface\nwith a AskoRiskToken.\nThis is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*"
+        },
+        "fullyImplemented": false,
+        "id": 4401,
+        "linearizedBaseContracts": [
+          4401
+        ],
+        "name": "AskoRiskTokenI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "4c20ac74",
+            "id": 4377,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getAssetAdd",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4373,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "548:2:12"
+            },
+            "returnParameters": {
+              "id": 4376,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4375,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4377,
+                  "src": "580:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4374,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "580:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "579:9:12"
+            },
+            "scope": 4401,
+            "src": "528:61:12",
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "17bfdfbc",
+            "id": 4384,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "borrowBalanceCurrent",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4380,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4379,
+                  "mutability": "mutable",
+                  "name": "account",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4384,
+                  "src": "622:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4378,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "622:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "621:17:12"
+            },
+            "returnParameters": {
+              "id": 4383,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4382,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4384,
+                  "src": "663:4:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4381,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "663:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "662:6:12"
+            },
+            "scope": 4401,
+            "src": "592:77:12",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "bd6d894d",
+            "id": 4389,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "exchangeRateCurrent",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4385,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "699:2:12"
+            },
+            "returnParameters": {
+              "id": 4388,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4387,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4389,
+                  "src": "726:4:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4386,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "726:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "725:6:12"
+            },
+            "scope": 4401,
+            "src": "671:61:12",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "8157230b",
+            "id": 4400,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_liquidateFor",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4398,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4391,
+                  "mutability": "mutable",
+                  "name": "_forAssetAdd",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "761:20:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4390,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "761:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4393,
+                  "mutability": "mutable",
+                  "name": "_forMMI",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "785:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4392,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "785:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4395,
+                  "mutability": "mutable",
+                  "name": "_amountOfThisToken",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "804:23:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4394,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "804:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4397,
+                  "mutability": "mutable",
+                  "name": "_minAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "831:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4396,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "831:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "757:91:12"
+            },
+            "returnParameters": {
+              "id": 4399,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "865:0:12"
+            },
+            "scope": 4401,
+            "src": "735:131:12",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4402,
+        "src": "491:377:12"
+      }
+    ],
+    "src": "0:869:12"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/AskoRiskTokenI.sol",
+    "exportedSymbols": {
+      "AskoRiskTokenI": [
+        4401
+      ]
+    },
+    "id": 4402,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4371,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:12"
+      },
+      {
+        "abstract": true,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 4372,
+          "nodeType": "StructuredDocumentation",
+          "src": "267:221:12",
+          "text": "The AskoRiskTokenI contract an abstract contract MoneyMarketControl uses to interface\nwith a AskoRiskToken.\nThis is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*"
+        },
+        "fullyImplemented": false,
+        "id": 4401,
+        "linearizedBaseContracts": [
+          4401
+        ],
+        "name": "AskoRiskTokenI",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "4c20ac74",
+            "id": 4377,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getAssetAdd",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4373,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "548:2:12"
+            },
+            "returnParameters": {
+              "id": 4376,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4375,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4377,
+                  "src": "580:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4374,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "580:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "579:9:12"
+            },
+            "scope": 4401,
+            "src": "528:61:12",
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "17bfdfbc",
+            "id": 4384,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "borrowBalanceCurrent",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4380,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4379,
+                  "mutability": "mutable",
+                  "name": "account",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4384,
+                  "src": "622:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4378,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "622:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "621:17:12"
+            },
+            "returnParameters": {
+              "id": 4383,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4382,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4384,
+                  "src": "663:4:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4381,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "663:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "662:6:12"
+            },
+            "scope": 4401,
+            "src": "592:77:12",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "bd6d894d",
+            "id": 4389,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "exchangeRateCurrent",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4385,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "699:2:12"
+            },
+            "returnParameters": {
+              "id": 4388,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4387,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4389,
+                  "src": "726:4:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4386,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "726:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "725:6:12"
+            },
+            "scope": 4401,
+            "src": "671:61:12",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "8157230b",
+            "id": 4400,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_liquidateFor",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 4398,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4391,
+                  "mutability": "mutable",
+                  "name": "_forAssetAdd",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "761:20:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4390,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "761:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4393,
+                  "mutability": "mutable",
+                  "name": "_forMMI",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "785:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4392,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "785:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4395,
+                  "mutability": "mutable",
+                  "name": "_amountOfThisToken",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "804:23:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4394,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "804:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4397,
+                  "mutability": "mutable",
+                  "name": "_minAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4400,
+                  "src": "831:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4396,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "831:4:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "757:91:12"
+            },
+            "returnParameters": {
+              "id": 4399,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "865:0:12"
+            },
+            "scope": 4401,
+            "src": "735:131:12",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4402,
+        "src": "491:377:12"
+      }
+    ],
+    "src": "0:869:12"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-09T22:40:09.467Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {},
+    "notice": "The AskoRiskTokenI contract an abstract contract MoneyMarketControl uses to interface with a AskoRiskToken. This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*"
+  }
+}

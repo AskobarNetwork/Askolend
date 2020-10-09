@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./MoneyMarketInstance.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";
+import "./interfaces/MoneyMarketInstanceI.sol";
+import "./interfaces/AskoRiskTokenI.sol";
 import "./compound/JumpRateModelV2.sol";
 import "./compound/Exponential.sol";
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,8 +77,8 @@ constructor ( address _oracle, address _MMF) public {
 
   address _MMinstance = MMF.createMMI(
         _assetContractAdd,
-        address(this),
         address(Oracle),
+        address(this),
    		 _assetName,
    		 _assetSymbol
      );
@@ -108,7 +110,7 @@ constructor ( address _oracle, address _MMF) public {
   )
   public
   {
-    MoneyMarketInstance _MMI = MoneyMarketInstance(instanceTracker[_assetContractAdd]);
+    MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(instanceTracker[_assetContractAdd]);
 
     address interestRateModel = address( new JumpRateModelV2(
       _baseRatePerYear,
@@ -146,7 +148,7 @@ _MMI._setUpAHR(
   )
   public
   {
-    MoneyMarketInstance _MMI = MoneyMarketInstance(instanceTracker[_assetContractAdd]);
+    MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(instanceTracker[_assetContractAdd]);
 
     address interestRateModel = address( new JumpRateModelV2(
       _baseRatePerYear,
@@ -183,7 +185,7 @@ _MMI._setUpAHR(
  **/
  function checkCollateralValue(address _borrower, address _ALR) external view onlyMMI returns(uint) {
 //instantiate the MoneyMakerInstance calling this function
-   MoneyMarketInstance MMI = MoneyMarketInstance(msg.sender);
+   MoneyMarketInstanceI MMI = MoneyMarketInstanceI(msg.sender);
 //retreive the address of its asset
    address asset = MMI.getAssetAdd();
 //retrieve USD price of this asset
@@ -225,7 +227,7 @@ _MMI._setUpAHR(
 @param _ARTcollateralized is the address of the AskoRiskToken where the borrower has collateral
 
 */
-  function liquidateAccount(address borrower, uint repayAmount, AskoRiskToken _ARTowed, AskoRiskToken _ARTcollateralized) public {
+  function liquidateAccount(address borrower, uint repayAmount, AskoRiskTokenI _ARTowed, AskoRiskTokenI _ARTcollateralized) public {
 //checks if its been nonCompliant for more than a half hour
     require(now >= nonCompliant[borrower][address(_ARTowed)].add(1800));
     //create local vars storage

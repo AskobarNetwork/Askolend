@@ -36,8 +36,6 @@ contract MoneyMarketInstance is Ownable, Exponential {
   MoneyMarketFactoryI public MMF;
   UniswapOracleFactoryI public UOF;
 
-
-
 /**
 @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Factory contract
 **/
@@ -45,7 +43,6 @@ contract MoneyMarketInstance is Ownable, Exponential {
     require(msg.sender == address(MMF));
     _;
   }
-
 
 /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
@@ -94,14 +91,14 @@ function _setUpAHR(
   fee_AHR = _fee;
   bytes memory ahrname = abi.encodePacked("AHR-");
   ahrname = abi.encodePacked(ahrname, assetName);
-
+//abi encode and concat strings
   bytes memory ahrsymbol = abi.encodePacked("AHR-");
   ahrsymbol = abi.encodePacked(ahrsymbol, assetSymbol);
-
+//abi encode and concat strings
   string memory assetNameAHR = string(ahrname);
   string memory assetSymbolAHR = string(ahrsymbol);
-
-  AHR = new AskoRiskToken(
+//un-encode concated string
+  AHR = new AskoRiskToken(//creates new Asko High Risk Token Contract
     _InterestRateModel,
     address(asset),
     address(UOF),
@@ -133,14 +130,14 @@ function _setUpAHR(
     fee_ALR = _fee;
     bytes memory alrname = abi.encodePacked("AlR-");
     alrname = abi.encodePacked(alrname, assetName);
-
+//abi encode and concat strings
     bytes memory alrsymbol = abi.encodePacked("AlR-");
     alrsymbol = abi.encodePacked(alrsymbol, assetSymbol);
-
+//abi encode and concat strings
     string memory assetNameALR = string(alrname);
     string memory assetSymbolALR = string(alrsymbol);
-
-    ALR = new AskoRiskToken(
+//un-encode concated string
+    ALR = new AskoRiskToken(//creates new Asko Low Risk Token Contract
       _InterestRateModel,
       address(asset),
       address(UOF),

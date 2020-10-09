@@ -249,7 +249,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
           return totalBorrows;
       }
 
-
 /**
 @notice Accrue interest then return the up-to-date exchange rate
 @return Calculated exchange rate scaled by 1e18

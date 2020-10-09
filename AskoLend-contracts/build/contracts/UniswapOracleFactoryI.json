@@ -91,9 +91,10 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.0+commit.26b70077\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"createNewOracle\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_MMI\",\"type\":\"address\"}],\"name\":\"getUnderlyingPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_MMI\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_asset\",\"type\":\"address\"}],\"name\":\"linkMMI\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenA\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_tokenB\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amountIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_amountOutMin\",\"type\":\"uint256\"}],\"name\":\"swapERC20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"createNewOracle(address)\":{\"details\":\"this function is marked as virtual as it is an abstracted function*\",\"params\":{\"token\":\"is the address of the first token in the token pair for this oracle\"}},\"getUnderlyingPrice(address)\":{\"params\":{\"_MMI\":\"is the address of the MoneyMarketInstance whos asset price is being retrieved\"},\"returns\":{\"_0\":\"returns the price of the asset*\"}},\"linkMMI(address,address)\":{\"params\":{\"_MMI\":\"is the address of the MoneyMarketInstance\",\"_asset\":\"is the address of the MoneyMarketInstancesunderlying asset*\"}},\"swapERC20(address,address,address,uint256,uint256)\":{\"details\":\"example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address_amountOutMin will need to be atleast enough to cover the cost of collateral liquidation (loan amount +i nterest) and its liquidation fee amount.*\",\"params\":{\"_amountIn\":\"is the amount of _tokenA being exchanged\",\"_amountOutMin\":\"is the minimum amount of _tokenB to be received\",\"_to\":\"is the address of the MoneyMarketInstance calling this function\",\"_tokenA\":\"is the address of the token being exchanged from\",\"_tokenB\":\"is the address of the token being exchanged to\"}}}},\"userdoc\":{\"methods\":{\"createNewOracle(address)\":{\"notice\":\"createNewOracle allows the owner of this contract to deploy a new oracle contract when a new asset is whitelisted\"},\"getUnderlyingPrice(address)\":{\"notice\":\"getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset\"},\"linkMMI(address,address)\":{\"notice\":\"linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract\"},\"swapERC20(address,address,address,uint256,uint256)\":{\"notice\":\"swapERC20 is an external function that swaps one ERC20 token for another using WETH as a medium of exchange.\"}},\"notice\":\"The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface eith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleFactoryI.sol\":\"UniswapOracleFactoryI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleFactoryI.sol\":{\"keccak256\":\"0x981c9357af404e55fe0fd912e7e7c73d647f5bb1cce7a2949993f9df20f09f6f\",\"urls\":[\"bzz-raw://a5635d1ed254a5fde290a24ed95488e8db82f7c6d02c2f4c4b77e86f18019913\",\"dweb:/ipfs/Qmdosfmt54V9utA1nsShrQAGGHoKffzVLpPP9ZxV1YGe74\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"createNewOracle\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_MMI\",\"type\":\"address\"}],\"name\":\"getUnderlyingPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_MMI\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_asset\",\"type\":\"address\"}],\"name\":\"linkMMI\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenA\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_tokenB\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amountIn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_amountOutMin\",\"type\":\"uint256\"}],\"name\":\"swapERC20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"createNewOracle(address)\":{\"details\":\"this function is marked as virtual as it is an abstracted function*\",\"params\":{\"token\":\"is the address of the first token in the token pair for this oracle\"}},\"getUnderlyingPrice(address)\":{\"params\":{\"_MMI\":\"is the address of the MoneyMarketInstance whos asset price is being retrieved\"},\"returns\":{\"_0\":\"returns the price of the asset*\"}},\"linkMMI(address,address)\":{\"params\":{\"_MMI\":\"is the address of the MoneyMarketInstance\",\"_asset\":\"is the address of the MoneyMarketInstancesunderlying asset*\"}},\"swapERC20(address,address,address,uint256,uint256)\":{\"details\":\"example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address_amountOutMin will need to be atleast enough to cover the cost of collateral liquidation (loan amount +i nterest) and its liquidation fee amount.*\",\"params\":{\"_amountIn\":\"is the amount of _tokenA being exchanged\",\"_amountOutMin\":\"is the minimum amount of _tokenB to be received\",\"_to\":\"is the address of the MoneyMarketInstance calling this function\",\"_tokenA\":\"is the address of the token being exchanged from\",\"_tokenB\":\"is the address of the token being exchanged to\"}}}},\"userdoc\":{\"methods\":{\"createNewOracle(address)\":{\"notice\":\"createNewOracle allows the owner of this contract to deploy a new oracle contract when a new asset is whitelisted\"},\"getUnderlyingPrice(address)\":{\"notice\":\"getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset\"},\"linkMMI(address,address)\":{\"notice\":\"linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract\"},\"swapERC20(address,address,address,uint256,uint256)\":{\"notice\":\"swapERC20 is an external function that swaps one ERC20 token for another using WETH as a medium of exchange.\"}},\"notice\":\"The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface eith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a truffle compiler error due when imported into the same contract due to the use of two seperate SafeMath instances*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleFactoryI.sol\":\"UniswapOracleFactoryI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleFactoryI.sol\":{\"keccak256\":\"0x981c9357af404e55fe0fd912e7e7c73d647f5bb1cce7a2949993f9df20f09f6f\",\"urls\":[\"bzz-raw://a5635d1ed254a5fde290a24ed95488e8db82f7c6d02c2f4c4b77e86f18019913\",\"dweb:/ipfs/Qmdosfmt54V9utA1nsShrQAGGHoKffzVLpPP9ZxV1YGe74\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
+  "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title UniswapOracleFactoryI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface\n    eith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\n    truffle compiler error due when imported into the same contract due to the use of two seperate\n    SafeMath instances\n**/\n\n abstract contract UniswapOracleFactoryI {\n\n/**\n@notice createNewOracle allows the owner of this contract to deploy a new oracle contract when\n        a new asset is whitelisted\n@param token is the address of the first token in the token pair for this oracle\n@dev this function is marked as virtual as it is an abstracted function\n**/\n\n    function createNewOracle(\n      address token\n    )\n    public\n    virtual\n    returns(address);\n\n/**\n@notice getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset\n@param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved\n@return returns the price of the asset\n**/\n    function getUnderlyingPrice(address _MMI) public virtual view returns(uint);\n\n/**\n@notice swapERC20 is an external function that swaps one ERC20 token for another\n        using WETH as a medium of exchange.\n@param _tokenA is the address of the token being exchanged from\n@param _tokenB is the address of the token being exchanged to\n@param _to is the address of the MoneyMarketInstance calling this function\n@param _amountIn is the amount of _tokenA being exchanged\n@param _amountOutMin is the minimum amount of _tokenB to be received\n@dev example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address\n@dev _amountOutMin will need to be atleast enough to cover the cost of collateral liquidation\n      (loan amount +i nterest) and its liquidation fee amount.\n**/\n  function swapERC20(\n    address _tokenA,\n    address _tokenB,\n    address _to,\n    uint _amountIn,\n    uint _amountOutMin\n  )\n  virtual\n  external\n  ;\n\n  /**\n  @notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract\n  @param _MMI is the address of the MoneyMarketInstance\n  @param _asset is the address of the MoneyMarketInstancesunderlying asset\n  **/\n    function linkMMI(address _MMI, address _asset) public virtual;\n}\n",
@@ -102,14 +103,14 @@
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleFactoryI.sol",
     "exportedSymbols": {
       "UniswapOracleFactoryI": [
-        4148
+        4462
       ]
     },
-    "id": 4149,
+    "id": 4463,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4113,
+        "id": 4422,
         "literals": [
           "solidity",
           "^",
@@ -117,27 +118,37 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:12"
+        "src": "0:23:13"
       },
       {
         "abstract": true,
         "baseContracts": [],
         "contractDependencies": [],
         "contractKind": "contract",
-        "documentation": "The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface\neith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*",
+        "documentation": {
+          "id": 4423,
+          "nodeType": "StructuredDocumentation",
+          "src": "274:329:13",
+          "text": "The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface\neith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*"
+        },
         "fullyImplemented": false,
-        "id": 4148,
+        "id": 4462,
         "linearizedBaseContracts": [
-          4148
+          4462
         ],
         "name": "UniswapOracleFactoryI",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": null,
-            "documentation": "@notice createNewOracle allows the owner of this contract to deploy a new oracle contract when\na new asset is whitelisted\n@param token is the address of the first token in the token pair for this oracle\n@dev this function is marked as virtual as it is an abstracted function*",
+            "documentation": {
+              "id": 4424,
+              "nodeType": "StructuredDocumentation",
+              "src": "649:290:13",
+              "text": "@notice createNewOracle allows the owner of this contract to deploy a new oracle contract when\na new asset is whitelisted\n@param token is the address of the first token in the token pair for this oracle\n@dev this function is marked as virtual as it is an abstracted function*"
+            },
             "functionSelector": "2fb2da61",
-            "id": 4120,
+            "id": 4431,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -145,17 +156,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4116,
+              "id": 4427,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4115,
+                  "id": 4426,
+                  "mutability": "mutable",
                   "name": "token",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4120,
-                  "src": "977:13:12",
+                  "scope": 4431,
+                  "src": "977:13:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -163,10 +175,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4114,
+                    "id": 4425,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "977:7:12",
+                    "src": "977:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -177,20 +189,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "969:27:12"
+              "src": "969:27:13"
             },
             "returnParameters": {
-              "id": 4119,
+              "id": 4430,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4118,
+                  "id": 4429,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4120,
-                  "src": "1032:7:12",
+                  "scope": 4431,
+                  "src": "1032:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -198,10 +211,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4117,
+                    "id": 4428,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1032:7:12",
+                    "src": "1032:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -212,19 +225,24 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1031:9:12"
+              "src": "1031:9:13"
             },
-            "scope": 4148,
-            "src": "945:96:12",
+            "scope": 4462,
+            "src": "945:96:13",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           },
           {
             "body": null,
-            "documentation": "@notice getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset\n@param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved\n@return returns the price of the asset*",
+            "documentation": {
+              "id": 4432,
+              "nodeType": "StructuredDocumentation",
+              "src": "1043:237:13",
+              "text": "@notice getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset\n@param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved\n@return returns the price of the asset*"
+            },
             "functionSelector": "fc57d4df",
-            "id": 4127,
+            "id": 4439,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -232,17 +250,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4123,
+              "id": 4435,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4122,
+                  "id": 4434,
+                  "mutability": "mutable",
                   "name": "_MMI",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4127,
-                  "src": "1313:12:12",
+                  "scope": 4439,
+                  "src": "1313:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -250,10 +269,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4121,
+                    "id": 4433,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1313:7:12",
+                    "src": "1313:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -264,20 +283,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1312:14:12"
+              "src": "1312:14:13"
             },
             "returnParameters": {
-              "id": 4126,
+              "id": 4438,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4125,
+                  "id": 4437,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4127,
-                  "src": "1355:4:12",
+                  "scope": 4439,
+                  "src": "1355:4:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -285,10 +305,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4124,
+                    "id": 4436,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1355:4:12",
+                    "src": "1355:4:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -298,19 +318,24 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1354:6:12"
+              "src": "1354:6:13"
             },
-            "scope": 4148,
-            "src": "1285:76:12",
+            "scope": 4462,
+            "src": "1285:76:13",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "public"
           },
           {
             "body": null,
-            "documentation": "@notice swapERC20 is an external function that swaps one ERC20 token for another\nusing WETH as a medium of exchange.\n@param _tokenA is the address of the token being exchanged from\n@param _tokenB is the address of the token being exchanged to\n@param _to is the address of the MoneyMarketInstance calling this function\n@param _amountIn is the amount of _tokenA being exchanged\n@param _amountOutMin is the minimum amount of _tokenB to be received\n@dev example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address\n@dev _amountOutMin will need to be atleast enough to cover the cost of collateral liquidation\n(loan amount +i nterest) and its liquidation fee amount.*",
+            "documentation": {
+              "id": 4440,
+              "nodeType": "StructuredDocumentation",
+              "src": "1363:717:13",
+              "text": "@notice swapERC20 is an external function that swaps one ERC20 token for another\nusing WETH as a medium of exchange.\n@param _tokenA is the address of the token being exchanged from\n@param _tokenB is the address of the token being exchanged to\n@param _to is the address of the MoneyMarketInstance calling this function\n@param _amountIn is the amount of _tokenA being exchanged\n@param _amountOutMin is the minimum amount of _tokenB to be received\n@dev example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address\n@dev _amountOutMin will need to be atleast enough to cover the cost of collateral liquidation\n(loan amount +i nterest) and its liquidation fee amount.*"
+            },
             "functionSelector": "f0defe93",
-            "id": 4140,
+            "id": 4453,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -318,17 +343,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4138,
+              "id": 4451,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4129,
+                  "id": 4442,
+                  "mutability": "mutable",
                   "name": "_tokenA",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2107:15:12",
+                  "scope": 4453,
+                  "src": "2107:15:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -336,10 +362,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4128,
+                    "id": 4441,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2107:7:12",
+                    "src": "2107:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -351,12 +377,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4131,
+                  "id": 4444,
+                  "mutability": "mutable",
                   "name": "_tokenB",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2128:15:12",
+                  "scope": 4453,
+                  "src": "2128:15:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -364,10 +391,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4130,
+                    "id": 4443,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2128:7:12",
+                    "src": "2128:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -379,12 +406,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4133,
+                  "id": 4446,
+                  "mutability": "mutable",
                   "name": "_to",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2149:11:12",
+                  "scope": 4453,
+                  "src": "2149:11:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -392,10 +420,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4132,
+                    "id": 4445,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2149:7:12",
+                    "src": "2149:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -407,12 +435,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4135,
+                  "id": 4448,
+                  "mutability": "mutable",
                   "name": "_amountIn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2166:14:12",
+                  "scope": 4453,
+                  "src": "2166:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -420,10 +449,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4134,
+                    "id": 4447,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2166:4:12",
+                    "src": "2166:4:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -434,12 +463,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4137,
+                  "id": 4450,
+                  "mutability": "mutable",
                   "name": "_amountOutMin",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2186:18:12",
+                  "scope": 4453,
+                  "src": "2186:18:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -447,10 +477,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4136,
+                    "id": 4449,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2186:4:12",
+                    "src": "2186:4:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -460,25 +490,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2101:107:12"
+              "src": "2101:107:13"
             },
             "returnParameters": {
-              "id": 4139,
+              "id": 4452,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2232:0:12"
+              "src": "2232:0:13"
             },
-            "scope": 4148,
-            "src": "2083:150:12",
+            "scope": 4462,
+            "src": "2083:150:13",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "external"
           },
           {
             "body": null,
-            "documentation": "@notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract\n@param _MMI is the address of the MoneyMarketInstance\n@param _asset is the address of the MoneyMarketInstancesunderlying asset*",
+            "documentation": {
+              "id": 4454,
+              "nodeType": "StructuredDocumentation",
+              "src": "2237:241:13",
+              "text": "@notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract\n@param _MMI is the address of the MoneyMarketInstance\n@param _asset is the address of the MoneyMarketInstancesunderlying asset*"
+            },
             "functionSelector": "1be1d0b9",
-            "id": 4147,
+            "id": 4461,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -486,17 +521,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4145,
+              "id": 4459,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4142,
+                  "id": 4456,
+                  "mutability": "mutable",
                   "name": "_MMI",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4147,
-                  "src": "2500:12:12",
+                  "scope": 4461,
+                  "src": "2500:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -504,10 +540,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4141,
+                    "id": 4455,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2500:7:12",
+                    "src": "2500:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -519,12 +555,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4144,
+                  "id": 4458,
+                  "mutability": "mutable",
                   "name": "_asset",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4147,
-                  "src": "2514:14:12",
+                  "scope": 4461,
+                  "src": "2514:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -532,10 +569,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4143,
+                    "id": 4457,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2514:7:12",
+                    "src": "2514:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -546,39 +583,39 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2499:30:12"
+              "src": "2499:30:13"
             },
             "returnParameters": {
-              "id": 4146,
+              "id": 4460,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2544:0:12"
+              "src": "2544:0:13"
             },
-            "scope": 4148,
-            "src": "2483:62:12",
+            "scope": 4462,
+            "src": "2483:62:13",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 4149,
-        "src": "606:1941:12"
+        "scope": 4463,
+        "src": "606:1941:13"
       }
     ],
-    "src": "0:2548:12"
+    "src": "0:2548:13"
   },
   "legacyAST": {
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/UniswapOracleFactoryI.sol",
     "exportedSymbols": {
       "UniswapOracleFactoryI": [
-        4148
+        4462
       ]
     },
-    "id": 4149,
+    "id": 4463,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4113,
+        "id": 4422,
         "literals": [
           "solidity",
           "^",
@@ -586,27 +623,37 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:12"
+        "src": "0:23:13"
       },
       {
         "abstract": true,
         "baseContracts": [],
         "contractDependencies": [],
         "contractKind": "contract",
-        "documentation": "The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface\neith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*",
+        "documentation": {
+          "id": 4423,
+          "nodeType": "StructuredDocumentation",
+          "src": "274:329:13",
+          "text": "The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory uses to interface\neith the UniswapOracleFactory. This is necissary as the OpenZeppelin and Uniswap libraries cause a\ntruffle compiler error due when imported into the same contract due to the use of two seperate\nSafeMath instances*"
+        },
         "fullyImplemented": false,
-        "id": 4148,
+        "id": 4462,
         "linearizedBaseContracts": [
-          4148
+          4462
         ],
         "name": "UniswapOracleFactoryI",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": null,
-            "documentation": "@notice createNewOracle allows the owner of this contract to deploy a new oracle contract when\na new asset is whitelisted\n@param token is the address of the first token in the token pair for this oracle\n@dev this function is marked as virtual as it is an abstracted function*",
+            "documentation": {
+              "id": 4424,
+              "nodeType": "StructuredDocumentation",
+              "src": "649:290:13",
+              "text": "@notice createNewOracle allows the owner of this contract to deploy a new oracle contract when\na new asset is whitelisted\n@param token is the address of the first token in the token pair for this oracle\n@dev this function is marked as virtual as it is an abstracted function*"
+            },
             "functionSelector": "2fb2da61",
-            "id": 4120,
+            "id": 4431,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -614,17 +661,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4116,
+              "id": 4427,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4115,
+                  "id": 4426,
+                  "mutability": "mutable",
                   "name": "token",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4120,
-                  "src": "977:13:12",
+                  "scope": 4431,
+                  "src": "977:13:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -632,10 +680,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4114,
+                    "id": 4425,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "977:7:12",
+                    "src": "977:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -646,20 +694,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "969:27:12"
+              "src": "969:27:13"
             },
             "returnParameters": {
-              "id": 4119,
+              "id": 4430,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4118,
+                  "id": 4429,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4120,
-                  "src": "1032:7:12",
+                  "scope": 4431,
+                  "src": "1032:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -667,10 +716,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4117,
+                    "id": 4428,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1032:7:12",
+                    "src": "1032:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -681,19 +730,24 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1031:9:12"
+              "src": "1031:9:13"
             },
-            "scope": 4148,
-            "src": "945:96:12",
+            "scope": 4462,
+            "src": "945:96:13",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           },
           {
             "body": null,
-            "documentation": "@notice getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset\n@param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved\n@return returns the price of the asset*",
+            "documentation": {
+              "id": 4432,
+              "nodeType": "StructuredDocumentation",
+              "src": "1043:237:13",
+              "text": "@notice getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset\n@param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved\n@return returns the price of the asset*"
+            },
             "functionSelector": "fc57d4df",
-            "id": 4127,
+            "id": 4439,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -701,17 +755,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4123,
+              "id": 4435,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4122,
+                  "id": 4434,
+                  "mutability": "mutable",
                   "name": "_MMI",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4127,
-                  "src": "1313:12:12",
+                  "scope": 4439,
+                  "src": "1313:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -719,10 +774,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4121,
+                    "id": 4433,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1313:7:12",
+                    "src": "1313:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -733,20 +788,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1312:14:12"
+              "src": "1312:14:13"
             },
             "returnParameters": {
-              "id": 4126,
+              "id": 4438,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4125,
+                  "id": 4437,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4127,
-                  "src": "1355:4:12",
+                  "scope": 4439,
+                  "src": "1355:4:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -754,10 +810,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4124,
+                    "id": 4436,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1355:4:12",
+                    "src": "1355:4:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -767,19 +823,24 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1354:6:12"
+              "src": "1354:6:13"
             },
-            "scope": 4148,
-            "src": "1285:76:12",
+            "scope": 4462,
+            "src": "1285:76:13",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "public"
           },
           {
             "body": null,
-            "documentation": "@notice swapERC20 is an external function that swaps one ERC20 token for another\nusing WETH as a medium of exchange.\n@param _tokenA is the address of the token being exchanged from\n@param _tokenB is the address of the token being exchanged to\n@param _to is the address of the MoneyMarketInstance calling this function\n@param _amountIn is the amount of _tokenA being exchanged\n@param _amountOutMin is the minimum amount of _tokenB to be received\n@dev example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address\n@dev _amountOutMin will need to be atleast enough to cover the cost of collateral liquidation\n(loan amount +i nterest) and its liquidation fee amount.*",
+            "documentation": {
+              "id": 4440,
+              "nodeType": "StructuredDocumentation",
+              "src": "1363:717:13",
+              "text": "@notice swapERC20 is an external function that swaps one ERC20 token for another\nusing WETH as a medium of exchange.\n@param _tokenA is the address of the token being exchanged from\n@param _tokenB is the address of the token being exchanged to\n@param _to is the address of the MoneyMarketInstance calling this function\n@param _amountIn is the amount of _tokenA being exchanged\n@param _amountOutMin is the minimum amount of _tokenB to be received\n@dev example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address\n@dev _amountOutMin will need to be atleast enough to cover the cost of collateral liquidation\n(loan amount +i nterest) and its liquidation fee amount.*"
+            },
             "functionSelector": "f0defe93",
-            "id": 4140,
+            "id": 4453,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -787,17 +848,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4138,
+              "id": 4451,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4129,
+                  "id": 4442,
+                  "mutability": "mutable",
                   "name": "_tokenA",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2107:15:12",
+                  "scope": 4453,
+                  "src": "2107:15:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -805,10 +867,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4128,
+                    "id": 4441,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2107:7:12",
+                    "src": "2107:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -820,12 +882,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4131,
+                  "id": 4444,
+                  "mutability": "mutable",
                   "name": "_tokenB",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2128:15:12",
+                  "scope": 4453,
+                  "src": "2128:15:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -833,10 +896,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4130,
+                    "id": 4443,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2128:7:12",
+                    "src": "2128:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -848,12 +911,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4133,
+                  "id": 4446,
+                  "mutability": "mutable",
                   "name": "_to",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2149:11:12",
+                  "scope": 4453,
+                  "src": "2149:11:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -861,10 +925,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4132,
+                    "id": 4445,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2149:7:12",
+                    "src": "2149:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -876,12 +940,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4135,
+                  "id": 4448,
+                  "mutability": "mutable",
                   "name": "_amountIn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2166:14:12",
+                  "scope": 4453,
+                  "src": "2166:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -889,10 +954,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4134,
+                    "id": 4447,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2166:4:12",
+                    "src": "2166:4:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -903,12 +968,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4137,
+                  "id": 4450,
+                  "mutability": "mutable",
                   "name": "_amountOutMin",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4140,
-                  "src": "2186:18:12",
+                  "scope": 4453,
+                  "src": "2186:18:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -916,10 +982,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4136,
+                    "id": 4449,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2186:4:12",
+                    "src": "2186:4:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -929,25 +995,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2101:107:12"
+              "src": "2101:107:13"
             },
             "returnParameters": {
-              "id": 4139,
+              "id": 4452,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2232:0:12"
+              "src": "2232:0:13"
             },
-            "scope": 4148,
-            "src": "2083:150:12",
+            "scope": 4462,
+            "src": "2083:150:13",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "external"
           },
           {
             "body": null,
-            "documentation": "@notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract\n@param _MMI is the address of the MoneyMarketInstance\n@param _asset is the address of the MoneyMarketInstancesunderlying asset*",
+            "documentation": {
+              "id": 4454,
+              "nodeType": "StructuredDocumentation",
+              "src": "2237:241:13",
+              "text": "@notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract\n@param _MMI is the address of the MoneyMarketInstance\n@param _asset is the address of the MoneyMarketInstancesunderlying asset*"
+            },
             "functionSelector": "1be1d0b9",
-            "id": 4147,
+            "id": 4461,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -955,17 +1026,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4145,
+              "id": 4459,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4142,
+                  "id": 4456,
+                  "mutability": "mutable",
                   "name": "_MMI",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4147,
-                  "src": "2500:12:12",
+                  "scope": 4461,
+                  "src": "2500:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -973,10 +1045,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4141,
+                    "id": 4455,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2500:7:12",
+                    "src": "2500:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -988,12 +1060,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4144,
+                  "id": 4458,
+                  "mutability": "mutable",
                   "name": "_asset",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4147,
-                  "src": "2514:14:12",
+                  "scope": 4461,
+                  "src": "2514:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1001,10 +1074,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4143,
+                    "id": 4457,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2514:7:12",
+                    "src": "2514:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1015,34 +1088,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2499:30:12"
+              "src": "2499:30:13"
             },
             "returnParameters": {
-              "id": 4146,
+              "id": 4460,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2544:0:12"
+              "src": "2544:0:13"
             },
-            "scope": 4148,
-            "src": "2483:62:12",
+            "scope": 4462,
+            "src": "2483:62:13",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 4149,
-        "src": "606:1941:12"
+        "scope": 4463,
+        "src": "606:1941:13"
       }
     ],
-    "src": "0:2548:12"
+    "src": "0:2548:13"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.0+commit.26b70077.Emscripten.clang"
+    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.2.5",
-  "updatedAt": "2020-10-06T18:35:28.075Z",
+  "updatedAt": "2020-10-09T18:32:51.575Z",
   "devdoc": {
     "methods": {
       "createNewOracle(address)": {

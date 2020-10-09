@@ -32,8 +32,8 @@ contract MoneyMarketControl is Ownable, Exponential {
   mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
   mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
   mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
-  mapping(address =>mapping(address => uint)) nonCompliant;// tracks user to a market to a time
-  mapping(address =>mapping(address => uint)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
+  mapping(address => mapping(address => uint)) nonCompliant;// tracks user to a market to a time
+  mapping(address => mapping(address => uint)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
   mapping(address => bool) isMMI;
 
   /**
@@ -75,8 +75,7 @@ constructor ( address _oracle, address _MMF) public {
 
   address _MMinstance = MMF.createMMI(
         _assetContractAdd,
-        msg.sender,
-        oracle,
+        address(this),
         address(Oracle),
    		 _assetName,
    		 _assetSymbol

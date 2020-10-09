@@ -25,7 +25,6 @@ The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance us
      function createMMI(
        address _assetContractAdd,
        address _owner,
-       address _oracle,
        address _oracleFactory,
        string memory _assetName,
        string memory _assetSymbol

@@ -8,10 +8,70 @@ MKR kovan address: 0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd
 
 DAI kovan address: 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa
 
-Money Market Control:  0x772c8cBd9214d2BD94d910cd771267C0d65168Cd
+FakeUSDC address: 0x2e12BED1FDf9EeFB410619017C76569Cf9Bf1668
 
-MKR Money Market Instance: 0xbad4cDC876e45C82feC30CC0a0cc20B7CDD1a513
+FakeLink address: 0x925875a558D6181788587d851ab3E653C09A0B06
 
-MKR AHR:  0x772c8cBd9214d2BD94d910cd771267C0d65168Cd
+FakeAugur address: 0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9
 
-MKR ALR:  0x772c8cBd9214d2BD94d910cd771267C0d65168Cd
+Money Market Control:  0x22f6F8cA010D238De94D5Ad53C510b6514473683
+
+MKR Money Market Instance: 0xAF9E522eAbA20F5aC8c23c28b6a0BC1059199a24
+
+MKR AHR:  0xAF9E522eAbA20F5aC8c23c28b6a0BC1059199a24
+
+MKR ALR:  0x4486E1C8479CeAf9DEf092545e539b505B36aD08
+
+
+
+contract deployment steps:
+
+clone repo(youve obviously done that if your reading this)
+
+cd to AskoLend-contracts
+
+run npm install
+
+run: truffle migrate --network kovan
+
+in migrations/4_MMC_migrations.js you will see the function calls after deployment that look like this:
+
+await MMC.whitelistAsset(
+  "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd",
+  "Maker",
+  "MKR"
+);
+await MMC.setUpAHR(
+  10,
+  10,
+  10,
+  50,
+  3,
+  20,
+  "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd"
+);
+await MMC.setUpALR(
+  20,
+  20,
+  20,
+  50,
+  3,
+  20,
+  "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd"
+);
+
+for whatever reason these calls work exactly as is using the MKR kovan address however
+they fail with any of the three fake ERC20 tokens i developed as well as failing with both USDC and DAI on kovan
+(these along with MKR) where all made by someone else and listed to uniswap. I created the "fake" tokens above so
+ I could control liquidity and pricing on kovan uniswap. These "fake" erc20's are built using
+ Open Zeppelins contract library and can be found under AskoLend/FakeTokens. This whiteList asset function is not ERC20 specific
+ and *should* work with ANY address input into it. I would like for you to run the deployment steps as is first and make sure they
+ work for you and then try replacing just the address part in all three function calls with any of the "Fake" token addresses and
+ then re-runing it to see if it fails for you.
+
+ we can touch base from here if you expereince the same thing I am.
+
+ If you would like to begin investigating this problem yourself the whitelistAsset function can be found in contracts/MoneyMarketControl.sol
+ on line 66. It calls createNewOracle on UniswapOracleFactory.sol and createMMI which creates a MoneyMarketInstance.sol contract.
+
+ feel free to hit me up if you have any problems.

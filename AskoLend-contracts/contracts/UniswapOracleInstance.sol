@@ -47,6 +47,7 @@ contract UniswapOracleInstance is Ownable {
           uint112 reserve1;
           (reserve0, reserve1, blockTimestampLast) = _pair.getReserves();
       ///   require(reserve0 != 0 && reserve1 != 0, 'ExampleOracleSimple: NO_RESERVES'); // ensure that there's liquidity in the pair
+    update();
       }
 
 /**
@@ -82,7 +83,8 @@ contract UniswapOracleInstance is Ownable {
 @notice consult returns the price of a token in USDC
 @return price is the price of one asset in USDC(example 1WETH in USDC)
 **/
-      function consult() external view returns (uint price) {
+      function consult() external returns (uint price) {
+        update();
         price = price0Average.mul(1).decode144();
       }
 

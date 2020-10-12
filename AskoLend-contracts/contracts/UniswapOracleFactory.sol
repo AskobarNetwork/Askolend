@@ -73,7 +73,7 @@ constructor(address usdcAdd, address _uniFactoryAdd) public {
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-  function getUnderlyingPrice(address _MMI) public view returns(uint) {
+  function getUnderlyingPrice(address _MMI) public returns(uint) {
     UniswapOracleInstance oracle = UniswapOracleInstance(instanceTracker[_MMI]);
     return oracle.consult();
   }

@@ -26,8 +26,8 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
   uint public borrowIndex;
   uint public totalBorrows;
   uint public totalReserves;
-  uint internal constant borrowRateMaxMantissa = 0.0005e16;
-  uint internal constant reserveFactorMaxMantissa = 1e18;
+  uint public constant borrowRateMaxMantissa = 0.0005e16;
+  uint public constant reserveFactorMaxMantissa = 1e18;
 
   address public parentContract;
   bool public isALR;
@@ -90,6 +90,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         UOF = UniswapOracleFactoryI(_oracleFactory);//instantiatesthe UniswapOracleFactory as a contract
         isALR = _isALR;// sets the isALR varaible to determine whether or not a specific contract is an ALR token
         initialExchangeRateMantissa = _initialExchangeRate;//sets the initialExchangeRateMantissa
+        accrualBlockNumber = getBlockNumber();
       }
 
 /**
@@ -98,7 +99,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @param owner The address of the account to query
 @return The amount of underlying owned by `owner`
 */
-    function balanceOfUnderlying(address owner) external returns (uint) {
+    function balanceOfUnderlying(address owner) external  returns (uint) {
         Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
         (MathError mErr, uint balance) = mulScalarTruncate(exchangeRate, balanceOf(owner));
         require(mErr == MathError.NO_ERROR);
@@ -122,14 +123,14 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       uint currentBlockNumber = getBlockNumber();
       uint accrualBlockNumberPrior = accrualBlockNumber;
 
-//Short-circuit accumulating 0 interest
-      require(accrualBlockNumberPrior != currentBlockNumber);
-
-//Read the previous values out of storage
+      //Read the previous values out of storage
       uint cashPrior = getCashPrior();
       uint borrowsPrior = totalBorrows;
       uint reservesPrior = totalReserves;
       uint borrowIndexPrior = borrowIndex;
+//Short-circuit accumulating 0 interest
+      if(accrualBlockNumberPrior != currentBlockNumber) {
+
 
 //Calculate the current borrow interest rate
       uint borrowRateMantissa = interestRateModel.getBorrowRate(cashPrior, borrowsPrior, reservesPrior);
@@ -137,7 +138,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 
 //Calculate the number of blocks elapsed since the last accrual
       (MathError mathErr, uint blockDelta) = subUInt(currentBlockNumber, accrualBlockNumberPrior);
-      require(mathErr == MathError.NO_ERROR);
 
 //Calculate the interest accumulated into borrows and reserves and the new index:
       Exp memory simpleInterestFactor;
@@ -147,26 +147,23 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       uint borrowIndexNew;
 //simpleInterestFactor = borrowRate * blockDelta
       (mathErr, simpleInterestFactor) = mulScalar(Exp({mantissa: borrowRateMantissa}), blockDelta);
-      require(mathErr == MathError.NO_ERROR);
 //interestAccumulated = simpleInterestFactor * totalBorrows
       (mathErr, interestAccumulated) = mulScalarTruncate(simpleInterestFactor, borrowsPrior);
-      require(mathErr == MathError.NO_ERROR);
 //totalBorrowsNew = interestAccumulated + totalBorrows
       (mathErr, totalBorrowsNew) = addUInt(interestAccumulated, borrowsPrior);
-      require(mathErr == MathError.NO_ERROR);
 //totalReservesNew = interestAccumulated * reserveFactor + totalReserves
       (mathErr, totalReservesNew) = mulScalarTruncateAddUInt(Exp({mantissa: reserveFactorMantissa}), interestAccumulated, reservesPrior);
-      require(mathErr != MathError.NO_ERROR);
 //borrowIndexNew = simpleInterestFactor * borrowIndex + borrowIndex
       (mathErr, borrowIndexNew) = mulScalarTruncateAddUInt(simpleInterestFactor, borrowIndexPrior, borrowIndexPrior);
-      require(mathErr != MathError.NO_ERROR);
 
-//Write the previously calculated values into storage
+      //Write the previously calculated values into storage
       accrualBlockNumber = currentBlockNumber;
       borrowIndex = borrowIndexNew;
       totalBorrows = totalBorrowsNew;
       totalReserves = totalReservesNew;
+
     }
+  }
 
 
 /**
@@ -253,8 +250,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @notice Accrue interest then return the up-to-date exchange rate
 @return Calculated exchange rate scaled by 1e18
 **/
-      function exchangeRateCurrent() public  returns (uint) {
-          accrueInterest();
+      function exchangeRateCurrent() public returns (uint) {
+            accrueInterest();
           if (totalSupply() == 0) {
 //If there are no tokens minted: exchangeRate = initialExchangeRate
             return initialExchangeRateMantissa;

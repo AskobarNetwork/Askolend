@@ -60,23 +60,16 @@ contract UniswapOracleInstance is Ownable {
           uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
 
 //check if this is the first update
-          if(runs != 0){
-
+          if(timeElapsed >= PERIOD){
             // ensure that at least one full period has passed since the last update
-            require(timeElapsed >= PERIOD, 'ExampleOracleSimple: PERIOD_NOT_ELAPSED');
+            // cumulative price is in (uq112x112 price * seconds) units so we simply wrap it after division by time elapsed
+            price0Average = FixedPoint.uq112x112(uint224((price0Cumulative - price0CumulativeLast) / timeElapsed));
+            price1Average = FixedPoint.uq112x112(uint224((price1Cumulative - price1CumulativeLast) / timeElapsed));
 
+            price0CumulativeLast = price0Cumulative;
+            price1CumulativeLast = price1Cumulative;
+            blockTimestampLast = blockTimestamp;
           }
-
-          // overflow is desired, casting never truncates
-          // cumulative price is in (uq112x112 price * seconds) units so we simply wrap it after division by time elapsed
-          price0Average = FixedPoint.uq112x112(uint224((price0Cumulative - price0CumulativeLast) / timeElapsed));
-          price1Average = FixedPoint.uq112x112(uint224((price1Cumulative - price1CumulativeLast) / timeElapsed));
-
-          price0CumulativeLast = price0Cumulative;
-          price1CumulativeLast = price1Cumulative;
-          blockTimestampLast = blockTimestamp;
-
-          runs = runs.add(1);
       }
 
 /**

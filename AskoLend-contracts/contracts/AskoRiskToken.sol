@@ -29,7 +29,6 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
   uint public constant borrowRateMaxMantissa = 0.0005e16;
   uint public constant reserveFactorMaxMantissa = 1e18;
 
-  address public parentContract;
   bool public isALR;
 
 
@@ -80,8 +79,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     )
     public
     ERC20(
-      _tokenSymbol,
-      _tokenName
+      _tokenName,
+      _tokenSymbol
     )
       {
         asset = IERC20(_asset);//instanciate the asset as a usable ERC20 contract instance
@@ -263,10 +262,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             MathError mathErr;
 //calculate total value held by contract plus owed to contract
             (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(totalCash, totalBorrows, totalReserves);
-            require(mathErr == MathError.NO_ERROR);
 //calculate exchange rate
             (mathErr, exchangeRate) = getExp(cashPlusBorrowsMinusReserves, totalSupply());
-            require(mathErr != MathError.NO_ERROR);
             return (exchangeRate.mantissa);
           }
       }
@@ -302,8 +299,38 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 //We get the current exchange rate and calculate the number of AHR to be minted:
 //mintTokens = _amount / exchangeRate
     (vars.mathErr, vars.mintTokens) = divScalarByExpTruncate(_amount, Exp({mantissa: vars.exchangeRateMantissa}));
-    require(vars.mathErr == MathError.NO_ERROR);
     _mint(_account, vars.mintTokens);
+  }
+
+  struct RedeemLocalVars {
+      MathError mathErr;
+      uint exchangeRateMantissa;
+      uint redeemAmount;
+  }
+
+/**
+@notice redeem allows a user to redeem their AskoRiskToken for the appropriate amount of underlying asset
+@param _amount is the amount of ART being exchanged
+**/
+  function redeem(uint256 _amount) public {
+    accrueInterest();
+    require( _amount != 0 );
+
+    RedeemLocalVars memory vars;
+
+//get exchange rate
+vars.exchangeRateMantissa = exchangeRateCurrent();
+
+  _burn(msg.sender, _amount);
+/**
+We calculate the exchange rate and the amount of underlying to be redeemed:
+redeemAmount = _amount x exchangeRateCurrent
+*/
+    (vars.mathErr, vars.redeemAmount) = mulScalarTruncate(Exp({mantissa: vars.exchangeRateMantissa}), _amount);
+//Fail if protocol has insufficient cash
+    require (getCashPrior() >= vars.redeemAmount);
+//transfer the calculated amount of underlying asset to the msg.sender
+    asset.transfer(msg.sender, vars.redeemAmount);
   }
 
 /**
@@ -339,10 +366,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       vars.accountBorrows = borrowBalanceCurrent(msg.sender);
 //accountBorrowsNew = accountBorrows + borrowAmount
       (vars.mathErr, vars.accountBorrowsNew) = addUInt(vars.accountBorrows, _borrowAmount);
-      require(vars.mathErr == MathError.NO_ERROR);
 //totalBorrowsNew = totalBorrows + borrowAmount
       (vars.mathErr, vars.totalBorrowsNew) = addUInt(totalBorrows, _borrowAmount);
-      require(vars.mathErr == MathError.NO_ERROR);
 //We write the previously calculated values into storage
       accountBorrows[msg.sender].principal = vars.accountBorrowsNew;
       accountBorrows[msg.sender].interestIndex = borrowIndex;
@@ -367,8 +392,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 */
   function repayBorrow(uint repayAmount) external onlyMMInstance {
     accrueInterest();
-  //Verify market's block number equals current block number
-    require(accrualBlockNumber == getBlockNumber());
 //create local vars storage
     RepayBorrowLocalVars memory vars;
 //We remember the original borrowerIndex for verification purposes
@@ -388,10 +411,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 
 //accountBorrowsNew = accountBorrows - actualRepayAmount
     (vars.mathErr, vars.accountBorrowsNew) = subUInt(vars.accountBorrows, vars.repayAmount);
-    require(vars.mathErr == MathError.NO_ERROR);
 //totalBorrowsNew = totalBorrows - actualRepayAmount
     (vars.mathErr, vars.totalBorrowsNew) = subUInt(totalBorrows, vars.repayAmount);
-    require(vars.mathErr == MathError.NO_ERROR);
 
     /* We write the previously calculated values into storage */
     accountBorrows[msg.sender].principal = vars.accountBorrowsNew;

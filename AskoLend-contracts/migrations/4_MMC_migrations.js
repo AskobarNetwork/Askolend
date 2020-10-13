@@ -1,6 +1,8 @@
 const MoneyMarketFactory = artifacts.require("MoneyMarketFactory");
 const MoneyMarketControl = artifacts.require("MoneyMarketControl");
 const UniswapOracleFactory = artifacts.require("UniswapOracleFactory");
+const FakeLink = artifacts.require("FakeLink");
+const FakeAugur = artifacts.require("FakeAugur");
 
 module.exports = async deployer => {
   await deployer.deploy(
@@ -8,54 +10,25 @@ module.exports = async deployer => {
     UniswapOracleFactory.address,
     MoneyMarketFactory.address
   );
+  console.log("Money Market Control Deployed!");
   UOF = await UniswapOracleFactory.deployed();
   await UOF.transferOwnership(MoneyMarketControl.address);
+  console.log(
+    "Uniswap oracle contract factory ownership transfered to Money Market Control contract"
+  );
   MMC = await MoneyMarketControl.deployed();
-  await MMC.whitelistAsset(
-    "0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9",
-    "FakeAugur",
-    "FAG"
-  );
-  await MMC.setUpAHR(
-    10,
-    10,
-    10,
-    50,
-    3,
-    20,
-    "0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9"
-  );
-  await MMC.setUpALR(
-    20,
-    20,
-    20,
-    50,
-    3,
-    20,
-    "0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9"
-  );
-
-  await MMC.whitelistAsset(
-    "0x925875a558D6181788587d851ab3E653C09A0B06",
-    "FakeLink",
-    "FAL"
-  );
-  await MMC.setUpAHR(
-    10,
-    10,
-    10,
-    50,
-    3,
-    20,
-    "0x925875a558D6181788587d851ab3E653C09A0B06"
-  );
-  await MMC.setUpALR(
-    20,
-    20,
-    20,
-    50,
-    3,
-    20,
-    "0x925875a558D6181788587d851ab3E653C09A0B06"
-  );
+  console.log("Setting up FakeAugur Money Market Instance");
+  await MMC.whitelistAsset(FakeAugur.address, "FakeAugur", "FAG");
+  console.log("FakeAugur White Listed");
+  await MMC.setUpAHR(5, 5, 5, 5, 3, 1, FakeAugur.address);
+  console.log("FakeAugur Asko High Risk Token Created");
+  await MMC.setUpALR(3, 3, 2, 5, 3, 2, FakeAugur.address);
+  console.log("FakeAugur Asko Low Risk Token Created");
+  console.log("Setting up FakeLink Money Market Instance");
+  await MMC.whitelistAsset(FakeLink.address, "FakeLink", "FAL");
+  console.log("FakeLink White Listed");
+  await MMC.setUpAHR(5, 5, 5, 5, 3, 1, FakeLink.address);
+  console.log("FakeLink Asko High Risk Token Created");
+  await MMC.setUpALR(5, 5, 5, 5, 3, 1, FakeLink.address);
+  console.log("FakeLink Asko Low Risk Token Created");
 };

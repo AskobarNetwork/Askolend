@@ -155,7 +155,7 @@ function _setUpAHR(
   function getAssetAdd() public view returns (address) {
     return address(asset);
   }
-  
+
 /**
 @notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool
 @param _amount is the amount of the asset being lent
@@ -184,6 +184,7 @@ function _setUpAHR(
 /**
 @notice borrow is used to take out a loan from in MoneyMarketInstance's underlying asset
 @param _amount is the amount of asset being barrowed
+@param _collateral is the address of the ALR token being used as collateral
 **/
   function borrow(uint _amount, address _collateral) public {
     //check that the user has enough collateral in input moeny market

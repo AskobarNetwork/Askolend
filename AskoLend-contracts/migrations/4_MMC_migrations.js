@@ -12,9 +12,9 @@ module.exports = async deployer => {
   await UOF.transferOwnership(MoneyMarketControl.address);
   MMC = await MoneyMarketControl.deployed();
   await MMC.whitelistAsset(
-    "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd",
-    "Maker",
-    "MKR"
+    "0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9",
+    "FakeAugur",
+    "FAG"
   );
   await MMC.setUpAHR(
     10,
@@ -23,7 +23,7 @@ module.exports = async deployer => {
     50,
     3,
     20,
-    "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd"
+    "0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9"
   );
   await MMC.setUpALR(
     20,
@@ -32,6 +32,30 @@ module.exports = async deployer => {
     50,
     3,
     20,
-    "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd"
+    "0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9"
+  );
+
+  await MMC.whitelistAsset(
+    "0x925875a558D6181788587d851ab3E653C09A0B06",
+    "FakeLink",
+    "FAL"
+  );
+  await MMC.setUpAHR(
+    10,
+    10,
+    10,
+    50,
+    3,
+    20,
+    "0x925875a558D6181788587d851ab3E653C09A0B06"
+  );
+  await MMC.setUpALR(
+    20,
+    20,
+    20,
+    50,
+    3,
+    20,
+    "0x925875a558D6181788587d851ab3E653C09A0B06"
   );
 };

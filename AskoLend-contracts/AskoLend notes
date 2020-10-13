@@ -1,8 +1,6 @@
 askolend notes
 
-USDC kovan address: 0xdcfab8057d08634279f8201b55d311c2a67897d2
-
-Uniswap oracle factory address: 0x008f48a334c6A7721687d060e7AB0e5A2923600b
+Uniswap oracle factory address: 0xf617C040748627FB940bb6945c6bdaBA44e4cc70
 
 MKR kovan address: 0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd
 
@@ -14,15 +12,19 @@ FakeLink address: 0x925875a558D6181788587d851ab3E653C09A0B06
 
 FakeAugur address: 0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9
 
-Money Market Control:  0x22f6F8cA010D238De94D5Ad53C510b6514473683
+Money Market Control:  0xC9F46C51d5Fd4dD4C41fff2DDA645205Fcb9323C
 
-MKR Money Market Instance: 0xAF9E522eAbA20F5aC8c23c28b6a0BC1059199a24
+LINK Money Market Instance: 0x746Abf06DC48Eff4B3F0EEd5100Ab2732Aa41bA1
 
-MKR AHR:  0xAF9E522eAbA20F5aC8c23c28b6a0BC1059199a24
+LINK AHR:  0x7ad85583c269ceA9c62992A90F164a9AD5698697
 
-MKR ALR:  0x4486E1C8479CeAf9DEf092545e539b505B36aD08
+LINK ALR:  0xF1F070203C0E0917656e6A8CD7dE84fcAD5cD247
 
+Augur Money Market Instance: 0x9F36B8971a2DA32fe948964c730761c29Eaa7E01
 
+Augur AHR:  0x1955F1039D9D5830113aB7748Be682Fc86777eb1
+
+Augur ALR:  0x06B71d65df8CBD0F0b82DC06838Ec8D0F72dC1cB
 
 contract deployment steps:
 
@@ -34,44 +36,5 @@ run npm install
 
 run: truffle migrate --network kovan
 
-in migrations/4_MMC_migrations.js you will see the function calls after deployment that look like this:
-
-await MMC.whitelistAsset(
-  "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd",
-  "Maker",
-  "MKR"
-);
-await MMC.setUpAHR(
-  10,
-  10,
-  10,
-  50,
-  3,
-  20,
-  "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd"
-);
-await MMC.setUpALR(
-  20,
-  20,
-  20,
-  50,
-  3,
-  20,
-  "0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd"
-);
-
-for whatever reason these calls work exactly as is using the MKR kovan address however
-they fail with any of the three fake ERC20 tokens i developed as well as failing with both USDC and DAI on kovan
-(these along with MKR) where all made by someone else and listed to uniswap. I created the "fake" tokens above so
- I could control liquidity and pricing on kovan uniswap. These "fake" erc20's are built using
- Open Zeppelins contract library and can be found under AskoLend/FakeTokens. This whiteList asset function is not ERC20 specific
- and *should* work with ANY address input into it. I would like for you to run the deployment steps as is first and make sure they
- work for you and then try replacing just the address part in all three function calls with any of the "Fake" token addresses and
- then re-runing it to see if it fails for you.
-
- we can touch base from here if you expereince the same thing I am.
-
- If you would like to begin investigating this problem yourself the whitelistAsset function can be found in contracts/MoneyMarketControl.sol
- on line 66. It calls createNewOracle on UniswapOracleFactory.sol and createMMI which creates a MoneyMarketInstance.sol contract.
-
- feel free to hit me up if you have any problems.
+This migration auto-magically whitelists the FakeLink and FakeAugur
+MoneyMarketInstances as well as their associated AHR and ARL tokens

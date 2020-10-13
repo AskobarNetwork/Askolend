@@ -1,16 +1,16 @@
 {
   "contractName": "CarefulMath",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"author\":\"Compound\",\"methods\":{},\"title\":\"Careful Math\"},\"userdoc\":{\"methods\":{},\"notice\":\"Derived from OpenZeppelin's SafeMath library        https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/AS/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol\":\"CarefulMath\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/AS/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol\":{\"keccak256\":\"0x50eb69c08c7248ff4fb5f0b0f8a4231180fcdb30c01865647502e55be73ec4be\",\"urls\":[\"bzz-raw://5df2a8f94eddbd61c9a1f68c5b4d42fd7795b1f6bdf1cb2726b11254356ea422\",\"dweb:/ipfs/QmNSVjiueGNwtbhTuiNcnz1DB5kcpdUoxYtM6uLFrACEfU\"]}},\"version\":1}",
-  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209d6dfb737b877b69b2a52633d2988b6825fb17e76f7381ea21054483f38c3f0564736f6c63430006060033",
-  "deployedBytecode": "0x6080604052600080fdfea26469706673582212209d6dfb737b877b69b2a52633d2988b6825fb17e76f7381ea21054483f38c3f0564736f6c63430006060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"author\":\"Compound\",\"methods\":{},\"title\":\"Careful Math\"},\"userdoc\":{\"methods\":{},\"notice\":\"Derived from OpenZeppelin's SafeMath library        https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol\":\"CarefulMath\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol\":{\"keccak256\":\"0x50eb69c08c7248ff4fb5f0b0f8a4231180fcdb30c01865647502e55be73ec4be\",\"urls\":[\"bzz-raw://5df2a8f94eddbd61c9a1f68c5b4d42fd7795b1f6bdf1cb2726b11254356ea422\",\"dweb:/ipfs/QmNSVjiueGNwtbhTuiNcnz1DB5kcpdUoxYtM6uLFrACEfU\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220bc43b6dbd2599276976259bf5a901523c5dcd4fed152c4e1a682f2751501f6e364736f6c63430006060033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220bc43b6dbd2599276976259bf5a901523c5dcd4fed152c4e1a682f2751501f6e364736f6c63430006060033",
   "immutableReferences": {},
   "sourceMap": "242:1949:8:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;242:1949:8;;;;;;;",
   "deployedSourceMap": "242:1949:8:-:0;;;12:1:-1;9;2:12",
   "source": "pragma solidity ^0.6.0;\n\n/**\n  * @title Careful Math\n  * @author Compound\n  * @notice Derived from OpenZeppelin's SafeMath library\n  *         https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol\n  */\ncontract CarefulMath {\n\n    /**\n     * @dev Possible error codes that we can return\n     */\n    enum MathError {\n        NO_ERROR,\n        DIVISION_BY_ZERO,\n        INTEGER_OVERFLOW,\n        INTEGER_UNDERFLOW\n    }\n\n    /**\n    * @dev Multiplies two numbers, returns an error on overflow.\n    */\n    function mulUInt(uint a, uint b) internal pure returns (MathError, uint) {\n        if (a == 0) {\n            return (MathError.NO_ERROR, 0);\n        }\n\n        uint c = a * b;\n\n        if (c / a != b) {\n            return (MathError.INTEGER_OVERFLOW, 0);\n        } else {\n            return (MathError.NO_ERROR, c);\n        }\n    }\n\n    /**\n    * @dev Integer division of two numbers, truncating the quotient.\n    */\n    function divUInt(uint a, uint b) internal pure returns (MathError, uint) {\n        if (b == 0) {\n            return (MathError.DIVISION_BY_ZERO, 0);\n        }\n\n        return (MathError.NO_ERROR, a / b);\n    }\n\n    /**\n    * @dev Subtracts two numbers, returns an error on overflow (i.e. if subtrahend is greater than minuend).\n    */\n    function subUInt(uint a, uint b) internal pure returns (MathError, uint) {\n        if (b <= a) {\n            return (MathError.NO_ERROR, a - b);\n        } else {\n            return (MathError.INTEGER_UNDERFLOW, 0);\n        }\n    }\n\n    /**\n    * @dev Adds two numbers, returns an error on overflow.\n    */\n    function addUInt(uint a, uint b) internal pure returns (MathError, uint) {\n        uint c = a + b;\n\n        if (c >= a) {\n            return (MathError.NO_ERROR, c);\n        } else {\n            return (MathError.INTEGER_OVERFLOW, 0);\n        }\n    }\n\n    /**\n    * @dev add a and b and then subtract c\n    */\n    function addThenSubUInt(uint a, uint b, uint c) internal pure returns (MathError, uint) {\n        (MathError err0, uint sum) = addUInt(a, b);\n\n        if (err0 != MathError.NO_ERROR) {\n            return (err0, 0);\n        }\n\n        return subUInt(sum, c);\n    }\n}",
-  "sourcePath": "/home/stan36/repos/AS/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol",
+  "sourcePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol",
   "ast": {
-    "absolutePath": "/home/stan36/repos/AS/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol",
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol",
     "exportedSymbols": {
       "CarefulMath": [
         3072
@@ -2420,7 +2420,7 @@
     "src": "0:2191:8"
   },
   "legacyAST": {
-    "absolutePath": "/home/stan36/repos/AS/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol",
+    "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/CarefulMath.sol",
     "exportedSymbols": {
       "CarefulMath": [
         3072
@@ -4835,7 +4835,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.4",
-  "updatedAt": "2020-10-12T03:00:41.867Z",
+  "updatedAt": "2020-10-12T23:37:54.876Z",
   "devdoc": {
     "author": "Compound",
     "methods": {},

@@ -407,7 +407,7 @@ redeemAmount = _amount x exchangeRateCurrent
 //transfer asset from the user to this contract
     asset.transferFrom(msg.sender, address(this), repayAmount);
 
-//We calculate the new borrower and total borrow balances, failing on underflow:
+//We calculate the new borrower and total borrow balances
 
 //accountBorrowsNew = accountBorrows - actualRepayAmount
     (vars.mathErr, vars.accountBorrowsNew) = subUInt(vars.accountBorrows, vars.repayAmount);

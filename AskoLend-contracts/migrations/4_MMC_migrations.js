@@ -20,15 +20,47 @@ module.exports = async deployer => {
   console.log("Setting up FakeAugur Money Market Instance");
   await MMC.whitelistAsset(FakeAugur.address, "FakeAugur", "FAG");
   console.log("FakeAugur White Listed");
-  await MMC.setUpAHR(5, 5, 5, 5, 3, 1, FakeAugur.address);
+  await MMC.setUpAHR(
+    5000000000000000,
+    5000000000000000,
+    5000000000000000,
+    5000000000000000,
+    3000000000000000,
+    1000000000000000,
+    FakeAugur.address
+  );
   console.log("FakeAugur Asko High Risk Token Created");
-  await MMC.setUpALR(3, 3, 2, 5, 3, 2, FakeAugur.address);
+  await MMC.setUpALR(
+    3000000000000000,
+    3000000000000000,
+    2000000000000000,
+    5000000000000000,
+    3000000000000000,
+    2000000000000000,
+    FakeAugur.address
+  );
   console.log("FakeAugur Asko Low Risk Token Created");
   console.log("Setting up FakeLink Money Market Instance");
   await MMC.whitelistAsset(FakeLink.address, "FakeLink", "FAL");
   console.log("FakeLink White Listed");
-  await MMC.setUpAHR(5, 5, 5, 5, 3, 1, FakeLink.address);
+  await MMC.setUpAHR(
+    5000000000000000,
+    5000000000000000,
+    5000000000000000,
+    5000000000000000,
+    3000000000000000,
+    1000000000000000,
+    FakeLink.address
+  );
   console.log("FakeLink Asko High Risk Token Created");
-  await MMC.setUpALR(5, 5, 5, 5, 3, 1, FakeLink.address);
+  await MMC.setUpALR(
+    5000000000000000,
+    5000000000000000,
+    5000000000000000,
+    5000000000000000,
+    3000000000000000,
+    1000000000000000,
+    FakeLink.address
+  );
   console.log("FakeLink Asko Low Risk Token Created");
 };

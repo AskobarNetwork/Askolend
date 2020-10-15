@@ -218,18 +218,27 @@ function _setUpAHR(
 	function repay(uint _repayAmount) public {
     //get their current owed balance of ALR
     uint accountBorrowsALR = ALR.borrowBalanceCurrent(msg.sender);
-
+    uint payAmountAHR;
+    uint payAmountALR;
     if(accountBorrowsALR != 0) { //if amount owed to ALR isnt zero
           if(accountBorrowsALR >= _repayAmount) { //check if repay amount is greater than ALR borrow balance
-            ALR.repayBorrow(_repayAmount); //if it is repay amount to ALR
+            payAmountALR = ALR.repayBorrow(_repayAmount); //if it is repay amount to ALR
+            //transfer asset from the user to this contract
+            asset.transferFrom(msg.sender, address(ALR), payAmountALR);
           } else { //if not
-            uint amountToALR = _repayAmount.sub(accountBorrowsALR); //calculate amSount needed to pay off ALR
-             ALR.repayBorrow(amountToALR); //pay off ALR
+            uint amountToALR = _repayAmount.sub(accountBorrowsALR); //calculate amount needed to pay off ALR
+            payAmountALR = ALR.repayBorrow(amountToALR); //pay off ALR
+             //transfer asset from the user to this contract
+            asset.transferFrom(msg.sender, address(ALR), payAmountALR);
             uint amountToAHR = _repayAmount.sub(amountToALR);//calculate AHR amount
-          AHR.repayBorrow(amountToAHR); //pay off towards AHR
+            payAmountAHR = AHR.repayBorrow(amountToAHR); //pay off towards AHR
+          //transfer asset from the user to this contract
+            asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
           }
     } else {//if amount owed to ALR IS zero
-      AHR.repayBorrow(_repayAmount);//pay towards AHR
+      payAmountAHR = AHR.repayBorrow(_repayAmount);//pay towards AHR
+      //transfer asset from the user to this contract
+      asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
     }
   }
 

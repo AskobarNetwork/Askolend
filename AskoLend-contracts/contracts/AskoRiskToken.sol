@@ -90,6 +90,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         isALR = _isALR;// sets the isALR varaible to determine whether or not a specific contract is an ALR token
         initialExchangeRateMantissa = _initialExchangeRate;//sets the initialExchangeRateMantissa
         accrualBlockNumber = getBlockNumber();
+        borrowIndex = mantissaOne;
       }
 
 /**
@@ -374,7 +375,6 @@ redeemAmount = _amount x exchangeRateCurrent
       totalBorrows = vars.totalBorrowsNew;
 //send them their loaned asset
        asset.transfer(msg.sender, _borrowAmount);
-
   }
 
   struct RepayBorrowLocalVars {
@@ -390,7 +390,7 @@ redeemAmount = _amount x exchangeRateCurrent
 @notice Sender repays their own borrow
 @param repayAmount The amount to repay
 */
-  function repayBorrow(uint repayAmount) external onlyMMInstance {
+  function repayBorrow(uint repayAmount) external onlyMMInstance returns(uint){
     accrueInterest();
 //create local vars storage
     RepayBorrowLocalVars memory vars;
@@ -398,14 +398,13 @@ redeemAmount = _amount x exchangeRateCurrent
     vars.borrowerIndex = accountBorrows[msg.sender].interestIndex;
 //We fetch the amount the borrower owes, with accumulated interest
     vars.accountBorrows = borrowBalanceCurrent(msg.sender);
-//If repayAmount == -1, repayAmount = accountBorrows
-    if (repayAmount == uint(-1)) {
+//If repayAmount == 0, repayAmount = accountBorrows
+    if (repayAmount == 0) {
         vars.repayAmount = vars.accountBorrows;
     } else {
         vars.repayAmount = repayAmount;
     }
-//transfer asset from the user to this contract
-    asset.transferFrom(msg.sender, address(this), repayAmount);
+
 
 //We calculate the new borrower and total borrow balances
 
@@ -418,7 +417,7 @@ redeemAmount = _amount x exchangeRateCurrent
     accountBorrows[msg.sender].principal = vars.accountBorrowsNew;
     accountBorrows[msg.sender].interestIndex = borrowIndex;
     totalBorrows = vars.totalBorrowsNew;
-
+    return vars.repayAmount;
   }
 
   /**

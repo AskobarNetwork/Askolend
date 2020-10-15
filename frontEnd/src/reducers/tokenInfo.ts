@@ -16,11 +16,11 @@ export function tokenInfo(state = initialState, action: any) {
         case TOKEN_INFO_INITIAL_OBTAIN:
             return Object.assign({}, state, initialState);
         case TOKEN_INFO_OBTAINED:
-            let newTokenInfos = state.tokenInfos === undefined? []: state.tokenInfos.slice();
+            let newTokenInfos = state.tokenInfos === undefined ? [] : state.tokenInfos.slice();
             newTokenInfos.push({
                 key: action.tokenAddress,
                 value: new Token(
-                    action.tokenAddress, action.tokenInfo?.name, 0, false, 0
+                    action.tokenAddress, action.tokenInfo?.name, 0, false, 0, false, 0, 0, 0, 0, 0,
                 ),
             });
             return Object.assign({}, state, {

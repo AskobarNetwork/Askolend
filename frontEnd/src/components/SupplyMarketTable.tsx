@@ -1,5 +1,5 @@
 import { Avatar, Grid, Switch, Typography } from '@material-ui/core';
-import { CollateralDialog, ConfirmationDialog } from '../components'
+import { CollateralDialog, ConfirmationDialog, SupplyDialog } from '../components'
 import { Token, getTokenLogoPngSrc } from '../models'
 
 import Paper from '@material-ui/core/Paper';
@@ -20,7 +20,8 @@ interface ISupplyMarketTableState {
     collateralopen: boolean,
     confirmationOpen: boolean,
     confirmationTitle: string,
-    selectedToken: Token | undefined
+    selectedToken: Token | undefined,
+    supplyOpen: boolean,
 }
 
 class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, ISupplyMarketTableState>  {
@@ -31,6 +32,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
             confirmationOpen: false,
             confirmationTitle: '',
             selectedToken: undefined,
+            supplyOpen: false,
         };
         this.collateralSwitchClick.bind(this);
     }
@@ -39,16 +41,16 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.setState({ collateralopen: false });
     }
 
-    collateralSwitchClick = (event: any, token: Token) => {
+    collateralSwitchClick = (event: React.MouseEvent, token: Token) => {
         this.setState({
             collateralopen: !this.state.collateralopen,
-            selectedToken: token
+            selectedToken: token,
         });
     }
 
     collateralSet = (collateralized: boolean, collateral: Token, confirmationMessage: string) => {
         if (collateralized !== collateral.collateral) {
-            this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage});
+            this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
             // TO-DO: Implement collateral action in https://github.com/AskobarNetwork/Askolend/issues/22
         }
         else {
@@ -58,6 +60,27 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
 
     confirmationClose = () => {
         this.setState({ confirmationOpen: false });
+    }
+
+    supplyClick = (event: React.MouseEvent, token: Token) => {
+        this.setState({
+            supplyOpen: !this.state.supplyOpen,
+            selectedToken: token
+        });
+    }
+
+    supplySet = (supplyEnabled: boolean, supply: Token, confirmationMessage: string) => {
+        if (supplyEnabled !== supply.supplyEnabled) {
+            this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
+            // TO-DO: Implement supply action in https://github.com/AskobarNetwork/Askolend/issues/22
+        }
+        else {
+            console.warn(`Supply for ${supply.address} is already set to ${supply.supplyEnabled}, no action taken`);
+        }
+    }
+
+    supplyClose = () => {
+        this.setState({ supplyOpen: false });
     }
 
     render() {
@@ -81,7 +104,17 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                         </TableHead>
                         <TableBody>
                             {this.props.tokenInfos?.map((token: any) => (
-                                <TableRow key={token.value.asset}>
+                                <TableRow hover={true} key={token.value.asset} onClick={(event) => {
+                                    event.stopPropagation();
+                                    this.supplyClick(event, token.value)
+                                }}>
+                                    <SupplyDialog {... {
+                                        supplyClose: this.supplyClose,
+                                        supplySet: this.supplySet,
+                                        supplyOpen: this.state.supplyOpen,
+                                        token: this.state.selectedToken
+                                    }}
+                                    />
                                     <TableCell align='left'>
                                         <Grid
                                             container
@@ -96,7 +129,10 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                     <TableCell align='right'>{token.value.apy + '%'}</TableCell>
                                     <TableCell align='center'>{0}</TableCell>
                                     <TableCell align='center'>
-                                        <Switch checked={token.value.collateral} onClick={(event) => this.collateralSwitchClick(event, token.value)}></Switch>
+                                        <Switch checked={token.value.collateral} onClick={(event) => {
+                                            event.stopPropagation();
+                                            this.collateralSwitchClick(event, token.value);
+                                        }}></Switch>
                                         <CollateralDialog {... {
                                             collateralClose: this.collateralClose,
                                             collateralSet: this.collateralSet,
@@ -110,7 +146,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }

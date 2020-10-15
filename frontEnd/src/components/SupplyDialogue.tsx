@@ -9,47 +9,47 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
-    collateralDialog: {
+    supplyDialog: {
         opacity: 0.5,
         textAlign: 'center',
     }
 });
 
-const disableCollateralMessage =
+const disableSupplyMessage =
     'This asset will no longer be used towards your borrowing limit, and can\'t be seized in liquidation'
-const enableCollateralMessage =
-    'Each asset used as collateral increases your borrowing limit. Be careful, this can subject the asset to being seized in liquidation.';
-const titlePostfix = ' as Collateral';
+const enableSupplyMessage =
+    'Each asset used as supply increases your borrowing limit. Be careful, this can subject the asset to being seized in liquidation.';
+const titlePostfix = ' as Supply';
 
-interface ICollateralDialogProps {
-    collateralClose: Function,
-    collateralSet: Function,
-    collateralOpen: boolean,
+interface ISupplyDialogProps {
+    supplyClose: Function,
+    supplySet: Function,
+    supplyOpen: boolean,
     token: Token | undefined,
     classes?: any,
 }
 
-class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}>  {
-    collateralSet = (title: string) => {
-        this.props.collateralClose();
-        this.props.collateralSet(!this.props.token?.collateral, this.props.token, title);
+class SupplyDialogClass extends React.Component<ISupplyDialogProps, {}>  {
+    supplySet = (title: string) => {
+        this.props.supplyClose();
+        this.props.supplySet(!this.props.token?.supplyEnabled, this.props.token, title);
     }
 
     render() {
         const buttonTooltip =
-            this.props.token?.collateral === false ? `Enable ${this.props.token?.asset} as collateral` : `Disable ${this.props.token?.asset}`;
+            this.props.token?.supplyEnabled === false ? `Enable ${this.props.token?.asset} as supply` : `Disable ${this.props.token?.asset}`;
         const enable =
-            this.props.token?.collateral === false ? true : false;
+            this.props.token?.supplyEnabled === false ? true : false;
         const message =
-            this.props.token?.collateral === false ? enableCollateralMessage : disableCollateralMessage;
+            this.props.token?.supplyEnabled === false ? enableSupplyMessage : disableSupplyMessage;
         const title =
-            this.props.token?.collateral === false ? 'Enable' + titlePostfix : 'Disable' + titlePostfix;
+            this.props.token?.supplyEnabled === false ? 'Enable' + titlePostfix : 'Disable' + titlePostfix;
 
         return (
             <Dialog
-                className={this.props.classes.collateralDialog}
-                open={this.props.collateralOpen}
-                onClose={() => this.props.collateralClose()}
+                className={this.props.classes.supplyDialog}
+                open={this.props.supplyOpen}
+                onClose={() => this.props.supplyClose()}
                 transitionDuration={0}
                 onClick={(event) => event.stopPropagation()}
             >
@@ -58,7 +58,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                         container
                         justify='flex-end'
                     >
-                        <IconButton onClick={() => this.props.collateralClose()}
+                        <IconButton onClick={() => this.props.supplyClose()}
                         >
                             <CloseIcon />
                         </IconButton>
@@ -94,7 +94,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                             <Button color='secondary'
                                 fullWidth={true}
                                 variant='contained'
-                                onClick={() => this.collateralSet(title)}>
+                                onClick={() => this.supplySet(title)}>
                                 {enable === true ? 'Enable' : 'Disable'}
                             </Button>
                         </Tooltip>
@@ -112,7 +112,7 @@ const mapStateToProps = (state: any) => {
 }
 
 // @ts-ignore
-const UnconnectedCollateralDialogClass: any = withStyles(styles)(CollateralDialogClass);
-const CollateralDialog = connect(mapStateToProps, null)(UnconnectedCollateralDialogClass)
+const UnconnectedSupplyDialogClass: any = withStyles(styles)(SupplyDialogClass);
+const SupplyDialog = connect(mapStateToProps, null)(UnconnectedSupplyDialogClass)
 
-export { CollateralDialog };
+export { SupplyDialog };

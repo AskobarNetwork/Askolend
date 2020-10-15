@@ -38,6 +38,7 @@ interface ISupplyDialogProps {
 }
 
 interface ISupplyDialogState {
+    supply: boolean,
     value: string,
 }
 
@@ -45,8 +46,10 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
     constructor(props: any) {
         super(props);
         this.state = {
+            supply: true,
             value: '1'
         };
+        this.handleChange.bind(this);
     }
 
     supplySet = (title: string) => {
@@ -55,7 +58,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
     }
 
     handleChange = (event: any, newValue: any) => {
-        this.setState({ value: newValue });
+        this.setState({ supply: !this.state.supply, value: newValue });
     };
 
     render() {
@@ -101,25 +104,60 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                         <TableRow>
                                             <TableCell>
                                                 Supply APY
-                                </TableCell>
+                                            </TableCell>
                                             <TableCell>
                                                 {this.props.token?.supplyApy}%
-                                </TableCell>
+                                            </TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell>
                                                 Distribution APY
-                                </TableCell>
+                                            </TableCell>
                                             <TableCell>
                                                 -%
-                                </TableCell>
+                                            </TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
                             </TabPanel>
                             <TabPanel value="2">
-                                Withdraw
-                        </TabPanel>
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>
+                                                Supply APY
+                                            </TableCell>
+                                            <TableCell>
+                                                {this.props.token?.supplyApy}%
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>
+                                                Distribution APY
+                                            </TableCell>
+                                            <TableCell>
+                                                -%
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                    <TableRow>
+                                        <TableCell>
+                                            Borrow Limit
+                                        </TableCell>
+                                        <TableCell>
+                                            ${this.props.token?.borrowLimit} &#x2192; $0
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>
+                                            Borrow Limit Used
+                                        </TableCell>
+                                        <TableCell>
+                                            {this.props.token?.borrowLimitUsed}% &#x2192; 0%
+                                        </TableCell>
+                                    </TableRow>
+                                </Table>
+                            </TabPanel>
                         </TabContext>
                     </Grid>
                 </DialogContent>
@@ -129,12 +167,16 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                         direction="column"
                     >
                         <Grid container item xs={12}>
-                            <Button color='secondary'
+                            <Button
+                                disabled={this.state.supply === false} 
+                                color='secondary'
                                 fullWidth={true}
                                 variant='contained'
-                                onClick={() => this.supplySet(`Enable ${this.props.token?.asset} as Supply`)}>
-                                Enable
-                        </Button>
+                                onClick={() => this.supplySet(
+                                    this.state.supply === true ? `Enable ${this.props.token?.asset} as Supply` : `Withdraw ${this.props.token?.asset}` 
+                                    )}>
+                                {this.state.supply === true ? 'Enable' : 'No Balance to Withdraw'}
+                            </Button>
                         </Grid>
                         <Table>
                             <TableBody>
@@ -146,7 +188,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                         alignItems="center"
                                     >
                                         <TableCell>
-                                            Wallet Balance
+                                            {this.state.supply === true ? 'Wallet Balance' : 'Protocol Balance'}
                                         </TableCell>
                                         <TableCell>
                                             0 {this.props.token?.asset}

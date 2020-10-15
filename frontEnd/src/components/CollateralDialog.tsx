@@ -10,7 +10,6 @@ import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
     collateralDialog: {
-        opacity: 0.5,
         textAlign: 'center',
     }
 });
@@ -52,6 +51,9 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                 onClose={() => this.props.collateralClose()}
                 transitionDuration={0}
                 onClick={(event) => event.stopPropagation()}
+                BackdropProps={{
+                    invisible: true
+                }}
             >
                 <DialogTitle>
                     <Grid

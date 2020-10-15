@@ -1,18 +1,23 @@
-import { Button, DialogActions, DialogContent, Grid, IconButton, Table, TableBody, TableCell, TableRow, Tooltip, Typography } from '@material-ui/core';
+import { Button, DialogActions, DialogContent, Grid, IconButton, Tab, Table, TableBody, TableCell, TableRow, Tooltip, Typography } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import React from 'react';
+import TabContext from '@material-ui/lab/TabContext';
+import TabList from '@material-ui/lab/TabList';
+import TabPanel from '@material-ui/lab/TabPanel';
 import { Token } from '../models';
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
+    backdrop: {
+        opacity: 0.5
+    },
     supplyDialog: {
-        opacity: 0.5,
         textAlign: 'center',
-    }
+    },
 });
 
 const disableSupplyMessage =
@@ -29,11 +34,26 @@ interface ISupplyDialogProps {
     classes?: any,
 }
 
-class SupplyDialogClass extends React.Component<ISupplyDialogProps, {}>  {
+interface ISupplyDialogState {
+    value: string,
+}
+
+class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialogState>  {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            value: '1'
+        };
+    }
+
     supplySet = (title: string) => {
         this.props.supplyClose();
         this.props.supplySet(!this.props.token?.supplyEnabled, this.props.token, title);
     }
+
+    handleChange = (event: any, newValue: any) => {
+        this.setState({ value: newValue });
+    };
 
     render() {
         const buttonTooltip =
@@ -44,6 +64,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, {}>  {
             this.props.token?.supplyEnabled === false ? enableSupplyMessage : disableSupplyMessage;
         const title =
             this.props.token?.supplyEnabled === false ? 'Enable' + titlePostfix : 'Disable' + titlePostfix;
+        const value = this.state.value
 
         return (
             <Dialog
@@ -52,7 +73,10 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, {}>  {
                 onClose={() => this.props.supplyClose()}
                 transitionDuration={0}
                 onClick={(event) => event.stopPropagation()}
-            >
+                BackdropProps={{
+                    invisible: true
+                }}
+                >
                 <DialogTitle>
                     <Grid
                         container
@@ -65,28 +89,18 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, {}>  {
                     </Grid>
                     {title}
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent className={this.props.classes.tabs}>
                     <Typography variant='subtitle1'>{message}</Typography>
-                    <Table>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>
-                                    Borrow Limit
-                                </TableCell>
-                                <TableCell>
-                                    $0 &#x2192; $0
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    Borrow Limit Used
-                                </TableCell>
-                                <TableCell>
-                                    0% &#x2192; 0%
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                    <TabContext value={value}>
+                        <TabList onChange={this.handleChange}>
+                            <Tab label="Item One" value="1" />
+                            <Tab label="Item Two" value="2" />
+                            <Tab label="Item Three" value="3" />
+                        </TabList>
+                        <TabPanel hidden value="1">Item One</TabPanel>
+                        <TabPanel hidden value="2">Item Two</TabPanel>
+                        <TabPanel hidden value="3">Item Three</TabPanel>
+                    </TabContext>
                 </DialogContent>
                 <DialogActions>
                     <Grid container item xs={12}>

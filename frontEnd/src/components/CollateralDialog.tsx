@@ -51,9 +51,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                 onClose={() => this.props.collateralClose()}
                 transitionDuration={0}
                 onClick={(event) => event.stopPropagation()}
-                BackdropProps={{
-                    invisible: true
-                }}
+                hideBackdrop={true}
             >
                 <DialogTitle>
                     <Grid
@@ -76,7 +74,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                                     Borrow Limit
                                 </TableCell>
                                 <TableCell>
-                                    $0 &#x2192; $0
+                                    ${this.props.token?.borrowLimit} &#x2192; $0
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -84,7 +82,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                                     Borrow Limit Used
                                 </TableCell>
                                 <TableCell>
-                                    0% &#x2192; 0%
+                                    {this.props.token?.borrowLimitUsed}% &#x2192; 0%
                                 </TableCell>
                             </TableRow>
                         </TableBody>

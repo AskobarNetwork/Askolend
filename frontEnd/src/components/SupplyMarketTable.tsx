@@ -107,6 +107,22 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                     title: this.state.confirmationTitle
                 }}
                 />
+                <CollateralDialog {... {
+                    collateralClose: this.collateralClose,
+                    collateralSet: this.collateralSet,
+                    collateralOpen: this.state.collateralopen,
+                    token: this.state.selectedToken
+                }}
+                />
+                <SupplyDialog {... {
+                    supply: this.supply,
+                    supplyClose: this.supplyClose,
+                    supplyEnable: this.supplyEnable,
+                    supplyOpen: this.state.supplyOpen,
+                    token: this.state.selectedToken,
+                    withdraw: this.withdraw,
+                }}
+                />
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -123,15 +139,6 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                     event.stopPropagation();
                                     this.supplyClick(event, token.value)
                                 }}>
-                                    <SupplyDialog {... {
-                                        supply: this.supply,
-                                        supplyClose: this.supplyClose,
-                                        supplyEnable: this.supplyEnable,
-                                        supplyOpen: this.state.supplyOpen,
-                                        token: this.state.selectedToken,
-                                        withdraw: this.withdraw,
-                                    }}
-                                    />
                                     <TableCell align='left'>
                                         <Grid
                                             container
@@ -150,13 +157,6 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                             event.stopPropagation();
                                             this.collateralSwitchClick(event, token.value);
                                         }}></Switch>
-                                        <CollateralDialog {... {
-                                            collateralClose: this.collateralClose,
-                                            collateralSet: this.collateralSet,
-                                            collateralOpen: this.state.collateralopen,
-                                            token: this.state.selectedToken
-                                        }}
-                                        />
                                     </TableCell>
                                 </TableRow>
                             ))}

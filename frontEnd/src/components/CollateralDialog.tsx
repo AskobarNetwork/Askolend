@@ -52,6 +52,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                 transitionDuration={0}
                 onClick={(event) => event.stopPropagation()}
                 hideBackdrop={true}
+                fullWidth={true}
             >
                 <DialogTitle>
                     <Grid

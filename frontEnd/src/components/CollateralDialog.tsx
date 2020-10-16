@@ -10,7 +10,6 @@ import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
     collateralDialog: {
-        opacity: 0.5,
         textAlign: 'center',
     }
 });
@@ -51,6 +50,8 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                 open={this.props.collateralOpen}
                 onClose={() => this.props.collateralClose()}
                 transitionDuration={0}
+                onClick={(event) => event.stopPropagation()}
+                hideBackdrop={true}
             >
                 <DialogTitle>
                     <Grid
@@ -73,7 +74,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                                     Borrow Limit
                                 </TableCell>
                                 <TableCell>
-                                    $0 &#x2192; $0
+                                    ${this.props.token?.borrowLimit} &#x2192; $0
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -81,7 +82,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
                                     Borrow Limit Used
                                 </TableCell>
                                 <TableCell>
-                                    0% &#x2192; 0%
+                                    {this.props.token?.borrowLimitUsed}% &#x2192; 0%
                                 </TableCell>
                             </TableRow>
                         </TableBody>

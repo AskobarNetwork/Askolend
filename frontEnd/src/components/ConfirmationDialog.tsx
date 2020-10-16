@@ -27,6 +27,7 @@ class ConfirmationDialogClass extends React.Component<IConfirmationDialogProps, 
                 open={this.props.confirmationOpen}
                 onClose={() => this.props.confirmationClose()}
                 transitionDuration={0}
+                hideBackdrop={true}
             >
                 <DialogTitle>
                     <Grid

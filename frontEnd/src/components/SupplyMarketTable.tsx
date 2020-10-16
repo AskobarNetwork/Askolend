@@ -69,7 +69,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         });
     }
 
-    supplySet = (supplyEnabled: boolean, supply: Token, confirmationMessage: string) => {
+    supplyEnable = (supplyEnabled: boolean, supply: Token, confirmationMessage: string) => {
         if (supplyEnabled !== supply.supplyEnabled) {
             this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
             // TO-DO: Implement supply action in https://github.com/AskobarNetwork/Askolend/issues/22
@@ -77,6 +77,21 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         else {
             console.warn(`Supply for ${supply.address} is already set to ${supply.supplyEnabled}, no action taken`);
         }
+    }
+
+    supply = (tokenToSupply: Token, amount: number, confirmationMessage: string) => {
+        if (tokenToSupply.supplyEnabled === true) {
+            this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
+            // TO-DO: Implement supply action in https://github.com/AskobarNetwork/Askolend/issues/22
+        }
+        else {
+            console.error(`${tokenToSupply.address} is not enabled, cannot supply`);
+        }
+    }
+
+    withdraw = (tokenToSupply: Token, amount: number, confirmationMessage: string) => {
+        this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
+        // TO-DO: Implement withdraw action in https://github.com/AskobarNetwork/Askolend/issues/23
     }
 
     supplyClose = () => {
@@ -109,10 +124,12 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                     this.supplyClick(event, token.value)
                                 }}>
                                     <SupplyDialog {... {
+                                        supply: this.supply,
                                         supplyClose: this.supplyClose,
-                                        supplySet: this.supplySet,
+                                        supplyEnable: this.supplyEnable,
                                         supplyOpen: this.state.supplyOpen,
-                                        token: this.state.selectedToken
+                                        token: this.state.selectedToken,
+                                        withdraw: this.withdraw,
                                     }}
                                     />
                                     <TableCell align='left'>
@@ -123,7 +140,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                             alignItems='center'
                                         >
                                             <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
-                                    <Typography>{token.value.asset}</Typography>
+                                            <Typography>{token.value.asset}</Typography>
                                         </Grid>
                                     </TableCell>
                                     <TableCell align='right'>{token.value.apy + '%'}</TableCell>

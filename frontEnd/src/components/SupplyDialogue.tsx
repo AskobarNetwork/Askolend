@@ -1,4 +1,5 @@
 import {
+    Avatar,
     Button,
     DialogActions,
     DialogContent,
@@ -9,7 +10,8 @@ import {
     TableBody,
     TableCell,
     TableRow,
-    Typography,
+    TextField,
+    Typography
 } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
@@ -21,6 +23,7 @@ import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import { Token } from '../models';
 import { connect } from 'react-redux'
+import { getTokenLogoPngSrc } from '../models'
 import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
@@ -30,14 +33,17 @@ const styles = (theme: any) => ({
 });
 
 interface ISupplyDialogProps {
+    supply: Function,
     supplyClose: Function,
-    supplySet: Function,
+    supplyEnable: Function,
     supplyOpen: boolean,
     token: Token | undefined,
+    withdraw: Function
     classes?: any,
 }
 
 interface ISupplyDialogState {
+    amount: number,
     supply: boolean,
     value: string,
 }
@@ -46,15 +52,26 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
     constructor(props: any) {
         super(props);
         this.state = {
+            amount: 0,
             supply: true,
             value: '1'
         };
         this.handleChange.bind(this);
     }
 
-    supplySet = (title: string) => {
+    supplyEnable = (title: string) => {
         this.props.supplyClose();
-        this.props.supplySet(!this.props.token?.supplyEnabled, this.props.token, title);
+        this.props.supplyEnable(!this.props.token?.supplyEnabled, this.props.token, title);
+    }
+
+    supply = (title: string) => {
+        this.props.supplyClose();
+        this.props.supply(this.props.token, 0, title);
+    }
+
+    withdraw = (title: string) => {
+        this.props.supplyClose();
+        this.props.withdraw(this.props.token, 0, title);
     }
 
     handleChange = (event: any, newValue: any) => {
@@ -62,9 +79,11 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
     };
 
     render() {
-        const Message = this.props.token?.supplyEnabled === false ?
-            <Typography variant='subtitle1'>To supply or repay {this.props.token?.asset} you must enable it first.</Typography>
-            : null;
+        const Message = (this.props.token?.supplyEnabled === false && this.state.supply === true) ?
+            <Typography variant='subtitle1'>To supply or repay {this.props.token?.asset} you must enable it first.</Typography> :
+            <TextField
+                type="number"
+            />;
 
         return (
             <Dialog
@@ -74,6 +93,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                 transitionDuration={0}
                 onClick={(event) => event.stopPropagation()}
                 hideBackdrop={true}
+                fullWidth={true}
             >
                 <DialogTitle>
                     <Grid
@@ -85,7 +105,15 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                             <CloseIcon />
                         </IconButton>
                     </Grid>
-                    {this.props.token?.asset}
+                    <Grid
+                        container
+                        direction='row'
+                        justify="center"
+                        alignItems="center"
+                    >
+                        <Avatar src={getTokenLogoPngSrc(this.props.token?.address || '')} alt={this.props.token?.asset} /> &nbsp;
+                        <Typography>{this.props.token?.asset}</Typography>
+                    </Grid>
                 </DialogTitle>
                 <DialogContent className={this.props.classes.tabs}>
                     <Grid
@@ -139,23 +167,23 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                                 -%
                                             </TableCell>
                                         </TableRow>
+                                        <TableRow>
+                                            <TableCell>
+                                                Borrow Limit
+                                        </TableCell>
+                                            <TableCell>
+                                                ${this.props.token?.borrowLimit} &#x2192; $0
+                                        </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>
+                                                Borrow Limit Used
+                                        </TableCell>
+                                            <TableCell>
+                                                {this.props.token?.borrowLimitUsed}% &#x2192; 0%
+                                        </TableCell>
+                                        </TableRow>
                                     </TableBody>
-                                    <TableRow>
-                                        <TableCell>
-                                            Borrow Limit
-                                        </TableCell>
-                                        <TableCell>
-                                            ${this.props.token?.borrowLimit} &#x2192; $0
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>
-                                            Borrow Limit Used
-                                        </TableCell>
-                                        <TableCell>
-                                            {this.props.token?.borrowLimitUsed}% &#x2192; 0%
-                                        </TableCell>
-                                    </TableRow>
                                 </Table>
                             </TabPanel>
                         </TabContext>
@@ -168,14 +196,24 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                     >
                         <Grid container item xs={12}>
                             <Button
-                                disabled={this.state.supply === false} 
                                 color='secondary'
                                 fullWidth={true}
                                 variant='contained'
-                                onClick={() => this.supplySet(
-                                    this.state.supply === true ? `Enable ${this.props.token?.asset} as Supply` : `Withdraw ${this.props.token?.asset}` 
-                                    )}>
-                                {this.state.supply === true ? 'Enable' : 'No Balance to Withdraw'}
+                                onClick={() =>
+                                    this.state.supply === true ?
+                                        (this.props.token?.supplyEnabled === false ?
+                                            this.supplyEnable(`Enable ${this.props.token?.asset} as Supply`) :
+                                            this.supply(`Supply ${this.props.token?.asset}`)
+                                        ) :
+                                        this.withdraw(`Withdraw ${this.props.token?.asset}`)
+                                }>
+                                {this.state.supply === true ?
+                                    (this.props.token?.supplyEnabled === false ?
+                                        'Enable' :
+                                        'Supply'
+                                    ) :
+                                    'Withdraw'
+                                }
                             </Button>
                         </Grid>
                         <Table>

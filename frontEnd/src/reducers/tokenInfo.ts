@@ -20,7 +20,7 @@ export function tokenInfo(state = initialState, action: any) {
             newTokenInfos.push({
                 key: action.tokenAddress,
                 value: new Token(
-                    action.tokenAddress, action.tokenInfo?.name, 0, false, 0, false, 0, 0, 0, 0, 0,
+                    action.tokenAddress, action.tokenInfo?.name, 0, false, 0, true, 0, 0, 0, 0, 0,
                 ),
             });
             return Object.assign({}, state, {

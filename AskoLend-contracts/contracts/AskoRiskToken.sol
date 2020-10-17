@@ -95,7 +95,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 
 /**
 @notice Get the underlying balance of the `owners`
-@dev This also accrues interest in a transaction
 @param owner The address of the account to query
 @return The amount of underlying owned by `owner`
 */
@@ -222,7 +221,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       }
 
 /**
-@notice Returns the current per-block borrow interest rate for this cToken
+@notice Returns the current per-block borrow interest rate for this ART
 @return The borrow interest rate per block, scaled by 1e18
 **/
       function borrowRatePerBlock() external view returns (uint) {
@@ -230,7 +229,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       }
 
 /**
-@notice Returns the current per-block supply interest rate for this cToken
+@notice Returns the current per-block supply interest rate for this ART
 @return The supply interest rate per block, scaled by 1e18
 **/
       function supplyRatePerBlock() external view returns (uint) {

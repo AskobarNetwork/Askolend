@@ -95,7 +95,7 @@ constructor ( address _oracle, address _MMF) public {
 @param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
 @param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
 @param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
-@param _fee is a number representing the fee for exchanging an ALR token, as a mantissa (scaled by 1e18)
+@param _fee is a number representing the fee for exchanging an AHR token, as a mantissa (scaled by 1e18)
 @param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
 @dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
 **/

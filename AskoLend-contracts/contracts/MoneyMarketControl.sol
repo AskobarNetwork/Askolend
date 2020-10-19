@@ -31,6 +31,8 @@ contract MoneyMarketControl is Ownable, Exponential {
   UniswapOracleFactoryI public Oracle;//oracle factory contract interface
   MoneyMarketFactoryI public MMF;
 
+  address[] public assets;
+
   mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
   mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
   mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
@@ -87,6 +89,7 @@ constructor ( address _oracle, address _MMF) public {
     Oracle.linkMMI(_MMinstance, _assetContractAdd);
     instanceTracker[_assetContractAdd] = _MMinstance;
     oracleTracker[_MMinstance] = oracle;
+    assets.push(_assetContractAdd);
   }
 
 /**
@@ -163,6 +166,14 @@ _MMI._setUpAHR(
       _fee,
       _initialExchangeRate
     );
+  }
+
+/**
+@notice getAsset returns an array of all assets whitelisted on the platform.
+@dev this can be used to loop through and retreive each assets MoneyMarket by the front end
+**/
+  function getAssets() public view returns(address[] memory) {
+    return assets;
   }
 
 /**

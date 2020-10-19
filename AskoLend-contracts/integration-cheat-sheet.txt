@@ -22,7 +22,8 @@ Getter Functions:
 ///the users locked collateral
     function checkCollateralValue( usrAddress, ALRtoken )  returns( USDCvalOfCollateral );
 
-
+//returns an array of all listed assets
+    function getAssets() returns(address[]);
 Setter Functions:
 
 ///function used to whitelist a new asset to the AskoLend platform
@@ -134,4 +135,4 @@ function getAssetAdd()  returns (address)
 
 
 I expect as the front end integration progresses we may have to build out other getter functions. the etter functions here
-are only the ones necessary for the user to interact with the front end. 
+are only the ones necessary for the user to interact with the front end.

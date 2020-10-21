@@ -1,0 +1,34 @@
+This txt file is ment to document what tasks need to be done to handle front end web3 integration for the AskoLend project
+
+TASKS SUPPLY SIDE:
+
+ need to add IERC20 approve function calls for end user to approve the contract to withdraw
+ an asset from them(suggest setting the withdraw amount to something insanely large like 1000000000000000000000000000000
+ so this only needs to be done once per asset for the end user) to SupplyMarketTable.tsx.
+
+ need to add lendToAHRpool() and lendToALRpool() contract calls to a MoneyMarketInstance in the SupplyMarketTable.tsx component.
+
+ need to add balanceOf() function calls to AskoRiskToken contracts for both high and low for each asset as well as a getCash() function call to each of these ART's
+ to retreive their asset balance
+
+TASKS BORROW SIDE:
+
+ need to add borrow() function call that inputs the amount to borrow and the address of the users collateralized ALR tokens(address of the token contract)
+
+ need to add call to ART contract(s) for an asset to accountBorrows() to return a Borrow Snapshot for the user showing their current borrow values
+
+ need to call borrowIndex() to calculate current interest rates for each assets
+
+TASKS COLLATERALIZE SIDE:
+
+ need to be able to call collateralizeALR() from an assets MoneyMarketInstance in the CollateralDailog.tsk component
+
+ need to call collateralTracker() from the MoneyMarketControl contract for each assets money market for a user
+
+TASKS REDEEM ARTs:
+
+need a component for user to redeem their Asko Risk Tokens back for their collateral(not sure if there is a component for this yet)
+
+TASKS REPAY LOAN:
+
+need a component where a user can repay their borrows using the repay() function from the MoneyMarketInstance contract of an asset 

@@ -156,16 +156,65 @@ function _setUpAHR(
     return address(asset);
   }
 
+  /**
+  @notice setFee allows the owner of this contract to set the fee
+  @param  _fee is the input number representing the fee
+  @dev the divisor is set to 10,000 in the constructor for this contract. this allows for
+        a fee percentage accounting for two decimal places. feePercent must account for this when being set.
+        The following examples show feePercent amounts and how they equate to percentages:
+                EX:
+                    a 1% fee would be set as feePercent = 100
+                    a .5% fee would be set as feePercent = 50
+                    a 50% fee would be set as feePercent = 5000
+  **/
+    function setFeeAHR(uint _fee) public onlyOwner {
+        fee_AHR = _fee;
+    }
+
+  /**
+  @notice setFee allows the owner of this contract to set the fee
+  @param  _fee is the input number representing the fee
+  @dev the divisor is set to 10,000 in the constructor for this contract. this allows for
+        a fee percentage accounting for two decimal places. feePercent must account for this when being set.
+        The following examples show feePercent amounts and how they equate to percentages:
+                EX:
+                    a 1% fee would be set as feePercent = 100
+                    a .5% fee would be set as feePercent = 50
+                    a 50% fee would be set as feePercent = 5000
+  **/
+    function setFeeALR(uint _fee) public onlyOwner {
+        fee_ALR = _fee;
+    }
+
+
+  /**
+  @notice calculateFee is used to calculate the fee earned
+  @param _payedAmount is a uint representing the full amount of an ERC20 asset payed
+  @dev the divisor is set to 10,000 in the constructor for this contract. this allows for
+        a fee percentage accounting for two decimal places. feePercent must account for this when being set.
+        The following examples show feePercent amounts and how they equate to percentages:
+                EX:
+                    a 1% fee would be set as feePercent = 100
+                    a .5% fee would be set as feePercent = 50
+                    a 50% fee would be set as feePercent = 5000
+  **/
+  function calculateFee(uint256 _payedAmount, uint _feePercent) public view returns(uint) {
+    uint256 fee = _payedAmount.mul(_feePercent).div(divisor);
+    return fee;
+  }
+
 /**
 @notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool
 @param _amount is the amount of the asset being lent
 @dev the user will need to first approve the transfer of the underlying asset
 **/
   function lendToAHRpool(uint _amount) public {
+    uint fees = calculateFee(_amount, fee_AHR);
+    uint remaining = _amount.sub(fees);
     //transfer appropriate amount off the asset from msg.sender to the AHR contract
     asset.transferFrom(msg.sender, address(AHR), _amount);
     //call mint function on AHR contract
-    AHR.mint(msg.sender, _amount);
+    AHR.mint(msg.sender, remaining);
   }
 
 /**
@@ -174,10 +223,12 @@ function _setUpAHR(
 @dev the user will need to first approve the transfer of the underlying asset
 **/
     function lendToALRpool(uint _amount) public {
+      uint fees = calculateFee(_amount, fee_ALR);
+      uint remaining = _amount.sub(fees);
       //transfer appropriate amount off the asset from msg.sender to the AHR contract
       asset.transferFrom(msg.sender, address(ALR), _amount);
       //call mint function on ALR contract
-      ALR.mint(msg.sender, _amount);
+      ALR.mint(msg.sender, remaining);
     }
 
 
@@ -216,27 +267,30 @@ function _setUpAHR(
 @param _repayAmount is the amount of the underlying asset being repayed
 **/
 	function repay(uint _repayAmount) public {
+
+    uint fees = calculateFee(_repayAmount, fee_ALR);
+    uint remaining = _repayAmount.add(fees);
     //get their current owed balance of ALR
     uint accountBorrowsALR = ALR.borrowBalanceCurrent(msg.sender);
     uint payAmountAHR;
     uint payAmountALR;
     if(accountBorrowsALR != 0) { //if amount owed to ALR isnt zero
-          if(accountBorrowsALR >= _repayAmount) { //check if repay amount is greater than ALR borrow balance
-            payAmountALR = ALR.repayBorrow(_repayAmount); //if it is repay amount to ALR
+          if(accountBorrowsALR >= remaining) { //check if repay amount is greater than ALR borrow balance
+            payAmountALR = ALR.repayBorrow(remaining); //if it is repay amount to ALR
             //transfer asset from the user to this contract
             asset.transferFrom(msg.sender, address(ALR), payAmountALR);
           } else { //if not
-            uint amountToALR = _repayAmount.sub(accountBorrowsALR); //calculate amount needed to pay off ALR
+            uint amountToALR = remaining.sub(accountBorrowsALR); //calculate amount needed to pay off ALR
             payAmountALR = ALR.repayBorrow(amountToALR); //pay off ALR
              //transfer asset from the user to this contract
             asset.transferFrom(msg.sender, address(ALR), payAmountALR);
-            uint amountToAHR = _repayAmount.sub(amountToALR);//calculate AHR amount
+            uint amountToAHR = remaining.sub(amountToALR);//calculate AHR amount
             payAmountAHR = AHR.repayBorrow(amountToAHR); //pay off towards AHR
           //transfer asset from the user to this contract
             asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
           }
     } else {//if amount owed to ALR IS zero
-      payAmountAHR = AHR.repayBorrow(_repayAmount);//pay towards AHR
+      payAmountAHR = AHR.repayBorrow(remaining);//pay towards AHR
       //transfer asset from the user to this contract
       asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
     }

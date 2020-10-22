@@ -6,7 +6,7 @@ import { BorrowMarketTable } from "./BorrowMarketTable";
 import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
 import { connect } from 'react-redux'
-import { getMoneyMarketInstances, obtainTokenInfo } from '../actions'
+import { clearTokens, getMoneyMarketInstances, obtainTokenInfo } from '../actions'
 import { ProtocolProvider } from "../web3";
 
 interface IHomeBoxProps {
@@ -68,6 +68,7 @@ class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
 const mapDispatchToProps = (dispatch: any) => {
 	return {
 		obtainMoneyMarket: (intialObtain: boolean) => {
+			dispatch(clearTokens())
 			dispatch(getMoneyMarketInstances())
 		}
 	}

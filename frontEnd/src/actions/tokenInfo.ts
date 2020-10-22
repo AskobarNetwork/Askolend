@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { AskoAsset } from './moneyMarket';
+import { MoneyMarket } from 'models/moneyMarket';
 
 export const TOKEN_INFO_INITIAL_OBTAIN = 'TOKEN_INFO_INITIAL_OBTAIN';
 export const TOKEN_INFO_OBTAINING = 'TOKEN_INFO_OBTAINING';
@@ -22,31 +22,37 @@ function tokenInfoObtained(address: string, info: any) {
     return { type: TOKEN_INFO_OBTAINED, tokenAddress: address, tokenInfoObtained: true, tokenInfo: info }
 }
 
-export function obtainTokenInfo(asset: AskoAsset) {
+export function clearTokens() {
+    return async function (dispatch: any) {
+        dispatch(tokenInfoIntialObtain());
+    }
+}
+
+export function obtainTokenInfo(moneymarket: MoneyMarket) {
     return async function (dispatch: any) {
         // if (initialObtain === true) {
         //     dispatch(tokenInfoIntialObtain());
         // }
-        const address = asset.address;
-        dispatch(tokenInfoObtaining(address));
+        //console.log(asset);
+        // const address = asset.address;
+        // dispatch(tokenInfoObtaining(address));
 
-        let tokenInfo = undefined;
-        try {
-            const res = await axios.get(process.env.REACT_APP_ASSETS_ENDPOINT + address + '/info.json');
-            tokenInfo = res.data;
-        } catch (e) {
-            tokenInfo = {
-                name: "unknown coin",
-                website: "?",
-                short_description: "",
-                explorer: "https://etherscan.io/token/" + address
-            }
-        }
+        // let tokenInfo = undefined;
+        // try {
+        //     const res = await axios.get(process.env.REACT_APP_ASSETS_ENDPOINT + address + '/info.json');
+        //     tokenInfo = res.data;
+        // } catch (e) {
+        //     tokenInfo = {
+        //         name: "aaaaaasjlkdfhjasdlkhfa",
+        //         website: "?",
+        //         short_description: "",
+        //         explorer: "https://etherscan.io/token/" + address
+        //     }
+        // }
 
-        // TODO: call the AHR + ALR contract methods and get the rest of the needed token info
 
-        // instead of sending TokenInfo, send an actual token
+        // // instead of sending TokenInfo, send an actual token
 
-        dispatch(tokenInfoObtained(address, tokenInfo));
+        // dispatch(tokenInfoObtained(address, tokenInfo));
     }
 }

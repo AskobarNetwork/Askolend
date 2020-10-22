@@ -1,18 +1,12 @@
 import { Contract } from 'ethers';
 import Fortmatic from 'fortmatic';
+import { MoneyMarket } from 'models/moneyMarket';
 import { obtainTokenInfo } from '.';
 import { ProtocolProvider } from '../web3';
 
 export const MONEYMARKET_GETINSTANCES_START = 'MONEYMARKET_GETINSTANCES_START'
 export const MONEYMARKET_GETINSTANCES_FINISH = 'MONEYMARKET_GETINSTANCES_FINISH'
 
-export interface AskoAsset {
-  address: string;
-  market: Contract;
-  token: Contract;
-  ahr: Contract;
-  alr: Contract;
-}
 
 function gettingInstances() {
   return { type: MONEYMARKET_GETINSTANCES_START, instances: {} }
@@ -31,23 +25,16 @@ export function getMoneyMarketInstances() {
     const assetAddresses: string[] = await moneyMarketControl.getAssets();
     const moneyMarketInstances: any = {};
     for (let address of assetAddresses) {
-        const instanceAddress = await moneyMarketControl.instanceTracker(address);
-        const market = eth.getContract("MoneyMarketInstance", instanceAddress);
-        const ahr = eth.getContract("AskoRiskToken", await market.AHR());
-        const alr = eth.getContract("AskoRiskToken", await market.ALR());
+      const instanceAddress = await moneyMarketControl.instanceTracker(address);
+      const market = eth.getContract("MoneyMarketInstance", instanceAddress);
+      const assetAddress = await market.getAssetAdd();
+      const ahr = await market.AHR();
+      const alr = await market.ALR();
+      const assetName = await market.assetName();
 
-        moneyMarketInstances[address] = {
-          address,
-          token: eth.getContract("ERC20", address),
-          market,
-          ahr,
-          alr
-        } as AskoAsset;
-
-        dispatch(obtainTokenInfo(moneyMarketInstances[address]));
+      const newMarket = new MoneyMarket(assetName, instanceAddress, assetAddress, ahr, alr);
+      moneyMarketInstances[assetName] = newMarket;
     }
-
-    console.log(moneyMarketInstances);
 
     dispatch(instancesFound(moneyMarketInstances));
   }

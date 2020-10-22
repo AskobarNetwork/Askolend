@@ -7,6 +7,7 @@ const initialState: any = {
 export function moneyMarket(state = initialState, action: any) {
     switch (action.type) {
         case MONEYMARKET_GETINSTANCES_START:
+            console.log("start");
             return Object.assign({}, state, {
                 instances: {}
             });

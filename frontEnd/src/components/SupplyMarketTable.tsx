@@ -12,8 +12,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { connect } from 'react-redux'
 
+import memoize from "memoize-one";
+
 interface ISupplyMarketTableProps {
-    tokenInfos?: [],
+    moneyMarkets?: {}
 }
 
 interface ISupplyMarketTableState {
@@ -22,6 +24,7 @@ interface ISupplyMarketTableState {
     confirmationTitle: string,
     selectedToken: Token | undefined,
     supplyOpen: boolean,
+    tokenlist: any[],
 }
 
 class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, ISupplyMarketTableState>  {
@@ -33,6 +36,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
             confirmationTitle: '',
             selectedToken: undefined,
             supplyOpen: false,
+            tokenlist: [],
         };
         this.collateralSwitchClick.bind(this);
     }
@@ -98,7 +102,54 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.setState({ supplyOpen: false });
     }
 
+    createTokenList = memoize(
+        (moneyMarkets: any) => {
+            if (moneyMarkets === undefined) {
+                return [];
+            }
+
+            console.log('redo')
+
+            const tokenList = [];
+            for (let market of Object.values<any>(moneyMarkets)) {
+                const instance = market as any;
+
+                const AHRtoken = new Token(instance.address,
+                    instance.name + " hr",
+                    instance.ahr.info.supplyRate,
+                    false,
+                    0,
+                    true,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0);
+                const ALRtoken = new Token(instance.address,
+                    instance.name + " lr", instance.ahr.info.supplyRate, false, 0, true, 0, 0, 0, 0, 0);
+
+                console.log(instance);
+                tokenList.push({
+                    key: instance.ahr.contract.address,
+                    value: AHRtoken
+                });
+
+                tokenList.push({
+                    key: instance.alr.contract.address,
+                    value: ALRtoken
+                });
+            }
+
+            return tokenList;
+        }
+    )
+
     render() {
+
+        console.log("render");
+
+        const supplyTokens = this.createTokenList(this.props.moneyMarkets);
+
         return (
             <React.Fragment>
                 <ConfirmationDialog {...{
@@ -134,7 +185,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.props.tokenInfos?.map((token: any) => (
+                            {supplyTokens.map((token: any) => (
                                 <TableRow hover={true} key={token.value.asset} onClick={(event) => {
                                     event.stopPropagation();
                                     this.supplyClick(event, token.value)
@@ -170,7 +221,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
 
 const mapStateToProps = (state: any) => {
     return {
-        tokenInfos: state.tokenInfo.tokenInfos,
+        moneyMarkets: state.moneyMarket.instances,
     }
 }
 

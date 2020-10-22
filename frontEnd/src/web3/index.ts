@@ -23,7 +23,7 @@ export class ProtocolProvider {
     const etherAmount = utils.formatEther(amount.toString());
     return etherAmount.toString();
   }
-  
+
   public static toWei(amount: string | number): BN {
     const weiAmount = utils.parseEther(amount.toString());
     return new BN(weiAmount.toString());

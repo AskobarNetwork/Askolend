@@ -44,6 +44,12 @@ contract MoneyMarketInstance is Ownable, Exponential {
     _;
   }
 
+  event LentToAHR(address lender, uint amount);
+  event LentToALR(address lender, uint amount);
+  event Borrow(address borrower, uint AHRamount, uint ALRamount);
+  event Repayed(address borrower, uint AHRamount,uint ALRamount);
+  event Collateralized(address collateralizer, uint amount);
+
 /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
         is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts
@@ -215,6 +221,7 @@ function _setUpAHR(
     asset.transferFrom(msg.sender, address(AHR), _amount);
     //call mint function on AHR contract
     AHR.mint(msg.sender, remaining);
+    emit LentToAHR(msg.sender, _amount);
   }
 
 /**
@@ -229,6 +236,7 @@ function _setUpAHR(
       asset.transferFrom(msg.sender, address(ALR), _amount);
       //call mint function on ALR contract
       ALR.mint(msg.sender, remaining);
+      emit LentToALR(msg.sender, _amount);
     }
 
 
@@ -258,8 +266,9 @@ function _setUpAHR(
     //cut amount of tokens in half
     uint half = _amount.div(2);
     //borrow half from each pool
-    AHR.borrow(half);
-    ALR.borrow(half);
+    AHR.borrow(half, msg.sender);
+    ALR.borrow(half, msg.sender);
+    emit Borrow(msg.sender, half, half);
   }
 
 /**
@@ -276,25 +285,28 @@ function _setUpAHR(
     uint payAmountALR;
     if(accountBorrowsALR != 0) { //if amount owed to ALR isnt zero
           if(accountBorrowsALR >= remaining) { //check if repay amount is greater than ALR borrow balance
-            payAmountALR = ALR.repayBorrow(remaining); //if it is repay amount to ALR
+            payAmountALR = ALR.repayBorrow(remaining, msg.sender); //if it is repay amount to ALR
             //transfer asset from the user to this contract
             asset.transferFrom(msg.sender, address(ALR), payAmountALR);
+            emit Repayed(msg.sender, 0, _repayAmount);
           } else { //if not
             uint amountToALR = remaining.sub(accountBorrowsALR); //calculate amount needed to pay off ALR
-            payAmountALR = ALR.repayBorrow(amountToALR); //pay off ALR
+            payAmountALR = ALR.repayBorrow(amountToALR, msg.sender); //pay off ALR
              //transfer asset from the user to this contract
             asset.transferFrom(msg.sender, address(ALR), payAmountALR);
             uint amountToAHR = remaining.sub(amountToALR);//calculate AHR amount
-            payAmountAHR = AHR.repayBorrow(amountToAHR); //pay off towards AHR
+            payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
           //transfer asset from the user to this contract
             asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
+            emit Repayed(msg.sender, payAmountAHR, payAmountALR);
           }
     } else {//if amount owed to ALR IS zero
-      payAmountAHR = AHR.repayBorrow(remaining);//pay towards AHR
+      payAmountAHR = AHR.repayBorrow(remaining, msg.sender);//pay towards AHR
       //transfer asset from the user to this contract
       asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
-    }
+      emit Repayed(msg.sender, payAmountAHR, 0);
   }
+}
 
 
 
@@ -305,6 +317,7 @@ function _setUpAHR(
    function collateralizeALR(uint _amount) public {
      ALR.burn(msg.sender, _amount);
      MMF.trackCollateral(msg.sender, address(ALR), _amount);
+     emit Collateralized(msg.sender, _amount);
    }
 
 

@@ -47,6 +47,13 @@ contract MoneyMarketControl is Ownable, Exponential {
       require(isMMI[msg.sender] == true);
       _;
     }
+
+    event WhiteListed(address asset, address moneyMarket, address oracle);
+    event AHRcreated(address asset, address interestRateModel);
+    event ALRcreated(address asset, address interestRateModel);
+    event NonCompliantTimerStart(address borrower, address ART);
+    event Accountliquidated(address borrower, address liquidator, uint amountRepayed, address ARTowed, address ARTcollateral);
+    event NonCompliantTimerReset(address borrower, address ART);
 /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
         is used to set up Oracle variables for the MoneyMarketFactory contract.
@@ -90,6 +97,7 @@ constructor ( address _oracle, address _MMF) public {
     instanceTracker[_assetContractAdd] = _MMinstance;
     oracleTracker[_MMinstance] = oracle;
     assets.push(_assetContractAdd);
+    emit WhiteListed(_assetContractAdd, _MMinstance, oracle);
   }
 
 /**
@@ -128,6 +136,8 @@ _MMI._setUpAHR(
   _fee,
   _initialExchangeRate
 );
+
+emit AHRcreated(_assetContractAdd, interestRateModel);
   }
 
 /**
@@ -166,6 +176,8 @@ _MMI._setUpAHR(
       _fee,
       _initialExchangeRate
     );
+    emit ALRcreated(_assetContractAdd, interestRateModel);
+
   }
 
 /**
@@ -216,6 +228,7 @@ _MMI._setUpAHR(
     //needs to check for account compliance
     require(nonCompliant[_borrower][_ART] == 0);
     nonCompliant[_borrower][_ART] = now;
+    emit NonCompliantTimerStart(_borrower, _ART);
   }
 //struct used to avoid stack too deep errors
   struct liquidateLocalVar {
@@ -285,9 +298,11 @@ this function calls the MoneyMarketInstance where the borrower has collateral st
 its underlying asset on uniswap for the underlying asset borrowed
 **/
     _ARTcollateralized._liquidateFor(vars.assetOwed, address(_ARTowed), vars.seizeTokens, repayAmount);
+    emit Accountliquidated(borrower, msg.sender, repayAmount, address(_ARTowed), address(_ARTcollateralized));
     }
   //reset accounts compliant timer
   nonCompliant[borrower][address(_ARTowed)] = 0;//resets borrowers compliance timer
+emit NonCompliantTimerReset(borrower, address(_ARTowed));
   }
 
 

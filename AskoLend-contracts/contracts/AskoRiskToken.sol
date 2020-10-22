@@ -56,6 +56,14 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
       require(msg.sender == address(MMI));
       _;
     }
+
+    event InterestAccrued(uint accrualBlockNumber, uint borrowIndex, uint totalBorrows, uint totalReserves);
+    event Minted(address lender, uint amountMinted);
+    event Redeemed(address redeemer, uint amountART, uint assetAmountRedeemed);
+    event Burn(address account, uint amount);
+    event Borrowed(address borrower, uint amountBorrowed);
+    event Repayed(address borrower, uint amountRepayed);
+
 /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
 is used to set up the name, symbol, and decimal variables for the AskoRiskToken contract.
@@ -100,6 +108,18 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 */
     function balanceOfUnderlying(address owner) external  returns (uint) {
         Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
+        (MathError mErr, uint balance) = mulScalarTruncate(exchangeRate, balanceOf(owner));
+        require(mErr == MathError.NO_ERROR);
+        return balance;
+    }
+
+/**
+@notice Get the underlying balance of the `owners`
+@param owner The address of the account to query
+@return The amount of underlying owned by `owner`
+**/
+    function balanceOfUnderlyingPrior(address owner) public view returns (uint) {
+        Exp memory exchangeRate = Exp({mantissa: exchangeRatePrior()});
         (MathError mErr, uint balance) = mulScalarTruncate(exchangeRate, balanceOf(owner));
         require(mErr == MathError.NO_ERROR);
         return balance;
@@ -165,17 +185,16 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       totalBorrows = totalBorrowsNew;
       totalReserves = totalReservesNew;
 
+emit InterestAccrued(accrualBlockNumber, borrowIndex, totalBorrows, totalReserves);
     }
   }
 
-
 /**
-@notice Accrue interest to updated borrowIndex and then calculate account's borrow balance using the updated borrowIndex
+@notice returns last calculated account's borrow balance using the prior borrowIndex
 @param account The address whose balance should be calculated after updating borrowIndex
 @return The calculated balance
 **/
-    function borrowBalanceCurrent(address account) public returns (uint) {
-      accrueInterest();
+    function borrowBalancePrior(address account) public view returns (uint) {
       MathError mathErr;
       uint principalTimesIndex;
       uint result;
@@ -202,6 +221,16 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       }
 
       return (result);
+    }
+
+/**
+@notice Accrue interest to updated borrowIndex and then calculate account's borrow balance using the updated borrowIndex
+@param account The address whose balance should be calculated after updating borrowIndex
+@return The calculated balance
+**/
+    function borrowBalanceCurrent(address account) public returns (uint) {
+      accrueInterest();
+      borrowBalancePrior(account);
     }
 
 /**
@@ -250,28 +279,37 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       }
 
 /**
+@notice return prior exchange rate for front end viewing
+@return Calculated exchange rate scaled by 1e18
+**/
+    function exchangeRatePrior() public view returns (uint) {
+      if (totalSupply() == 0) {
+//If there are no tokens minted: exchangeRate = initialExchangeRate
+        return initialExchangeRateMantissa;
+      } else {
+//Otherwise: exchangeRate = (totalCash + totalBorrows - totalReserves) / totalSupply
+        uint totalCash = getCashPrior();//get contract asset balance
+        uint cashPlusBorrowsMinusReserves;
+        Exp memory exchangeRate;
+        MathError mathErr;
+//calculate total value held by contract plus owed to contract
+        (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(totalCash, totalBorrows, totalReserves);
+          require(mathErr == MathError.NO_ERROR);
+//calculate exchange rate
+        (mathErr, exchangeRate) = getExp(cashPlusBorrowsMinusReserves, totalSupply());
+          require(mathErr == MathError.NO_ERROR);
+        return (exchangeRate.mantissa);
+      }
+    }
+
+
+/**
 @notice Accrue interest then return the up-to-date exchange rate
 @return Calculated exchange rate scaled by 1e18
 **/
       function exchangeRateCurrent() public returns (uint) {
             accrueInterest();
-          if (totalSupply() == 0) {
-//If there are no tokens minted: exchangeRate = initialExchangeRate
-            return initialExchangeRateMantissa;
-          } else {
-//Otherwise: exchangeRate = (totalCash + totalBorrows - totalReserves) / totalSupply
-            uint totalCash = getCashPrior();//get contract asset balance
-            uint cashPlusBorrowsMinusReserves;
-            Exp memory exchangeRate;
-            MathError mathErr;
-//calculate total value held by contract plus owed to contract
-            (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(totalCash, totalBorrows, totalReserves);
-              require(mathErr == MathError.NO_ERROR);
-//calculate exchange rate
-            (mathErr, exchangeRate) = getExp(cashPlusBorrowsMinusReserves, totalSupply());
-              require(mathErr == MathError.NO_ERROR);
-            return (exchangeRate.mantissa);
-          }
+            exchangeRatePrior();
       }
 
 
@@ -307,6 +345,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     (vars.mathErr, vars.mintTokens) = divScalarByExpTruncate(_amount, Exp({mantissa: vars.exchangeRateMantissa}));
     require(vars.mathErr == MathError.NO_ERROR);
     _mint(_account, vars.mintTokens);
+    emit Minted(_account, vars.mintTokens);
   }
 
   struct RedeemLocalVars {
@@ -339,6 +378,7 @@ redeemAmount = _amount x exchangeRateCurrent
     require (getCashPrior() >= vars.redeemAmount);
 //transfer the calculated amount of underlying asset to the msg.sender
     asset.transfer(msg.sender, vars.redeemAmount);
+    emit Redeemed(msg.sender, _amount, vars.redeemAmount);
   }
 
 /**
@@ -349,6 +389,8 @@ redeemAmount = _amount x exchangeRateCurrent
 **/
   function burn(address _account, uint256 _amount) public onlyMMInstance{
     _burn(_account, _amount);
+    emit Burn( _account, _amount);
+
   }
 
 //struct used by borrow function to avoid stack too deep errors
@@ -363,7 +405,7 @@ redeemAmount = _amount x exchangeRateCurrent
 @notice Sender borrows assets from the protocol to their own address
 @param _borrowAmount The amount of the underlying asset to borrow
 */
-  function borrow(uint _borrowAmount) external onlyMMInstance {
+  function borrow(uint _borrowAmount, address _borrower) external onlyMMInstance {
 // _collateral the address of the ALR the user has staked as collateral?
       accrueInterest();
 //Fail if protocol has insufficient underlying cash
@@ -371,7 +413,7 @@ redeemAmount = _amount x exchangeRateCurrent
 //create local vars storage
       BorrowLocalVars memory vars;
 //calculate the new borrower and total borrow balances, failing on overflow:
-      vars.accountBorrows = borrowBalanceCurrent(msg.sender);
+      vars.accountBorrows = borrowBalanceCurrent(_borrower);
 //accountBorrowsNew = accountBorrows + borrowAmount
       (vars.mathErr, vars.accountBorrowsNew) = addUInt(vars.accountBorrows, _borrowAmount);
         require(vars.mathErr == MathError.NO_ERROR);
@@ -379,11 +421,12 @@ redeemAmount = _amount x exchangeRateCurrent
       (vars.mathErr, vars.totalBorrowsNew) = addUInt(totalBorrows, _borrowAmount);
         require(vars.mathErr == MathError.NO_ERROR);
 //We write the previously calculated values into storage
-      accountBorrows[msg.sender].principal = vars.accountBorrowsNew;
-      accountBorrows[msg.sender].interestIndex = borrowIndex;
+      accountBorrows[_borrower].principal = vars.accountBorrowsNew;
+      accountBorrows[_borrower].interestIndex = borrowIndex;
       totalBorrows = vars.totalBorrowsNew;
 //send them their loaned asset
-       asset.transfer(msg.sender, _borrowAmount);
+       asset.transfer(_borrower, _borrowAmount);
+       emit Borrowed(_borrower, _borrowAmount);
   }
 
   struct RepayBorrowLocalVars {
@@ -399,14 +442,14 @@ redeemAmount = _amount x exchangeRateCurrent
 @notice Sender repays their own borrow
 @param repayAmount The amount to repay
 */
-  function repayBorrow(uint repayAmount) external onlyMMInstance returns(uint){
+  function repayBorrow(uint repayAmount, address borrower) external onlyMMInstance returns(uint){
     accrueInterest();
 //create local vars storage
     RepayBorrowLocalVars memory vars;
 //We remember the original borrowerIndex for verification purposes
-    vars.borrowerIndex = accountBorrows[msg.sender].interestIndex;
+    vars.borrowerIndex = accountBorrows[borrower].interestIndex;
 //We fetch the amount the borrower owes, with accumulated interest
-    vars.accountBorrows = borrowBalanceCurrent(msg.sender);
+    vars.accountBorrows = borrowBalanceCurrent(borrower);
 //If repayAmount == 0, repayAmount = accountBorrows
     if (repayAmount == 0) {
         vars.repayAmount = vars.accountBorrows;
@@ -424,9 +467,10 @@ redeemAmount = _amount x exchangeRateCurrent
     (vars.mathErr, vars.totalBorrowsNew) = subUInt(totalBorrows, vars.repayAmount);
       require(vars.mathErr == MathError.NO_ERROR);
     /* We write the previously calculated values into storage */
-    accountBorrows[msg.sender].principal = vars.accountBorrowsNew;
-    accountBorrows[msg.sender].interestIndex = borrowIndex;
+    accountBorrows[borrower].principal = vars.accountBorrowsNew;
+    accountBorrows[borrower].interestIndex = borrowIndex;
     totalBorrows = vars.totalBorrowsNew;
+    emit Repayed(borrower, vars.repayAmount);
     return vars.repayAmount;
   }
 

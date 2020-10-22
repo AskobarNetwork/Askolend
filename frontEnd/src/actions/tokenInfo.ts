@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { AskoAsset } from './moneyMarket';
 
 export const TOKEN_INFO_INITIAL_OBTAIN = 'TOKEN_INFO_INITIAL_OBTAIN';
 export const TOKEN_INFO_OBTAINING = 'TOKEN_INFO_OBTAINING';
@@ -21,19 +22,31 @@ function tokenInfoObtained(address: string, info: any) {
     return { type: TOKEN_INFO_OBTAINED, tokenAddress: address, tokenInfoObtained: true, tokenInfo: info }
 }
 
-export function obtainTokenInfo(address: string, initialObtain: boolean) {
-    return function (dispatch: any) {
-        if (initialObtain === true) {
-            dispatch(tokenInfoIntialObtain());
-        }
+export function obtainTokenInfo(asset: AskoAsset) {
+    return async function (dispatch: any) {
+        // if (initialObtain === true) {
+        //     dispatch(tokenInfoIntialObtain());
+        // }
+        const address = asset.address;
         dispatch(tokenInfoObtaining(address));
-        axios.get(process.env.REACT_APP_ASSETS_ENDPOINT + address + '/info.json')
-            .then(function (response) {
-                dispatch(tokenInfoObtained(address, response.data));
-            })
-            .catch(function (error) {
-                console.error(error);
-                dispatch(tokenInfoObtainingError(address, error));
-            })
+
+        let tokenInfo = undefined;
+        try {
+            const res = await axios.get(process.env.REACT_APP_ASSETS_ENDPOINT + address + '/info.json');
+            tokenInfo = res.data;
+        } catch (e) {
+            tokenInfo = {
+                name: "unknown coin",
+                website: "?",
+                short_description: "",
+                explorer: "https://etherscan.io/token/" + address
+            }
+        }
+
+        // TODO: call the AHR + ALR contract methods and get the rest of the needed token info
+
+        // instead of sending TokenInfo, send an actual token
+
+        dispatch(tokenInfoObtained(address, tokenInfo));
     }
 }

@@ -6,11 +6,11 @@ import { BorrowMarketTable } from "./BorrowMarketTable";
 import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
 import { connect } from 'react-redux'
-import { getTokenAddresses } from '../models/'
-import { obtainTokenInfo } from '../actions'
+import { getMoneyMarketInstances, obtainTokenInfo } from '../actions'
+import { ProtocolProvider } from "../web3";
 
 interface IHomeBoxProps {
-	obtainTokenInfo: Function,
+	obtainMoneyMarket: Function
 }
 
 interface IHomeBoxState {
@@ -18,15 +18,18 @@ interface IHomeBoxState {
 }
 
 class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
-	componentDidMount = () => {
-		let tokenAddresses = getTokenAddresses();
-		tokenAddresses.forEach((address: string, index: number) => {
-			let intialObtain = false;
-			if (index === 0) {
-				intialObtain = true;
-			}
-			this.props.obtainTokenInfo(address, intialObtain);
-		});
+	componentDidMount = async () => {
+
+		this.props.obtainMoneyMarket();
+
+		// let tokenAddresses = getTokenAddresses();
+		// tokenAddresses.forEach((address: string, index: number) => {
+		// 	let intialObtain = false;
+		// 	if (index === 0) {
+		// 		intialObtain = true;
+		// 	}
+		// 	this.props.obtainTokenInfo(address, intialObtain);
+		// });
 	}
 
 	render() {
@@ -61,10 +64,11 @@ class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
 	}
 }
 
+
 const mapDispatchToProps = (dispatch: any) => {
 	return {
-		obtainTokenInfo: (address: string, intialObtain: boolean) => {
-			dispatch(obtainTokenInfo(address, intialObtain))
+		obtainMoneyMarket: (intialObtain: boolean) => {
+			dispatch(getMoneyMarketInstances())
 		}
 	}
 }

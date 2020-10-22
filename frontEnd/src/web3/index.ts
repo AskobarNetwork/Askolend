@@ -1,10 +1,11 @@
 import { Signer, Contract, utils } from "ethers";
 import BN from "bn.js";
-import { Web3Provider, Provider } from "@ethersproject/providers";
+import { Web3Provider } from "@ethersproject/providers";
 import { Network } from "./types";
 
 const contractAddresses = {
   test: '0xb33f2f17eb9af9309ccbd31d6941ef15268c9e7b'
+
 }
 
 type ContractName = keyof typeof contractAddresses
@@ -76,9 +77,9 @@ export class ProtocolProvider {
     }
   };
 
-  public getContract = (name: ContractName) => {
+  public getContract = (name: string, address: string) => {
     const { abi } = this.getABI(name);
-    const address = this.contractAddresses[name];
+    //const address = this.contractAddresses[name];
     return new Contract(address, abi, this.signer as Signer);
   };
 }

@@ -1,5 +1,5 @@
 import Fortmatic from 'fortmatic';
-import Web3 from 'web3';
+// import Web3 from 'web3';
 
 export const WEB3_ACCOUNTS_CHANGED = 'WEB3_ACCOUNTS_CHANGED'
 export const WEB3_CHAIN_CHANGED = 'WEB3_CHAIN_CHANGED'
@@ -11,6 +11,8 @@ export const WEB3_MODAL_TOGGLE = 'WEB3_MODAL_TOGGLE'
 function web3Connect() {
   return { type: WEB3_CONNECT, connected: false }
 }
+
+type Web3 = any;
 
 function web3Connected(web3: Web3) {
   return { type: WEB3_CONNECTED, connected: true, web3 }
@@ -25,11 +27,11 @@ export function makeWeb3Connection(fortmaticApiKey: string) {
     if (window.ethereum) {
       // Use MetaMask provider
       // @ts-ignore
-      window.web3 = new Web3(window.ethereum);
+      // window.web3 = new Web3(window.ethereum);
     } else {
       // Use Fortmatic provider
       // @ts-ignore
-      window.web3 = new Web3(fm.getProvider());
+      // window.web3 = new Web3(fm.getProvider());
       // @ts-ignore
       window.web3.currentProvider.enable();
     }

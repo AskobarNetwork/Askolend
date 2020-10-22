@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import React from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Web3 from 'web3';
+// import Web3 from 'web3';
 import { connect } from 'react-redux'
 import { makeWeb3Connection } from '../actions'
 import { withStyles } from '@material-ui/styles';
@@ -22,6 +22,8 @@ const styles = (theme: any) => ({
         maxHeight: '15px',
     },
 });
+
+type Web3 = any;
 
 interface IBarProps {
     classes: any,
@@ -46,7 +48,7 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
 
 
     componentDidUpdate = () => {
-        this.props.web3.eth.requestAccounts().then((accounts) => {
+        this.props.web3.eth.requestAccounts().then((accounts: any[]) => {
             let account = accounts[0];
             if (account !== null && account !== undefined && account !== '') {
                 if (this.state.account !== account) {
@@ -54,20 +56,20 @@ class BarClass extends React.Component<IBarProps, IBarState>  {
                         account: account,
                     });
                 }
-                this.props.web3.eth.getBalance(account).then((balance) => {
+                this.props.web3.eth.getBalance(account).then((balance: String | undefined) => {
                     if (this.state.balance !== balance && balance !== undefined) {
                         this.setState({
                             balance: balance,
                         });
                     }
-                }).catch((err) => {
+                }).catch((err: any) => {
                     console.error(err);
                 });
             }
             else {
                 console.error('account is ' + account);
             }
-        }).catch((err) => {
+        }).catch((err: any) => {
             console.error(err);
         });
     }

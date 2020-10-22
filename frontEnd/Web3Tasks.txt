@@ -1,4 +1,19 @@
 This txt file is ment to document what tasks need to be done to handle front end web3 integration for the AskoLend project
+TASKS PULL MONEY MARKET INSTANCES INTO LEND/BORROW:
+the whitelisted asset list will need to be called to retrieve a "whitelisted asset array" from the MoneyMarketControl contract using
+getAssets()
+
+each address in this array will need to be used to call the instanceTracker() function to retrieve their MoneyMarketInstance addresses
+which will then be used to instantiate each instance using ether.js
+
+I beleive we can do this using redux to instantiate each contract and keep them in state for global use
+
+we will need to do this with every asset as an IERC20 instance
+
+each MoneyMarketInstance
+
+and each MoneyMakerInstance's ALR and AHR tokens
+
 
 TASKS SUPPLY SIDE:
 
@@ -31,4 +46,4 @@ need a component for user to redeem their Asko Risk Tokens back for their collat
 
 TASKS REPAY LOAN:
 
-need a component where a user can repay their borrows using the repay() function from the MoneyMarketInstance contract of an asset 
+need a component where a user can repay their borrows using the repay() function from the MoneyMarketInstance contract of an asset

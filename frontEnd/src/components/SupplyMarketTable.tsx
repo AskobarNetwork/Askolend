@@ -144,6 +144,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
             }
         }
 
+        // ALR OR AHR
         const supply: SupplyToken[] = [];
         for (const token of tokenList) {
 
@@ -206,6 +207,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                 <TableCell>Asset</TableCell>
                                 <TableCell align='right'>APY</TableCell>
                                 <TableCell align='center'>Wallet</TableCell>
+                                <TableCell align='center'>Balance</TableCell>
                                 <TableCell align='center'>Collateral</TableCell>
                             </TableRow>
                         </TableHead>
@@ -228,6 +230,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                     </TableCell>
                                     <TableCell align='right'>{token.apy + '%'}</TableCell>
                                     <TableCell align='center'>{token.wallet}</TableCell>
+                                    <TableCell align='center'>{token.balance}</TableCell>
                                     <TableCell align='center'>
                                         {
                                             token.lowRisk ?

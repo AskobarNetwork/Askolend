@@ -6,6 +6,7 @@ import { ProtocolProvider } from "web3";
 
 const fromWei = ProtocolProvider.fromWei;
 
+// Asset + Asset-ALR + Asset-AHR
 export interface Token {
 
         name: string,

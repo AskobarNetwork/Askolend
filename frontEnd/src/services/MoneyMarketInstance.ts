@@ -44,4 +44,22 @@ export class MoneyMarketInstanceService {
 
         return (await this.provider.getProvider()).waitForTransaction(transactionObject.hash)
     }
+
+    calculateFee = async(amount: BigNumber, fee: BigNumber): Promise<BigNumber> => {
+        return await this.contract.calculateFee(amount, fee);
+    }
+
+    getAHRFee = async(): Promise<BigNumber> => {
+        return await this.contract.fee_AHR();
+    }
+
+    getALRFee = async(): Promise<BigNumber> => {
+        return await this.contract.fee_ALR();
+    }
+
+    getDivisor = async(): Promise<BigNumber> => {
+        return await this.contract.divisor();
+    }
+
+
 }

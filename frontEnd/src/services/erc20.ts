@@ -15,9 +15,8 @@ class ERC20Service {
     return this.contract.address
   }
 
-  getBalance = async (owner: string): Promise<number> => {
-    const amount: BigNumber = await this.contract.balanceOf(owner);
-    return amount.toNumber();
+  getBalance = async (owner: string): Promise<BigNumber> => {
+    return await this.contract.balanceOf(owner);
   }
 
   /**

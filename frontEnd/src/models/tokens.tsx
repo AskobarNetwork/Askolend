@@ -1,24 +1,31 @@
+import { BigNumber, ethers } from "ethers";
 import { AskoRiskTokenService } from "services/AskoRiskToken";
 import { ERC20Service } from "services/erc20";
 import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
+import { ProtocolProvider } from "web3";
+
+const fromWei = ProtocolProvider.fromWei;
 
 export interface Token {
 
         name: string,
         asset: string,
         address: string, // address of the underlying asset
-        highRiskSupplyAPY: number,
-        lowRiskSupplyAPY: number,
-        lowRiskBorrowAPY: number,
-        borrowLimit: number,
-        borrowLimitUsed: number,
-        borrowedAmount: number,
+        highRiskSupplyAPY: string,
+        highRiskBalance: string,
+        lowRiskSupplyAPY: string,
+        lowRiskBorrowAPY: string,
+        lowRiskBalance: string,
+        lowRiskExchangeRate: string,
+        borrowLimit: string,
+        borrowLimitUsed: string,
+        borrowedAmount: string,
         supplyEnabled: boolean,
         collateral: boolean,
         marketAddress: string,
         lowRiskAddress: string,
         highRiskAddress: string,
-        walletAmount: number,
+        walletAmount: string,
 
         // collateral: boolean,
         // liquidity: number,
@@ -33,34 +40,50 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
     const userAddress = await provider.getSignerAddress();
     const name = await moneyMarket.getAssetName();
     const address = await moneyMarket.getAsset();
-    const highRiskSupplyAPY = (await highRisk.supplyRate()).toNumber();
-    const lowRiskSupplyAPY = (await lowRisk.supplyRate()).toNumber();
-    const lowRiskBorrowAPY = (await lowRisk.borrowRate()).toNumber();
+    const highRiskSupplyAPY = fromWei(await highRisk.supplyRate());
+    const lowRiskSupplyAPY = fromWei(await lowRisk.supplyRate());
+    const lowRiskBorrowAPY = fromWei(await lowRisk.borrowRate());
+
+    let lowRiskBalance = fromWei(await lowRisk.getBalance(userAddress));
+    let highRiskBalance = fromWei(await highRisk.getBalance(userAddress));
+
+    let lowRiskExchangeRate = "0";
+    try {
+        lowRiskExchangeRate = fromWei(await lowRisk.getExchangeRate());
+    } catch (ex) {
+        console.log("get exchange rate failed");
+    } 
     
     const asset = await new ERC20Service(provider, address);
-    const walletAmount = await asset.getBalance(userAddress);
+    const walletAmount = fromWei(await asset.getBalance(userAddress));
 
-    let borrowedAmount = 0;
+    let borrowedAmount = "0";
     try {
-        borrowedAmount = await lowRisk.borrowBalancePrior(userAddress);
+        borrowedAmount = fromWei(await lowRisk.borrowBalancePrior(userAddress));
     } catch (ex) {
+        console.log("get borrow balance prior")
     }
+
+    const canSupply = await asset.hasEnoughAllowance(userAddress, moneyMarket.address, ethers.constants.MaxUint256.div(2));
 
     return {
         name,
         asset: name,
         address,
         highRiskSupplyAPY,
+        highRiskBalance,
         lowRiskSupplyAPY,
         lowRiskBorrowAPY,
-        borrowLimit: 0, // help,
-        borrowLimitUsed: 0, // help,
+        lowRiskBalance,
+        lowRiskExchangeRate,
+        borrowLimit: "0", // help,
+        borrowLimitUsed: "0", // help,
         borrowedAmount,
-        supplyEnabled: false, //help
+        supplyEnabled: canSupply,
         collateral: false, // help
         marketAddress: moneyMarket.address,
         lowRiskAddress: lowRisk.address,
-        highRiskAddress: highRisk.address
+        highRiskAddress: highRisk.address,
         walletAmount
     } as Token;
     

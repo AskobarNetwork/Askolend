@@ -21,7 +21,7 @@ export function getMoneyMarketInstances() {
     dispatch(gettingInstances());
 
     const eth = await ProtocolProvider.getInstance();
-    const control = new MoneyMarketControlService(eth, "0xB4693b9732003C1448be473702b2Ee0611dcb165");
+    const control = new MoneyMarketControlService(eth, "0x67065c77F3320aBF53bC19796a66d7DfB2232EBf");
     const instances = await control.getInstances();
 
     dispatch(instancesFound(instances));

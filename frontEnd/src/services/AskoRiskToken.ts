@@ -1,11 +1,13 @@
 import { BigNumber, Contract } from "ethers";
 import { ProtocolProvider } from "web3";
+import { ERC20Service } from "./erc20";
 
 
-export class AskoRiskTokenService {
-    contract: Contract;
+export class AskoRiskTokenService extends ERC20Service {
 
-    constructor(public provider: ProtocolProvider, controlAddress: string) {
+    constructor(provider: ProtocolProvider, controlAddress: string)
+    {
+        super(provider, controlAddress)
         this.contract = provider.getContract("AskoRiskToken", controlAddress)
     }
 
@@ -29,11 +31,19 @@ export class AskoRiskTokenService {
         return await this.contract.borrowRatePerBlock();
     }
 
-    balanceOfUnderlying = async (owner: string): Promise<number> => {
+    balanceOfUnderlying = async (owner: string): Promise<BigNumber> => {
         return await this.contract.balanceOfUnderlyingPrior(owner);
     }
 
-    borrowBalancePrior = async (owner: string): Promise<number> => {
+    borrowBalancePrior = async (owner: string): Promise<BigNumber> => {
         return await this.contract.borrowBalancePrior(owner);
+    }
+
+    balanceOfUnderlyingPrior = async (owner: string): Promise<BigNumber> => {
+        return await this.contract.balanceOfUnderlyingPrior(owner);
+    }
+
+    getCash = async (): Promise<BigNumber> => {
+        return await this.getCash();
     }
 }

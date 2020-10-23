@@ -1,4 +1,4 @@
-import { Contract } from "ethers";
+import { BigNumber, Contract, providers } from "ethers";
 import { Token } from "models";
 import { ProtocolProvider } from "web3";
 
@@ -31,5 +31,17 @@ export class MoneyMarketInstanceService {
 
     getName = async(): Promise<string> => {
         return await this.contract.name();
+    }
+
+    supplyALRPool = async(amount: BigNumber): Promise<providers.TransactionReceipt> => {
+        const transactionObject = await this.contract.lendToALRpool(amount);
+
+        return (await this.provider.getProvider()).waitForTransaction(transactionObject.hash)
+    }
+
+    supplyAHRPool = async(amount: BigNumber): Promise<providers.TransactionReceipt> => {
+        const transactionObject = await this.contract.lendToAHRpool(amount);
+
+        return (await this.provider.getProvider()).waitForTransaction(transactionObject.hash)
     }
 }

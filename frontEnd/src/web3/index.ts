@@ -1,5 +1,4 @@
-import { Signer, Contract, utils } from "ethers";
-import BN from "bn.js";
+import { Signer, Contract, utils, BigNumber } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { Network } from "./types";
 
@@ -19,14 +18,14 @@ export class ProtocolProvider {
 
   private static _instance: ProtocolProvider;
 
-  public static fromWei(amount: BN): string {
+  public static fromWei(amount: BigNumber): string {
     const etherAmount = utils.formatEther(amount.toString());
     return etherAmount.toString();
   }
 
-  public static toWei(amount: string | number): BN {
+  public static toWei(amount: string | number): BigNumber {
     const weiAmount = utils.parseEther(amount.toString());
-    return new BN(weiAmount.toString());
+    return BigNumber.from(weiAmount.toString());
   }
 
   private constructor() { }

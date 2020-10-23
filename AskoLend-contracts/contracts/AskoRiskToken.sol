@@ -157,7 +157,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 
 //Calculate the number of blocks elapsed since the last accrual
       (MathError mathErr, uint blockDelta) = subUInt(currentBlockNumber, accrualBlockNumberPrior);
-      require(mathErr == MathError.NO_ERROR);
 //Calculate the interest accumulated into borrows and reserves and the new index:
       Exp memory simpleInterestFactor;
       uint interestAccumulated;
@@ -166,19 +165,14 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       uint borrowIndexNew;
 //simpleInterestFactor = borrowRate * blockDelta
       (mathErr, simpleInterestFactor) = mulScalar(Exp({mantissa: borrowRateMantissa}), blockDelta);
-        require(mathErr == MathError.NO_ERROR);
 //interestAccumulated = simpleInterestFactor * totalBorrows
       (mathErr, interestAccumulated) = mulScalarTruncate(simpleInterestFactor, borrowsPrior);
-        require(mathErr == MathError.NO_ERROR);
 //totalBorrowsNew = interestAccumulated + totalBorrows
       (mathErr, totalBorrowsNew) = addUInt(interestAccumulated, borrowsPrior);
-        require(mathErr == MathError.NO_ERROR);
 //totalReservesNew = interestAccumulated * reserveFactor + totalReserves
       (mathErr, totalReservesNew) = mulScalarTruncateAddUInt(Exp({mantissa: reserveFactorMantissa}), interestAccumulated, reservesPrior);
-        require(mathErr == MathError.NO_ERROR);
 //borrowIndexNew = simpleInterestFactor * borrowIndex + borrowIndex
       (mathErr, borrowIndexNew) = mulScalarTruncateAddUInt(simpleInterestFactor, borrowIndexPrior, borrowIndexPrior);
-        require(mathErr == MathError.NO_ERROR);
       //Write the previously calculated values into storage
       accrualBlockNumber = currentBlockNumber;
       borrowIndex = borrowIndexNew;
@@ -309,10 +303,8 @@ emit InterestAccrued(accrualBlockNumber, borrowIndex, totalBorrows, totalReserve
         MathError mathErr;
 //calculate total value held by contract plus owed to contract
         (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(totalCash, totalBorrows, totalReserves);
-          require(mathErr == MathError.NO_ERROR);
 //calculate exchange rate
         (mathErr, exchangeRate) = getExp(cashPlusBorrowsMinusReserves, totalSupply());
-          require(mathErr == MathError.NO_ERROR);
         return (exchangeRate.mantissa);
       }
     }
@@ -358,7 +350,6 @@ emit InterestAccrued(accrualBlockNumber, borrowIndex, totalBorrows, totalReserve
 //We get the current exchange rate and calculate the number of AHR to be minted:
 //mintTokens = _amount / exchangeRate
     (vars.mathErr, vars.mintTokens) = divScalarByExpTruncate(_amount, Exp({mantissa: vars.exchangeRateMantissa}));
-    require(vars.mathErr == MathError.NO_ERROR);
     _mint(_account, vars.mintTokens);
     emit Minted(_account, vars.mintTokens);
   }
@@ -388,7 +379,6 @@ We calculate the exchange rate and the amount of underlying to be redeemed:
 redeemAmount = _amount x exchangeRateCurrent
 */
     (vars.mathErr, vars.redeemAmount) = mulScalarTruncate(Exp({mantissa: vars.exchangeRateMantissa}), _amount);
-  require(vars.mathErr == MathError.NO_ERROR);
 //Fail if protocol has insufficient cash
     require (getCashPrior() >= vars.redeemAmount);
 //transfer the calculated amount of underlying asset to the msg.sender
@@ -431,10 +421,8 @@ redeemAmount = _amount x exchangeRateCurrent
       vars.accountBorrows = borrowBalanceCurrent(_borrower);
 //accountBorrowsNew = accountBorrows + borrowAmount
       (vars.mathErr, vars.accountBorrowsNew) = addUInt(vars.accountBorrows, _borrowAmount);
-        require(vars.mathErr == MathError.NO_ERROR);
 //totalBorrowsNew = totalBorrows + borrowAmount
       (vars.mathErr, vars.totalBorrowsNew) = addUInt(totalBorrows, _borrowAmount);
-        require(vars.mathErr == MathError.NO_ERROR);
 //We write the previously calculated values into storage
       accountBorrows[_borrower].principal = vars.accountBorrowsNew;
       accountBorrows[_borrower].interestIndex = borrowIndex;
@@ -477,10 +465,8 @@ redeemAmount = _amount x exchangeRateCurrent
 
 //accountBorrowsNew = accountBorrows - actualRepayAmount
     (vars.mathErr, vars.accountBorrowsNew) = subUInt(vars.accountBorrows, vars.repayAmount);
-      require(vars.mathErr == MathError.NO_ERROR);
 //totalBorrowsNew = totalBorrows - actualRepayAmount
     (vars.mathErr, vars.totalBorrowsNew) = subUInt(totalBorrows, vars.repayAmount);
-      require(vars.mathErr == MathError.NO_ERROR);
     /* We write the previously calculated values into storage */
     accountBorrows[borrower].principal = vars.accountBorrowsNew;
     accountBorrows[borrower].interestIndex = borrowIndex;

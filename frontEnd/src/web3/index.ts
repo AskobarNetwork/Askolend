@@ -11,7 +11,7 @@ const contractAddresses = {
 type ContractName = keyof typeof contractAddresses
 
 export class ProtocolProvider {
-  private ABI_BASE_ROUTE = "./artifacts";
+  private static ABI_BASE_ROUTE = "./artifacts";
 
   public provider: Web3Provider | null = null;
   public signer: Signer | null = null;
@@ -63,22 +63,32 @@ export class ProtocolProvider {
     return (await this.provider) as Web3Provider;
   };
 
+  public getSignerAddress = async (): Promise<string> => {
+    const signer = this.signer;
+
+    if (signer === null) {
+      throw new Error('No signer');
+    }
+
+    return await signer.getAddress();
+  }
+
   public getNetwork = async () => {
     const network = await this.provider?.getNetwork();
     const name = network!.name === "homestead" ? "mainnet" : network!.name;
     return name as Network;
   };
 
-  public getABI = (name: string) => {
+  public static getABI = (name: string) => {
     try {
-      return require(`${this.ABI_BASE_ROUTE}/${name}.json`);
+      return require(`${ProtocolProvider.ABI_BASE_ROUTE}/${name}.json`);
     } catch (error) {
       throw new Error(`No ABI found with name: ${name}`);
     }
   };
 
   public getContract = (name: string, address: string) => {
-    const { abi } = this.getABI(name);
+    const { abi } = ProtocolProvider.getABI(name);
     //const address = this.contractAddresses[name];
     return new Contract(address, abi, this.signer as Signer);
   };

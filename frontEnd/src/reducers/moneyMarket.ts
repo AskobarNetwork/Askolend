@@ -1,7 +1,7 @@
 import { MONEYMARKET_GETINSTANCES_FINISH, MONEYMARKET_GETINSTANCES_START } from "../actions"
 
 const initialState: any = {
-    instances: {}
+    instances: []
 }
 
 export function moneyMarket(state = initialState, action: any) {
@@ -9,7 +9,7 @@ export function moneyMarket(state = initialState, action: any) {
         case MONEYMARKET_GETINSTANCES_START:
             console.log("start");
             return Object.assign({}, state, {
-                instances: {}
+                instances: []
             });
         case MONEYMARKET_GETINSTANCES_FINISH:
             return Object.assign({}, state, {

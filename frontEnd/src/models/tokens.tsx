@@ -1,40 +1,51 @@
-export class Token {
-    address: string;
-    asset: string;
-    apy: number;
-    collateral: boolean;
-    liquidity: number;
-    supplyEnabled: boolean;
-    supplyApy: number;
-    borrowApy: number;
-    borrowBalance: number;
-    borrowLimit: number;
-    borrowLimitUsed: number;
+import { AskoRiskTokenService } from "services/AskoRiskToken";
+import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
 
-    constructor(address: string,
-        asset: string,
-        apy: number,
-        collateral: boolean,
-        liquidity: number,
-        supplyEnabled: boolean,
-        supplyApy: number,
-        borrowApy: number,
-        borrowBalance: number,
-        borrowLimit: number,
-        borrowLimitUsed: number,
+export class Token {
+
+    constructor(
+        public name: string,
+        public address: string, // address of the underlying asset
+        public highRiskSupplyAPY: number,
+        public lowRiskSupplyAPY: number,
+        public lowRiskBorrowAPY: number,
+        public borrowLimit: number,
+        public borrowLimitUsed: number,
+        public borrowedAmount: number,
+        public supplyEnabled: boolean,
+        public collateral: boolean,
+        public marketAddress: string,
+        public lowRiskAddress: string,
+        public highRiskAddress: string
+
+        // collateral: boolean,
+        // liquidity: number,
+        // borrowBalance: number,
     ) {
-        this.address = address;
-        this.asset = asset;
-        this.apy = apy;
-        this.collateral = collateral;
-        this.liquidity = liquidity;
-        this.supplyEnabled = supplyEnabled;
-        this.supplyApy = supplyApy;
-        this.borrowApy = borrowApy;
-        this.borrowBalance = borrowBalance;
-        this.borrowLimit = borrowLimit;
-        this.borrowLimitUsed = borrowLimitUsed;
     }
+}
+
+export async function createToken(moneyMarket: MoneyMarketInstanceService): Promise<Token> {
+    const provider = moneyMarket.provider;
+    const highRisk = new AskoRiskTokenService(provider, await moneyMarket.getHighRisk());
+    const lowRisk = new AskoRiskTokenService(provider, await moneyMarket.getLowRisk());
+
+    return new Token(
+        await moneyMarket.getAssetName(),
+        await moneyMarket.getAsset(),
+        await highRisk.supplyRate(),
+        await lowRisk.supplyRate(),
+        await lowRisk.borrowRate(),
+        0, // help,
+        0, // help,
+        await lowRisk.borrowBalancePrior(await provider.getSignerAddress()),
+        false, //help
+        false, // help
+        moneyMarket.address,
+        lowRisk.address,
+        highRisk.address
+    )
+    
 }
 
 export function getTokenLogoPngSrc(address: string): string {

@@ -38,6 +38,7 @@ contract MoneyMarketControl is Ownable, Exponential {
   mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
   mapping(address => mapping(address => uint)) nonCompliant;// tracks user to a market to a time
   mapping(address => mapping(address => uint)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
+  mapping(address => mapping(address => uint)) lockedCollateralTracker; //tracks user to a market to an amount of collateral locked in a market
   mapping(address => bool) isMMI;
 
   /**
@@ -196,17 +197,42 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
 @dev this function can only be called by a MoneyMarketInstance.
 **/
  function trackCollateral(address _borrower, address _ALR, uint _amount) external onlyMMI {
-   collateralTracker[_borrower][_ALR] = _amount;
+   collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR].add(_amount);
+ }
+
+/**
+@notice lockCollateral is used by an MMI when a user borrows against their collateral to track collateral amounts
+        globally.
+@param _borrower is the address of the corrower
+@param _ALR is the address of the seller
+@param _amount is the amount of ALR  collateral being "locked" in a borrow
+@dev this function can only be called by a MoneyMarketInstance.
+**/
+ function lockCollateral(address _borrower, address _ALR, uint _amount) external onlyMMI {
+   lockedCollateralTracker[_borrower][_ALR] = lockedCollateralTracker[_borrower][_ALR].add(_amount);
  }
 
  /**
+ @notice unlockCollateral is used by an MMI when a user pays a loan off to unlock their borrowed against collateral so that
+          it can be borrowed against again
+ @param _borrower is the address of the corrower
+ @param _ALR is the address of the seller
+ @param _amount is the amount of ALR  collateral being "unlocked" from a repay
+ @dev this function can only be called by a MoneyMarketInstance.
+ **/
+  function unlockCollateral(address _borrower, address _ALR, uint _amount) external onlyMMI {
+    lockedCollateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR].sub(_amount);
+  }
+
+ /**
 @notice checkCollateralValue is a view function that accepts an account address and an ALR contract
-        address and returns the USD value of the collateral they have locked.
+        address and returns the USD value of the availible collateral they have. Availible collateral is
+        determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
 @param _borrower is the address whos collateral value we are looking up
 @param _ALR is the address of the ALR token where collateral value is being looked up
 @dev this function can only be called by a MoneyMarketInstance.
  **/
- function checkCollateralValue(address _borrower, address _ALR) external view onlyMMI returns(uint) {
+ function checkAvailibleCollateralValue(address _borrower, address _ALR ) external view onlyMMI returns(uint) {
 //instantiate the MoneyMakerInstance calling this function
    MoneyMarketInstanceI MMI = MoneyMarketInstanceI(msg.sender);
 //retreive the address of its asset
@@ -215,8 +241,12 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
    uint priceOfAsset = Oracle.getUnderlyingPrice(asset);
 //retrieve the amount of the asset locked as collateral
    uint amountOfAssetCollat = collateralTracker[_borrower][_ALR];
-//multiply the amount of collateral by the asset price and return it
-   return amountOfAssetCollat.mul(priceOfAsset);
+//retreive the amount of locked collateral that is loaned against
+   uint amountOfLockedCollat = lockedCollateralTracker[_borrower][_ALR];
+//determine availible collateral
+  uint availibleCollateral = amountOfAssetCollat.sub(amountOfLockedCollat);
+//multiply the amount of availible collateral by the asset price and return it
+   return availibleCollateral.mul(priceOfAsset);
  }
 
 /**
@@ -237,6 +267,7 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
       uint borrowedAmount;
       uint collatAmount;
       uint borrowedValue;
+      uint borrowedValue150;
       uint collatValue;
       uint halfVal;
       uint exchangeRateMantissa; // Note: reverts on error
@@ -269,12 +300,16 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
 //calculate USDC value amounts of each
     vars.borrowedValue = vars.borrowedAmount.mul(priceBorrowedMantissa);
     vars.collatValue = vars.collatAmount.mul(priceCollateralMantissa);
-//divide collateral value in half
-    vars.halfVal = vars.collatValue.div(2);
-//add 1/2 the collateral value to the total collateral value for 150% colleral value
-    vars.collatValue = vars.collatValue.add(vars.halfVal);
-//require the value of whats been borrowed to be lower than 150% of the collaterals value
-    if (vars.collatValue >= vars.borrowedValue){
+//divide borrowedValue value in half
+    vars.halfVal = vars.borrowedValue.div(2);
+//add 1/2 the borrowedValue value to the total borrowedValue value for 150% borrowedValue value
+    vars.borrowedValue150 = vars.borrowedValue.add(vars.halfVal);
+/**
+need to check if the amount of collateral is less than 150% of the borrowed amount
+if the collateral value is greater than or equal to 150% of the borrowed value than we liquidate
+if not than the non compliance timer is reset
+**/
+    if (vars.collatValue <= vars.borrowedValue150){
 //Get the exchange rate and calculate the number of collateral tokens to seize:
      vars.exchangeRateMantissa = _ARTowed.exchangeRateCurrent(); // Note: reverts on error
     Exp memory numerator;

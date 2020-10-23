@@ -257,7 +257,7 @@ emit InterestAccrued(accrualBlockNumber, borrowIndex, totalBorrows, totalReserve
 @notice Returns the current per-block borrow interest rate for this ART
 @return The borrow interest rate per block, scaled by 1e18
 **/
-      function borrowRatePerBlock() external view returns (uint) {
+      function borrowRatePerBlock() public view returns (uint) {
           return interestRateModel.getBorrowRate(getCashPrior(), totalBorrows, totalReserves);
       }
 
@@ -265,9 +265,24 @@ emit InterestAccrued(accrualBlockNumber, borrowIndex, totalBorrows, totalReserve
 @notice Returns the current per-block supply interest rate for this ART
 @return The supply interest rate per block, scaled by 1e18
 **/
-      function supplyRatePerBlock() external view returns (uint) {
+      function supplyRatePerBlock() public view returns (uint) {
           return interestRateModel.getSupplyRate(getCashPrior(), totalBorrows, totalReserves, reserveFactorMantissa);
       }
+
+/**
+@notice getSupplyAPY roughly calculates the current APY for supplying using an average of 6500 blocks per day
+**/
+    function getSupplyAPY() public view returns (uint) {
+      //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
+      return supplyRatePerBlock().mul(2372500);
+    }
+/**
+@notice getSupplyAPY roughly calculates the current APY for borrowing using an average of 6500 blocks per day
+**/
+  function getBorrowAPY() public view returns (uint) {
+    //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
+    return borrowRatePerBlock().mul(2372500);
+  }
 
 /**
 @notice Returns the current total borrows plus accrued interest

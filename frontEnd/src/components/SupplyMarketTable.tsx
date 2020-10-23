@@ -17,11 +17,19 @@ import { ProtocolProvider } from 'web3';
 import { MoneyMarketInstanceService } from 'services/MoneyMarketInstance';
 import { getTokenData } from 'actions/askoToken';
 import { ERC20Service } from 'services/erc20';
+import { AskoRiskTokenService } from 'services/AskoRiskToken';
+import { setCollateralMarket } from 'actions/collateral';
+
+interface TokenMap {
+    [moneyMarketAddress: string]: Token;
+}
 
 interface ISupplyMarketTableProps {
     moneyMarkets?: [],
-    askoTokens?: {},
-    refreshMoneyMarket: Function
+    askoTokens?: TokenMap,
+    collateralMarket?: string,
+    refreshMoneyMarket: Function,
+    setCollateralMarket: Function
     
 }
 
@@ -51,10 +59,19 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
     }
 
     collateralSwitchClick = (event: React.MouseEvent, token: SupplyToken) => {
-        this.setState({
-            collateralopen: !this.state.collateralopen,
-            selectedToken: token,
-        });
+        // this.setState({
+        //     collateralopen: !this.state.collateralopen,
+        //     selectedToken: token,
+        // });
+
+        if (this.props.collateralMarket === token.token.marketAddress) {
+            this.props.setCollateralMarket(undefined);
+        } else {
+            console.log("set" + token.token.marketAddress);
+            this.props.setCollateralMarket(token.token.marketAddress);
+        }
+
+        
     }
 
     collateralSet = (collateralized: boolean, collateral: Token, confirmationMessage: string) => {
@@ -122,8 +139,27 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         }
     }
 
-    withdraw = (tokenToSupply: Token, amount: number, confirmationMessage: string) => {
+    withdraw = async (tokenToSupply: SupplyToken, amount: number, confirmationMessage: string) => {
         this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
+
+        const provider = await ProtocolProvider.getInstance();
+        const askoToken = new AskoRiskTokenService(provider, tokenToSupply.token.lowRiskAddress);
+
+        const amountInWei = ProtocolProvider.toWei(amount);
+        const currentBalance = await askoToken.getBalance(await provider.getSignerAddress());
+
+        if (amountInWei.gt(currentBalance)) {
+            this.setState({ confirmationOpen: true, confirmationTitle: "You are trying to withdraw more than you have deposited." });
+            return;
+        }
+
+        try {
+            await askoToken.withdraw(amountInWei);
+        } catch {
+            this.setState({ confirmationOpen: false, confirmationTitle: confirmationMessage });
+            this.props.refreshMoneyMarket(tokenToSupply.token.marketAddress);
+        }
+
         // TO-DO: Implement withdraw action in https://github.com/AskobarNetwork/Askolend/issues/23
     }
 
@@ -234,7 +270,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                     <TableCell align='center'>
                                         {
                                             token.lowRisk ?
-                                            <Switch checked={token.token.collateral} onClick={(event) => {
+                                            <Switch checked={this.props.collateralMarket === token.token.marketAddress} onClick={(event) => {
                                                 event.stopPropagation();
                                                 this.collateralSwitchClick(event, token);
                                             }}></Switch> : null
@@ -253,7 +289,8 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
 const mapStateToProps = (state: any) => {
     return {
         moneyMarkets: state.moneyMarket.instances,
-        askoTokens: state.askoToken.tokens
+        askoTokens: state.askoToken.tokens,
+        collateralMarket: state.collateral.market
     }
 }
 
@@ -261,7 +298,10 @@ const mapDispatchToProps = (dispatch: any) => {
 	return {
 		refreshMoneyMarket: (market: string) => {
 			dispatch(getTokenData(market));
-		}
+        },
+        setCollateralMarket: (market: string) => {
+            dispatch(setCollateralMarket(market));
+        }
 	}
 }
 

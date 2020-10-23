@@ -25,6 +25,7 @@ import { SupplyToken, Token } from '../models';
 import { connect } from 'react-redux'
 import { getTokenLogoPngSrc } from '../models'
 import { withStyles } from '@material-ui/styles';
+import { ProtocolProvider } from 'web3';
 
 const styles = (theme: any) => ({
     supplyDialog: {
@@ -78,11 +79,22 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
         this.setState({ supply: !this.state.supply, value: newValue });
     };
 
+    canWithdraw = (): boolean => {
+        if (this.props.token === undefined) {
+            return false;
+        }
+        const withdrawAmount = ProtocolProvider.toWei(this.state.amount);
+        const balance = ProtocolProvider.toWei(this.props.token?.balance);
+
+        return withdrawAmount.lte(balance);
+    }
+
     render() {
         const Message = (this.props.token?.token.supplyEnabled === false && this.state.supply === true) ?
             <Typography variant='subtitle1'>To supply or repay {this.props.token?.title} you must enable it first.</Typography> :
             <React.Fragment>
                 <Typography variant='subtitle1'>{this.state.supply ? "Supply" : "Withdraw"} {this.state.amount} {this.props.token?.token.name} to the {this.props.token?.lowRisk ? 'Low Risk' : 'High Risk'} Market.</Typography>
+                {/* <Typography>{"Current Balance: "} {this.props.token?.balance}</Typography> */}
                 <TextField
                     type="number"
                     value={this.state.amount}
@@ -160,7 +172,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                                 {this.props.token?.apy}%
                                             </TableCell>
                                         </TableRow>
-                                        { this.props.token?.lowRisk ? 
+                                        {/* { this.props.token?.lowRisk ? 
                                         <TableRow>
                                             <TableCell>
                                                 Borrow Limit
@@ -178,7 +190,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                                 {0}% &#x2192; 0%
                                         </TableCell>
                                         </TableRow>
-                                        : null }
+                                        : null } */}
                                     </TableBody>
                                 </Table>
                             </TabPanel>
@@ -195,7 +207,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                 color='secondary'
                                 fullWidth={true}
                                 variant='contained'
-                                disabled={this.props.token?.token.supplyEnabled && this.state.amount <= 0}
+                                disabled={(this.props.token?.token.supplyEnabled && this.state.amount <= 0) || (!this.state.supply && !this.canWithdraw())}
                                 onClick={() =>
                                     this.state.supply === true ?
                                         (this.props.token?.token.supplyEnabled === false ?
@@ -226,7 +238,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                             {this.state.supply === true ? 'Wallet Balance' : 'Protocol Balance'}
                                         </TableCell>
                                         <TableCell>
-                                            0 {this.props.token?.token.asset}
+                                            {this.state.supply === true ? this.props.token?.wallet : this.props.token?.balance} {this.state.supply === true ? this.props.token?.token.asset : this.props.token?.token.asset + "-" + (this.props.token?.lowRisk ? 'LR' : 'HR')}
                                         </TableCell>
                                     </Grid>
                                 </TableRow>

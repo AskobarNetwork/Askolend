@@ -16,12 +16,14 @@ function instancesFound(instances: any) {
   return { type: MONEYMARKET_GETINSTANCES_FINISH, instances: instances }
 }
 
+const controlAddress = "0x919f366Eb79BC5405B8F9AE9c812dFB9b0C9138D";
+
 export function getMoneyMarketInstances() {
   return async function (dispatch: any) {
     dispatch(gettingInstances());
 
     const eth = await ProtocolProvider.getInstance();
-    const control = new MoneyMarketControlService(eth, "0x67065c77F3320aBF53bC19796a66d7DfB2232EBf");
+    const control = new MoneyMarketControlService(eth, controlAddress);
     const instances = await control.getInstances();
 
     dispatch(instancesFound(instances));

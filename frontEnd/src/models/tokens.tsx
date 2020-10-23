@@ -14,6 +14,7 @@ export interface Token {
         address: string, // address of the underlying asset
         highRiskSupplyAPY: string,
         highRiskBalance: string,
+        highRiskExchangeRate: string,
         lowRiskSupplyAPY: string,
         lowRiskBorrowAPY: string,
         lowRiskBalance: string,
@@ -54,6 +55,9 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
     } catch (ex) {
         console.log("get exchange rate failed");
     } 
+
+    const highRiskExchangeRate = fromWei(await highRisk.getExchangeRate());
+    
     
     const asset = await new ERC20Service(provider, address);
     const walletAmount = fromWei(await asset.getBalance(userAddress));
@@ -73,6 +77,7 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
         address,
         highRiskSupplyAPY,
         highRiskBalance,
+        highRiskExchangeRate,
         lowRiskSupplyAPY,
         lowRiskBorrowAPY,
         lowRiskBalance,

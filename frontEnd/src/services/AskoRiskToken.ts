@@ -46,4 +46,10 @@ export class AskoRiskTokenService extends ERC20Service {
     getCash = async (): Promise<BigNumber> => {
         return await this.getCash();
     }
+
+    withdraw = async (amount: BigNumber): Promise<void> => {
+        const transactionObject = await this.contract.redeem(amount);
+
+        (await this.provider.getProvider()).waitForTransaction(transactionObject.hash)
+    }
 }

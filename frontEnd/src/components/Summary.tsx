@@ -45,6 +45,9 @@ export function Summary() {
                     </Typography>
                 </Grid>
             </Grid>
+
+            <Typography>You can only use Low Risk as collateral.</Typography>
+            <Typography>You can only specific one type of collateral when borrowing an asset.</Typography>
         </div>
     );
 }

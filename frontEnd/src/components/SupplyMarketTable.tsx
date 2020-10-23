@@ -15,10 +15,13 @@ import { connect } from 'react-redux'
 import memoize from "memoize-one";
 import { ProtocolProvider } from 'web3';
 import { MoneyMarketInstanceService } from 'services/MoneyMarketInstance';
+import { getTokenData } from 'actions/askoToken';
 
 interface ISupplyMarketTableProps {
     moneyMarkets?: [],
     askoTokens?: {},
+    refreshMoneyMarket: Function
+    
 }
 
 interface ISupplyMarketTableState {
@@ -68,6 +71,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
     }
 
     supplyClick = (event: React.MouseEvent, token: Token) => {
+        this.props.refreshMoneyMarket(token.marketAddress);
         this.setState({
             supplyOpen: !this.state.supplyOpen,
             selectedToken: token
@@ -225,6 +229,14 @@ const mapStateToProps = (state: any) => {
     }
 }
 
-const SupplyMarketTable = connect(mapStateToProps, null)(SupplyMarketTableClass)
+const mapDispatchToProps = (dispatch: any) => {
+	return {
+		refreshMoneyMarket: (market: string) => {
+			dispatch(getTokenData(market));
+		}
+	}
+}
+
+const SupplyMarketTable = connect(mapStateToProps, mapDispatchToProps)(SupplyMarketTableClass)
 
 export { SupplyMarketTable };

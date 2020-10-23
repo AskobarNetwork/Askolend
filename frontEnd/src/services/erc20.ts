@@ -15,6 +15,11 @@ class ERC20Service {
     return this.contract.address
   }
 
+  getBalance = async (owner: string): Promise<number> => {
+    const amount: BigNumber = await this.contract.balanceOf(owner);
+    return amount.toNumber();
+  }
+
   /**
    * @returns A boolean indicating if `spender` has enough allowance to transfer `neededAmount` tokens from `spender`.
    */

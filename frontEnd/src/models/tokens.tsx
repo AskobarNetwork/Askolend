@@ -1,4 +1,5 @@
 import { AskoRiskTokenService } from "services/AskoRiskToken";
+import { ERC20Service } from "services/erc20";
 import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
 
 export interface Token {
@@ -16,7 +17,8 @@ export interface Token {
         collateral: boolean,
         marketAddress: string,
         lowRiskAddress: string,
-        highRiskAddress: string
+        highRiskAddress: string,
+        walletAmount: number,
 
         // collateral: boolean,
         // liquidity: number,
@@ -34,6 +36,9 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
     const highRiskSupplyAPY = (await highRisk.supplyRate()).toNumber();
     const lowRiskSupplyAPY = (await lowRisk.supplyRate()).toNumber();
     const lowRiskBorrowAPY = (await lowRisk.borrowRate()).toNumber();
+    
+    const asset = await new ERC20Service(provider, address);
+    const walletAmount = await asset.getBalance(userAddress);
 
     let borrowedAmount = 0;
     try {
@@ -56,6 +61,7 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
         marketAddress: moneyMarket.address,
         lowRiskAddress: lowRisk.address,
         highRiskAddress: highRisk.address
+        walletAmount
     } as Token;
     
 }

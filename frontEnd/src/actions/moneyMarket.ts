@@ -1,9 +1,8 @@
 import { Contract } from 'ethers';
 import Fortmatic from 'fortmatic';
-import { MoneyMarket } from 'models/moneyMarket';
 import { MoneyMarketControlService } from 'services/MoneyMarketControl';
-import { obtainTokenInfo } from '.';
 import { ProtocolProvider } from '../web3';
+import { getTokenData, resetTokens } from './askoToken';
 
 export const MONEYMARKET_GETINSTANCES_START = 'MONEYMARKET_GETINSTANCES_START'
 export const MONEYMARKET_GETINSTANCES_FINISH = 'MONEYMARKET_GETINSTANCES_FINISH'
@@ -26,5 +25,10 @@ export function getMoneyMarketInstances() {
     const instances = await control.getInstances();
 
     dispatch(instancesFound(instances));
+    dispatch(resetTokens());
+
+    for (const instance of instances) {
+      dispatch(getTokenData(instance));
+    }
   }
 }

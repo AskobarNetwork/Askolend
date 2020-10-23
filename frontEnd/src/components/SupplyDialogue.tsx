@@ -134,7 +134,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                                 Supply APY
                                             </TableCell>
                                             <TableCell>
-                                                {this.props.token?.supplyApy}%
+                                                {this.props.token?.lowRiskSupplyAPY}%
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -156,7 +156,7 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
                                                 Supply APY
                                             </TableCell>
                                             <TableCell>
-                                                {this.props.token?.supplyApy}%
+                                                {this.props.token?.lowRiskSupplyAPY}%
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -244,7 +244,6 @@ class SupplyDialogClass extends React.Component<ISupplyDialogProps, ISupplyDialo
 
 const mapStateToProps = (state: any) => {
     return {
-        tokenInfos: state.tokenInfo.tokenInfos,
     }
 }
 

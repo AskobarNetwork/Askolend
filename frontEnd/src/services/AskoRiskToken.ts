@@ -1,4 +1,4 @@
-import { Contract } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { ProtocolProvider } from "web3";
 
 
@@ -17,15 +17,15 @@ export class AskoRiskTokenService {
         return await this.contract.getAssetAdd();
     }
 
-    getExchangeRate = async (): Promise<number> => {
+    getExchangeRate = async (): Promise<BigNumber> => {
         return await this.contract.exchangeRatePrior();
     }
 
-    supplyRate = async (): Promise<number> => {
+    supplyRate = async (): Promise<BigNumber> => {
         return await this.contract.supplyRatePerBlock();
     }
 
-    borrowRate = async (): Promise<number> => {
+    borrowRate = async (): Promise<BigNumber> => {
         return await this.contract.borrowRatePerBlock();
     }
 

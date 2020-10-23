@@ -14,7 +14,7 @@ export class MoneyMarketControlService {
     }
 
     getInstances = async (): Promise<string[]> => {
-        const assets = this.contract.getAssets();
+        const assets = await this.contract.getAssets();
         const instances = [];
         for (const asset of assets) {
             instances.push(await this.contract.instanceTracker(asset));

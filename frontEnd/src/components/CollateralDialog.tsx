@@ -36,7 +36,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
 
     render() {
         const buttonTooltip =
-            this.props.token?.collateral === false ? `Enable ${this.props.token?.asset} as collateral` : `Disable ${this.props.token?.asset}`;
+            this.props.token?.collateral === false ? `Enable ${this.props.token?.name} as collateral` : `Disable ${this.props.token?.asset}`;
         const enable =
             this.props.token?.collateral === false ? true : false;
         const message =
@@ -108,7 +108,7 @@ class CollateralDialogClass extends React.Component<ICollateralDialogProps, {}> 
 
 const mapStateToProps = (state: any) => {
     return {
-        tokenInfos: state.tokenInfo.tokenInfos,
+        
     }
 }
 

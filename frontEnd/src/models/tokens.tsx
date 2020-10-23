@@ -1,28 +1,26 @@
 import { AskoRiskTokenService } from "services/AskoRiskToken";
 import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
 
-export class Token {
+export interface Token {
 
-    constructor(
-        public name: string,
-        public address: string, // address of the underlying asset
-        public highRiskSupplyAPY: number,
-        public lowRiskSupplyAPY: number,
-        public lowRiskBorrowAPY: number,
-        public borrowLimit: number,
-        public borrowLimitUsed: number,
-        public borrowedAmount: number,
-        public supplyEnabled: boolean,
-        public collateral: boolean,
-        public marketAddress: string,
-        public lowRiskAddress: string,
-        public highRiskAddress: string
+        name: string,
+        asset: string,
+        address: string, // address of the underlying asset
+        highRiskSupplyAPY: number,
+        lowRiskSupplyAPY: number,
+        lowRiskBorrowAPY: number,
+        borrowLimit: number,
+        borrowLimitUsed: number,
+        borrowedAmount: number,
+        supplyEnabled: boolean,
+        collateral: boolean,
+        marketAddress: string,
+        lowRiskAddress: string,
+        highRiskAddress: string
 
         // collateral: boolean,
         // liquidity: number,
         // borrowBalance: number,
-    ) {
-    }
 }
 
 export async function createToken(moneyMarket: MoneyMarketInstanceService): Promise<Token> {
@@ -30,21 +28,35 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
     const highRisk = new AskoRiskTokenService(provider, await moneyMarket.getHighRisk());
     const lowRisk = new AskoRiskTokenService(provider, await moneyMarket.getLowRisk());
 
-    return new Token(
-        await moneyMarket.getAssetName(),
-        await moneyMarket.getAsset(),
-        await highRisk.supplyRate(),
-        await lowRisk.supplyRate(),
-        await lowRisk.borrowRate(),
-        0, // help,
-        0, // help,
-        await lowRisk.borrowBalancePrior(await provider.getSignerAddress()),
-        false, //help
-        false, // help
-        moneyMarket.address,
-        lowRisk.address,
-        highRisk.address
-    )
+    const userAddress = await provider.getSignerAddress();
+    const name = await moneyMarket.getAssetName();
+    const address = await moneyMarket.getAsset();
+    const highRiskSupplyAPY = (await highRisk.supplyRate()).toNumber();
+    const lowRiskSupplyAPY = (await lowRisk.supplyRate()).toNumber();
+    const lowRiskBorrowAPY = (await lowRisk.borrowRate()).toNumber();
+
+    let borrowedAmount = 0;
+    try {
+        borrowedAmount = await lowRisk.borrowBalancePrior(userAddress);
+    } catch (ex) {
+    }
+
+    return {
+        name,
+        asset: name,
+        address,
+        highRiskSupplyAPY,
+        lowRiskSupplyAPY,
+        lowRiskBorrowAPY,
+        borrowLimit: 0, // help,
+        borrowLimitUsed: 0, // help,
+        borrowedAmount,
+        supplyEnabled: false, //help
+        collateral: false, // help
+        marketAddress: moneyMarket.address,
+        lowRiskAddress: lowRisk.address,
+        highRiskAddress: highRisk.address
+    } as Token;
     
 }
 

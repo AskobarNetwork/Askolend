@@ -1,6 +1,6 @@
 import { Avatar, Grid, Switch, Typography } from '@material-ui/core';
 import { CollateralDialog, ConfirmationDialog, SupplyDialog } from '../components'
-import { Token, getTokenLogoPngSrc } from '../models'
+import { Token, getTokenLogoPngSrc, createToken } from '../models'
 
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
@@ -13,9 +13,12 @@ import TableRow from '@material-ui/core/TableRow';
 import { connect } from 'react-redux'
 
 import memoize from "memoize-one";
+import { ProtocolProvider } from 'web3';
+import { MoneyMarketInstanceService } from 'services/MoneyMarketInstance';
 
 interface ISupplyMarketTableProps {
-    moneyMarkets?: {}
+    moneyMarkets?: [],
+    askoTokens?: {},
 }
 
 interface ISupplyMarketTableState {
@@ -24,7 +27,6 @@ interface ISupplyMarketTableState {
     confirmationTitle: string,
     selectedToken: Token | undefined,
     supplyOpen: boolean,
-    tokenlist: any[],
 }
 
 class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, ISupplyMarketTableState>  {
@@ -35,8 +37,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
             confirmationOpen: false,
             confirmationTitle: '',
             selectedToken: undefined,
-            supplyOpen: false,
-            tokenlist: [],
+            supplyOpen: false
         };
         this.collateralSwitchClick.bind(this);
     }
@@ -102,53 +103,48 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.setState({ supplyOpen: false });
     }
 
-    createTokenList = memoize(
-        (moneyMarkets: any) => {
-            if (moneyMarkets === undefined) {
+    createSupplyTokenList = memoize(
+        (markets: string[] | undefined, tokens: any) => {
+            if (tokens === undefined || markets === undefined) {
                 return [];
             }
 
-            console.log('redo')
+            const tokenList: Token[] = [];
+            for (const market of markets) {
+                const token = tokens[market];
+                if (token !== undefined) {
+                    tokenList.push(token);
+                }
+            }
 
-            const tokenList = [];
-            for (let market of Object.values<any>(moneyMarkets)) {
-                const instance = market as any;
+            const supply: any[] = [];
+            for (const token of tokenList) {
 
-                const AHRtoken = new Token(instance.address,
-                    instance.name + " hr",
-                    instance.ahr.info.supplyRate,
-                    false,
-                    0,
-                    true,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0);
-                const ALRtoken = new Token(instance.address,
-                    instance.name + " lr", instance.ahr.info.supplyRate, false, 0, true, 0, 0, 0, 0, 0);
+                // Need high risk and low risk
+                supply.push({
+                    key: "hr" + token.address,
+                    title: token.asset + " (High Risk)",
+                    token,
+                    apy: token.highRiskSupplyAPY,
+                    allowCollateral: false
+                })
 
-                console.log(instance);
-                tokenList.push({
-                    key: instance.ahr.contract.address,
-                    value: AHRtoken
-                });
-
-                tokenList.push({
-                    key: instance.alr.contract.address,
-                    value: ALRtoken
+                supply.push({
+                    key: "lr" + token.address,
+                    title: token.asset + " (Low Risk)",
+                    token,
+                    apy: token.lowRiskSupplyAPY,
+                    allowCollateral: true
                 });
             }
 
-            return tokenList;
+            return supply;
         }
     )
 
     render() {
-
-        console.log("render");
-
-        const supplyTokens = this.createTokenList(this.props.moneyMarkets);
+        const supplyTokens = this.createSupplyTokenList(this.props.moneyMarkets, this.props.askoTokens);
+        console.log(supplyTokens);
 
         return (
             <React.Fragment>
@@ -186,9 +182,9 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                         </TableHead>
                         <TableBody>
                             {supplyTokens.map((token: any) => (
-                                <TableRow hover={true} key={token.value.asset} onClick={(event) => {
+                                <TableRow hover={true} key={token.key} onClick={(event) => {
                                     event.stopPropagation();
-                                    this.supplyClick(event, token.value)
+                                    this.supplyClick(event, token.token)
                                 }}>
                                     <TableCell align='left'>
                                         <Grid
@@ -197,17 +193,20 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                             justify='flex-start'
                                             alignItems='center'
                                         >
-                                            <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
-                                            <Typography>{token.value.asset}</Typography>
+                                            <Avatar src={getTokenLogoPngSrc(token.token.address)} alt={token.token.asset} /> &nbsp;
+                                            <Typography>{token.title}</Typography>
                                         </Grid>
                                     </TableCell>
-                                    <TableCell align='right'>{token.value.apy + '%'}</TableCell>
+                                    <TableCell align='right'>{token.apy + '%'}</TableCell>
                                     <TableCell align='center'>{0}</TableCell>
                                     <TableCell align='center'>
-                                        <Switch checked={token.value.collateral} onClick={(event) => {
-                                            event.stopPropagation();
-                                            this.collateralSwitchClick(event, token.value);
-                                        }}></Switch>
+                                        {
+                                            token.allowCollateral ?
+                                            <Switch checked={token.token.collateral} onClick={(event) => {
+                                                event.stopPropagation();
+                                                this.collateralSwitchClick(event, token.token);
+                                            }}></Switch> : null
+                                        }
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -222,6 +221,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
 const mapStateToProps = (state: any) => {
     return {
         moneyMarkets: state.moneyMarket.instances,
+        askoTokens: state.askoToken.tokens
     }
 }
 

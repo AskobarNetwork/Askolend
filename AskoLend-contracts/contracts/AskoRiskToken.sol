@@ -149,8 +149,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
       uint borrowIndexPrior = borrowIndex;
 //Short-circuit accumulating 0 interest
       if(accrualBlockNumberPrior != currentBlockNumber) {
-
-
 //Calculate the current borrow interest rate
       uint borrowRateMantissa = interestRateModel.getBorrowRate(cashPrior, borrowsPrior, reservesPrior);
       require(borrowRateMantissa <= borrowRateMaxMantissa);
@@ -316,7 +314,21 @@ emit InterestAccrued(accrualBlockNumber, borrowIndex, totalBorrows, totalReserve
 **/
       function exchangeRateCurrent() public returns (uint) {
             accrueInterest();
-            exchangeRatePrior();
+            if (totalSupply() == 0) {
+      //If there are no tokens minted: exchangeRate = initialExchangeRate
+              return initialExchangeRateMantissa;
+            } else {
+      //Otherwise: exchangeRate = (totalCash + totalBorrows - totalReserves) / totalSupply
+              uint totalCash = getCashPrior();//get contract asset balance
+              uint cashPlusBorrowsMinusReserves;
+              Exp memory exchangeRate;
+              MathError mathErr;
+      //calculate total value held by contract plus owed to contract
+              (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(totalCash, totalBorrows, totalReserves);
+      //calculate exchange rate
+              (mathErr, exchangeRate) = getExp(cashPlusBorrowsMinusReserves, totalSupply());
+              return (exchangeRate.mantissa);
+            }
       }
 
 

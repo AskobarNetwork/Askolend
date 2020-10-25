@@ -25,7 +25,7 @@ module.exports = async deployer => {
     "2000000000000000000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "2000000000000000000", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     4204800, //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    "2000000000000000000", //fee this is the fee % value
+    50, //fee this is the fee % value
     "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
     FakeAugur.address //asset address
   );
@@ -35,7 +35,7 @@ module.exports = async deployer => {
     "3000000000000000000",
     "3000000000000000000",
     8409600,
-    "3000000000000000000",
+    50,
     "2000000000000000000",
     FakeAugur.address
   );
@@ -48,7 +48,7 @@ module.exports = async deployer => {
     "4000000000000000000",
     "4000000000000000000",
     16819200,
-    "4000000000000000000",
+    50,
     "3000000000000000000",
     FakeLink.address
   );
@@ -58,7 +58,7 @@ module.exports = async deployer => {
     "5000000000000000000",
     "5000000000000000000",
     33638400,
-    "5000000000000000000",
+    50,
     "4000000000000000000",
     FakeLink.address
   );

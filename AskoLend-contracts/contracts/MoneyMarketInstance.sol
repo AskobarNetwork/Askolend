@@ -19,7 +19,6 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
 contract MoneyMarketInstance is Ownable, Exponential {
     using SafeMath for uint256;
 
-  uint public feePercent;
   uint public divisor;
   uint public fee_AHR;
   uint public fee_ALR;

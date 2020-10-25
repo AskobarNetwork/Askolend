@@ -25,6 +25,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
 
 
 
+
   string public assetName;
   string public assetSymbol;
 
@@ -109,6 +110,7 @@ function _setUpAHR(
     _InterestRateModel,
     address(asset),
     address(UOF),
+    address(MMF),
     assetNameAHR,
     assetSymbolAHR,
     false,
@@ -148,6 +150,7 @@ function _setUpAHR(
       _InterestRateModel,
       address(asset),
       address(UOF),
+      address(MMF),
       assetNameALR,
       assetSymbolALR,
       true,
@@ -326,9 +329,17 @@ function _setUpAHR(
 **/
    function collateralizeALR(uint _amount) public {
      ALR.burn(msg.sender, _amount);
-     MMF.trackCollateral(msg.sender, address(ALR), _amount);
+     MMF.trackCollateralUp(msg.sender, address(ALR), _amount);
      emit Collateralized(msg.sender, _amount);
    }
+
+/**
+@notice allowa an ALR to check if the address calling it is anothe ALR
+**/
+
+function checkIfALR(address _inQuestion) public view returns(bool){
+      return MMF._checkIfALR(_inQuestion);
+}
 
 
 }

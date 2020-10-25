@@ -26,7 +26,7 @@ contract MoneyMarketControl is Ownable, Exponential {
 
 
   uint public instanceCount;//tracks the number of instances
-  uint public liquidationIncentiveMantissa = 1.5e18; // 1.5
+
 
   UniswapOracleFactoryI public Oracle;//oracle factory contract interface
   MoneyMarketFactoryI public MMF;
@@ -36,10 +36,10 @@ contract MoneyMarketControl is Ownable, Exponential {
   mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
   mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
   mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
-  mapping(address => mapping(address => uint)) nonCompliant;// tracks user to a market to a time
   mapping(address => mapping(address => uint)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
   mapping(address => mapping(address => uint)) lockedCollateralTracker; //tracks user to a market to an amount of collateral locked in a market
   mapping(address => bool) isMMI;
+  mapping(address => bool) isALR;
 
   /**
   @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Instance contract
@@ -52,9 +52,7 @@ contract MoneyMarketControl is Ownable, Exponential {
     event WhiteListed(address asset, address moneyMarket, address oracle);
     event AHRcreated(address asset, address interestRateModel);
     event ALRcreated(address asset, address interestRateModel);
-    event NonCompliantTimerStart(address borrower, address ART);
-    event Accountliquidated(address borrower, address liquidator, uint amountRepayed, address ARTowed, address ARTcollateral);
-    event NonCompliantTimerReset(address borrower, address ART);
+
 /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
         is used to set up Oracle variables for the MoneyMarketFactory contract.
@@ -171,6 +169,7 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
       _optimal,
       address(_MMI)
     ));
+    isALR[address(_MMI)] = true;
 
     _MMI._setUpALR(
       interestRateModel,
@@ -190,15 +189,28 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
   }
 
 /**
-@notice trackCollateral is an external function used bya MMI to track collateral amounts globally
+@notice trackCollateralUp is an external function used bya MMI to track collateral amounts globally
 @param _borrower is the address of the corrower
 @param _ALR is the address of the seller
 @param _amount is the amount of ALR being collateralized
 @dev this function can only be called by a MoneyMarketInstance.
 **/
- function trackCollateral(address _borrower, address _ALR, uint _amount) external onlyMMI {
+ function trackCollateralUp(address _borrower, address _ALR, uint _amount) external {
+   require( isMMI[msg.sender] || isALR[msg.sender]);
    collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR].add(_amount);
  }
+
+ /**
+ @notice trackCollateralDown is an external function used bya MMI to track collateral amounts globally
+ @param _borrower is the address of the corrower
+ @param _ALR is the address of the seller
+ @param _amount is the amount of ALR being collateralized
+ @dev this function can only be called by a MoneyMarketInstance.
+ **/
+  function trackCollateralDown(address _borrower, address _ALR, uint _amount) external {
+    require( isMMI[msg.sender] || isALR[msg.sender]);
+    collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR].sub(_amount);
+  }
 
 /**
 @notice lockCollateral is used by an MMI when a user borrows against their collateral to track collateral amounts
@@ -223,6 +235,8 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
   function unlockCollateral(address _borrower, address _ALR, uint _amount) external onlyMMI {
     lockedCollateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR].sub(_amount);
   }
+
+
 
  /**
 @notice checkCollateralValue is a view function that accepts an account address and an ALR contract
@@ -249,97 +263,10 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
    return availibleCollateral.mul(priceOfAsset);
  }
 
-/**
-@notice markAccountNonCompliant is used by a potential liquidator to mark an account as non compliant which starts its 30 minute timer
-@param _borrower is the address of the non compliant borrower
-@param _ART is the address of the money market instances ALR token the user is non-compliant in
-**/
-  function markAccountNonCompliant(address _borrower, address _ART) public {
-    //needs to check for account compliance
-    require(nonCompliant[_borrower][_ART] == 0);
-    nonCompliant[_borrower][_ART] = now;
-    emit NonCompliantTimerStart(_borrower, _ART);
-  }
-//struct used to avoid stack too deep errors
-  struct liquidateLocalVar {
-      address assetOwed;
-      address assetColat;
-      uint borrowedAmount;
-      uint collatAmount;
-      uint borrowedValue;
-      uint borrowedValue150;
-      uint collatValue;
-      uint halfVal;
-      uint exchangeRateMantissa; // Note: reverts on error
-      uint seizeTokens;
-  }
-
-/**
-@notice The sender liquidates the borrowers collateral. This function is called on the MoneyMarket the borrower owes to.
-@param borrower The borrower of this cToken to be liquidated
-@param repayAmount The amount of the underlying borrowed asset to repay
-@param _ARTowed is the address of the AskoRiskToken where the borrower owes asset
-@param _ARTcollateralized is the address of the AskoRiskToken where the borrower has collateral
-
-*/
-  function liquidateAccount(address borrower, uint repayAmount, AskoRiskTokenI _ARTowed, AskoRiskTokenI _ARTcollateralized) public {
-//checks if its been nonCompliant for more than a half hour
-    require(now >= nonCompliant[borrower][address(_ARTowed)].add(1800));
-    //create local vars storage
-        liquidateLocalVar memory vars;
-//get asset addresses of both ARTs
-     vars.assetOwed = _ARTowed.getAssetAdd();
-     vars.assetColat = _ARTcollateralized.getAssetAdd();
-//Read oracle prices for borrowed and collateral markets
-    uint priceBorrowedMantissa = Oracle.getUnderlyingPrice(vars.assetOwed);
-    uint priceCollateralMantissa = Oracle.getUnderlyingPrice(vars.assetColat);
-    require(priceBorrowedMantissa != 0 && priceCollateralMantissa != 0);
-//retrieve asset amounts for each
-    vars.borrowedAmount = _ARTowed.borrowBalanceCurrent(borrower);
-    vars.collatAmount = collateralTracker[borrower][address(_ARTcollateralized)];
-//calculate USDC value amounts of each
-    vars.borrowedValue = vars.borrowedAmount.mul(priceBorrowedMantissa);
-    vars.collatValue = vars.collatAmount.mul(priceCollateralMantissa);
-//divide borrowedValue value in half
-    vars.halfVal = vars.borrowedValue.div(2);
-//add 1/2 the borrowedValue value to the total borrowedValue value for 150% borrowedValue value
-    vars.borrowedValue150 = vars.borrowedValue.add(vars.halfVal);
-/**
-need to check if the amount of collateral is less than 150% of the borrowed amount
-if the collateral value is greater than or equal to 150% of the borrowed value than we liquidate
-if not than the non compliance timer is reset
-**/
-    if (vars.collatValue <= vars.borrowedValue150){
-//Get the exchange rate and calculate the number of collateral tokens to seize:
-     vars.exchangeRateMantissa = _ARTowed.exchangeRateCurrent(); // Note: reverts on error
-    Exp memory numerator;
-    Exp memory denominator;
-    Exp memory ratio;
-    MathError mathErr;
-//numerator = liquidationIncentive * priceBorrowed
-    (mathErr, numerator) = mulExp(liquidationIncentiveMantissa, priceBorrowedMantissa);
-    require(mathErr == MathError.NO_ERROR);
-//denominator = priceCollateral * exchangeRate
-    (mathErr, denominator) = mulExp(priceCollateralMantissa, vars.exchangeRateMantissa);
-    require(mathErr == MathError.NO_ERROR);
-//ratio = (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
-    (mathErr, ratio) = divExp(numerator, denominator);
-    require(mathErr == MathError.NO_ERROR);
-//seizeTokens = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
-    (mathErr, vars.seizeTokens) = mulScalarTruncate(ratio, repayAmount);
-    require(mathErr == MathError.NO_ERROR);
-/**
-this function calls the MoneyMarketInstance where the borrower has collateral staked and has it swap
-its underlying asset on uniswap for the underlying asset borrowed
-**/
-    _ARTcollateralized._liquidateFor(vars.assetOwed, address(_ARTowed), vars.seizeTokens, repayAmount);
-    emit Accountliquidated(borrower, msg.sender, repayAmount, address(_ARTowed), address(_ARTcollateralized));
-    }
-  //reset accounts compliant timer
-  nonCompliant[borrower][address(_ARTowed)] = 0;//resets borrowers compliance timer
-emit NonCompliantTimerReset(borrower, address(_ARTowed));
-  }
 
 
+function _checkIfALR(address __inQ) external view returns(bool) {
+  return isALR[__inQ];
+}
 
 }

@@ -28,6 +28,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
   uint public totalReserves;
   uint public constant borrowRateMaxMantissa = 0.0005e16;
   uint public constant reserveFactorMaxMantissa = 1e18;
+  uint public liquidationIncentiveMantissa = .001e18; //.001
 
   bool public isALR;
 
@@ -35,9 +36,12 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
   IERC20 public asset;
   InterestRateModel public interestRateModel;
   MoneyMarketInstance public MMI;
+  MoneyMarketFactoryI public MMF;
   UniswapOracleFactoryI public UOF;
 
   mapping(address => BorrowSnapshot) internal accountBorrows;
+  mapping(address => uint) nonCompliant;// tracks user to a market to a time
+
 
 /**
 @notice struct for borrow balance information
@@ -63,6 +67,9 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
     event Burn(address account, uint amount);
     event Borrowed(address borrower, uint amountBorrowed);
     event Repayed(address borrower, uint amountRepayed);
+    event NonCompliantTimerStart(address borrower);
+    event Accountliquidated(address borrower, address liquidator, uint amountRepayed, address ARTowed, address ARTcollateral);
+    event NonCompliantTimerReset(address borrower);
 
 /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
@@ -80,6 +87,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     address _interestRateModel,
     address _asset,
     address _oracleFactory,
+    address _MoneyMarketControl,
     string memory _tokenName,
     string memory _tokenSymbol,
     bool _isALR,
@@ -95,6 +103,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         MMI = MoneyMarketInstance(msg.sender);//instanciates this contracts MoneyMarketInstance contract
         interestRateModel = InterestRateModel(_interestRateModel);//instanciates the this contracts interest rate model as a contract
         UOF = UniswapOracleFactoryI(_oracleFactory);//instantiatesthe UniswapOracleFactory as a contract
+        MMF = MoneyMarketFactoryI(_MoneyMarketControl);
         isALR = _isALR;// sets the isALR varaible to determine whether or not a specific contract is an ALR token
         initialExchangeRateMantissa = _initialExchangeRate;//sets the initialExchangeRateMantissa
         accrualBlockNumber = getBlockNumber();
@@ -488,25 +497,110 @@ redeemAmount = _amount x exchangeRateCurrent
   }
 
   /**
+  @notice markAccountNonCompliant is used by a potential liquidator to mark an account as non compliant which starts its 30 minute timer
+  @param _borrower is the address of the non compliant borrower
+  **/
+    function markAccountNonCompliant(address _borrower) public {
+      //needs to check for account compliance
+      require(nonCompliant[_borrower] == 0);
+      nonCompliant[_borrower] = now;
+      emit NonCompliantTimerStart(_borrower);
+    }
+  //struct used to avoid stack too deep errors
+    struct liquidateLocalVar {
+        address assetOwed;
+        address assetColat;
+        uint borrowedAmount;
+        uint collatAmount;
+        uint borrowedValue;
+        uint borrowedValue150;
+        uint collatValue;
+        uint halfVal;
+        uint exchangeRateMantissa; // Note: reverts on error
+        uint seizeTokens;
+    }
+
+  /**
   @notice _liquidateFor is called by the liquidateAccount function on a MMI where a user is being liquidated. This function
           is called on a MMI contract where collateral is staked.
-  @param _forAssetAdd is the asset address that this contracts asset is being swapped for
-  @param _forMMI is the MoneyMarketInstance where the swapped asset is being sent to
-  @param _amountOfThisToken  is the amount of this contracts asset to be swapped
-  @param _minAmount is the minimum amount of the calling MMI's asset to be swappedfor
+  @param repayAmount The amount of the underlying borrowed asset to repay
   **/
-  function _liquidateFor(
-    address _forAssetAdd,
-    address _forMMI,
-    uint _amountOfThisToken,
-    uint _minAmount
-  ) external {
-//require function caller to be the money market factory to ensure liquidation checks are perfomred
-    require(MMI.owner() == msg.sender);
-//swap out collateral for this contracts asset and send it
-    UOF.swapERC20(address(asset), _forAssetAdd, _forMMI, _amountOfThisToken, _minAmount);
+  function liquidateAccount(
+    address _borrower,
+    address _liquidator,
+    AskoRiskToken _ARTcollateralized,
+    uint repayAmount
+  ) public {
+
+    //checks if its been nonCompliant for more than a half hour
+        require(now >= nonCompliant[_borrower].add(1800));
+        //create local vars storage
+            liquidateLocalVar memory vars;
+    //get asset addresses of collateral ART
+         vars.assetColat = _ARTcollateralized.getAssetAdd();
+
+    //Read oracle prices for borrowed and collateral markets
+        uint priceBorrowedMantissa = UOF.getUnderlyingPrice(address(asset));
+        uint priceCollateralMantissa = UOF.getUnderlyingPrice( vars.assetColat);
+        require(priceBorrowedMantissa != 0 && priceCollateralMantissa != 0);
+    //retrieve asset amounts for each
+        vars.borrowedAmount = borrowBalanceCurrent(_borrower);
+    //calculate USDC value amounts of each
+        vars.borrowedValue = vars.borrowedAmount.mul(priceBorrowedMantissa);
+        vars.collatValue = MMF.checkAvailibleCollateralValue(_borrower, vars.assetColat);
+    //divide borrowedValue value in half
+        vars.halfVal = vars.borrowedValue.div(2);
+    //add 1/2 the borrowedValue value to the total borrowedValue value for 150% borrowedValue value
+        vars.borrowedValue150 = vars.borrowedValue.add(vars.halfVal);
+    /**
+    need to check if the amount of collateral is less than 150% of the borrowed amount
+    if the collateral value is greater than or equal to 150% of the borrowed value than we liquidate
+    if not than the non compliance timer is reset
+    **/
+        if (vars.collatValue <= vars.borrowedValue150){
+    //Get the exchange rate and calculate the number of collateral tokens to seize:
+         vars.exchangeRateMantissa = exchangeRateCurrent(); // Note: reverts on error
+
+        Exp memory numerator;
+        Exp memory denominator;
+        Exp memory ratio;
+        MathError mathErr;
+    //numerator = liquidationIncentive * priceBorrowed
+        (mathErr, numerator) = mulExp( liquidationIncentiveMantissa, priceBorrowedMantissa);
+    //denominator = priceCollateral * exchangeRate
+        (mathErr, denominator) = mulExp(priceCollateralMantissa, vars.exchangeRateMantissa);
+    //ratio = (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
+        (mathErr, ratio) = divExp(numerator, denominator);
+    //seizeTokens = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
+        (mathErr, vars.seizeTokens) = mulScalarTruncate(ratio, repayAmount);
+    //get balance before swap
+        uint pbal = _ARTcollateralized.getCash();
+    //swap out collateral for this contracts asset and send it
+        UOF.swapERC20(address(asset),  vars.assetColat, address(_ARTcollateralized), vars.seizeTokens, vars.borrowedAmount);
+    //let recipeint Money Asko Risk Token know about the incoming liquidation
+      _ARTcollateralized.liquidateReceive(vars.borrowedAmount, _borrower, _liquidator, pbal);
+    //track collateral
+    MMF.trackCollateralDown(_borrower, address(_ARTcollateralized), vars.seizeTokens);
+    emit Accountliquidated(_borrower, msg.sender, repayAmount, address(this), address(_ARTcollateralized));
+  }
+//if account is compliant
+//reset accounts compliant timer
+nonCompliant[_borrower] = 0;//resets borrowers compliance timer
+emit NonCompliantTimerReset(_borrower);
   }
 
+/**
+
+**/
+  function liquidateReceive(uint _amount, address _borrower, address _liquidator, uint _pbal) external {
+    require(MMI.checkIfALR(msg.sender));
+    uint liquidationReward = _amount.mul(liquidationIncentiveMantissa);
+    uint nbal = getCashPrior();
+    uint remaining = nbal.sub(_pbal).sub(_amount.sub(liquidationReward));
+    asset.transfer(_liquidator, liquidationReward);
+    asset.transfer(_borrower, remaining);
+
+  }
 
 /**
 @notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address

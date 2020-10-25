@@ -12,6 +12,8 @@ The AskoRiskTokenI contract an abstract contract MoneyMarketControl uses to inte
 
  abstract contract AskoRiskTokenI {
 
+     uint public liquidationIncentiveMantissa;
+
  function getAssetAdd() public view virtual returns (address);
 
  function borrowBalanceCurrent(address account) public virtual returns (uint);
@@ -20,8 +22,10 @@ function exchangeRateCurrent() public virtual returns (uint);
 
 
 function _liquidateFor(
+  address _borrower,
+  address _liquidator,
   address _forAssetAdd,
-  address _forMMI,
+  address _forArt,
   uint _amountOfThisToken,
   uint _minAmount
 ) external

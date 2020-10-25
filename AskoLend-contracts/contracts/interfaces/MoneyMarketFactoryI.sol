@@ -13,6 +13,7 @@ The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance us
 
  abstract contract MoneyMarketFactoryI {
 
+
    /**
    @notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts
    @param _assetContractAdd is the address of the ERC20 asset being whitelisted
@@ -46,10 +47,13 @@ The MoneyMarketFactoryI contract an abstract contract the MoneyMarketInstance us
 
      function checkAvailibleCollateralValue(address _borrower, address _ALR) external virtual returns(uint);
 
-    function trackCollateral(address _borrower, address _ALR, uint _amount) external virtual;
+    function trackCollateralUp(address _borrower, address _ALR, uint _amount) external virtual;
+
+    function trackCollateralDown(address _borrower, address _ALR, uint _amount) external virtual;
 
     function lockCollateral(address _borrower, address _ALR, uint _amount) external virtual;
 
-      function unlockCollateral(address _borrower, address _ALR, uint _amount) external virtual;
+    function unlockCollateral(address _borrower, address _ALR, uint _amount) external virtual;
 
+    function _checkIfALR(address __inQ) external view virtual returns(bool);
 }

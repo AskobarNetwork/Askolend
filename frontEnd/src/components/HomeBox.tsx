@@ -6,7 +6,7 @@ import { BorrowMarketTable } from "./BorrowMarketTable";
 import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
 import { connect } from 'react-redux'
-import { getMoneyMarketInstances, obtainTokenInfo } from '../actions'
+import { getMoneyMarketInstances } from '../actions'
 import { ProtocolProvider } from "../web3";
 
 interface IHomeBoxProps {

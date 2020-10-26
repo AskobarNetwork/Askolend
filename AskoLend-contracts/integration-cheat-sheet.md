@@ -63,15 +63,15 @@ Setter Functions:
 
     function liquidateAccount( borrower,  repayAmount, ARTowed, ARTcollateralized );
 
-///////////////////////// Money Market Instance //////////////////
+## ///////////////////////// Money Market Instance //////////////////
 
-Getter Functions:
+### Getter Functions:
 //retruns the address of the asset for a MoneyMarketInstance
 
 function getAssetAdd()  returns (address)
 
 
-Setter Functions:
+### Setter Functions:
 
 //both of these function take an input amount for how much of an asset is being lended to each pool
 //these functions require that the user has approved the MoneyMarketInstance contract through the asset contract
@@ -93,9 +93,9 @@ function repay( repayAmount );
 
 function collateralizeALR( amount );
 
-///////////////////////// AskoRiskToken /////////////
+## ///////////////////////// AskoRiskToken /////////////
 
-Getter Functions:
+### Getter Functions:
 
 // returns current borrow index
 
@@ -115,6 +115,7 @@ function balanceOfUnderlying( user ) returns (value);
 //returns the asset balance of the ART contract
 
 function getCashPrior() returns (balance);
+    **This is an internal function!**
 
 //returns the current borrow rate per block
 
@@ -124,7 +125,11 @@ function borrowRatePerBlock() returns (rate);
 
 function supplyRatePerBlock() returns (rate);
 
-Setter Functions:
+// @TODO: Chris make Supply APY, Borrow APY
+
+// Remove distribution APY
+
+### Setter Functions:
 
 //allows the userto redeem the input amount of ART for the appropriate amount of underlying asset
 function redeem( amount );

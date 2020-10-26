@@ -1,6 +1,6 @@
 import { Avatar, Grid, Switch, Typography } from '@material-ui/core';
 import { CollateralDialog, ConfirmationDialog, SupplyDialog } from '../components'
-import { Token, getTokenLogoPngSrc } from '../models'
+import { Token, getTokenLogoPngSrc, SupplyToken } from '../models'
 
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
@@ -12,15 +12,32 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { connect } from 'react-redux'
 
+import memoize from "memoize-one";
+import { ProtocolProvider } from 'web3';
+import { MoneyMarketInstanceService } from 'services/MoneyMarketInstance';
+import { getTokenData } from 'actions/askoToken';
+import { ERC20Service } from 'services/erc20';
+import { AskoRiskTokenService } from 'services/AskoRiskToken';
+import { setCollateralMarket } from 'actions/collateral';
+
+interface TokenMap {
+    [moneyMarketAddress: string]: Token;
+}
+
 interface ISupplyMarketTableProps {
-    tokenInfos?: [],
+    moneyMarkets?: [],
+    askoTokens?: TokenMap,
+    collateralMarket?: string,
+    refreshMoneyMarket: Function,
+    setCollateralMarket: Function
+    
 }
 
 interface ISupplyMarketTableState {
     collateralopen: boolean,
     confirmationOpen: boolean,
     confirmationTitle: string,
-    selectedToken: Token | undefined,
+    selectedToken: SupplyToken | undefined,
     supplyOpen: boolean,
 }
 
@@ -32,7 +49,7 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
             confirmationOpen: false,
             confirmationTitle: '',
             selectedToken: undefined,
-            supplyOpen: false,
+            supplyOpen: false
         };
         this.collateralSwitchClick.bind(this);
     }
@@ -41,11 +58,20 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.setState({ collateralopen: false });
     }
 
-    collateralSwitchClick = (event: React.MouseEvent, token: Token) => {
-        this.setState({
-            collateralopen: !this.state.collateralopen,
-            selectedToken: token,
-        });
+    collateralSwitchClick = (event: React.MouseEvent, token: SupplyToken) => {
+        // this.setState({
+        //     collateralopen: !this.state.collateralopen,
+        //     selectedToken: token,
+        // });
+
+        if (this.props.collateralMarket === token.token.marketAddress) {
+            this.props.setCollateralMarket(undefined);
+        } else {
+            console.log("set" + token.token.marketAddress);
+            this.props.setCollateralMarket(token.token.marketAddress);
+        }
+
+        
     }
 
     collateralSet = (collateralized: boolean, collateral: Token, confirmationMessage: string) => {
@@ -62,35 +88,78 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.setState({ confirmationOpen: false });
     }
 
-    supplyClick = (event: React.MouseEvent, token: Token) => {
+    supplyClick = (event: React.MouseEvent, token: SupplyToken) => {
+        console.log(token);
+        this.props.refreshMoneyMarket(token.token.marketAddress);
         this.setState({
             supplyOpen: !this.state.supplyOpen,
             selectedToken: token
         });
     }
 
-    supplyEnable = (supplyEnabled: boolean, supply: Token, confirmationMessage: string) => {
-        if (supplyEnabled !== supply.supplyEnabled) {
+    supplyEnable = async (supplyEnabled: boolean, supply: SupplyToken, confirmationMessage: string) => {
+        if (supplyEnabled !== supply.token.supplyEnabled) {
             this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
             // TO-DO: Implement supply action in https://github.com/AskobarNetwork/Askolend/issues/22
+
+            const provider = await ProtocolProvider.getInstance();
+            const assetToken = new ERC20Service(provider, supply.token.address);
+            await assetToken.approveUnlimited(supply.token.marketAddress);
+            
+            this.props.refreshMoneyMarket(supply.token.marketAddress);
+
+            this.setState({ confirmationOpen: false, confirmationTitle: confirmationMessage });
         }
         else {
-            console.warn(`Supply for ${supply.address} is already set to ${supply.supplyEnabled}, no action taken`);
+            console.warn(`Supply for ${supply.token.address} is already set to ${supply.token.supplyEnabled}, no action taken`);
         }
     }
 
-    supply = (tokenToSupply: Token, amount: number, confirmationMessage: string) => {
-        if (tokenToSupply.supplyEnabled === true) {
+    supply = async (tokenToSupply: SupplyToken, amount: number, confirmationMessage: string) => {
+        if (tokenToSupply.token.supplyEnabled === true) {
             this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
-            // TO-DO: Implement supply action in https://github.com/AskobarNetwork/Askolend/issues/22
+
+            const provider = await ProtocolProvider.getInstance();
+            const moneyMarket = new MoneyMarketInstanceService(provider, tokenToSupply.token.marketAddress);
+
+            const amountInWei = ProtocolProvider.toWei(amount);
+
+            if (tokenToSupply.lowRisk) {
+                await moneyMarket.supplyALRPool(amountInWei);
+            } else {
+                await moneyMarket.supplyAHRPool(amountInWei);
+            }
+
+            this.setState({ confirmationOpen: false, confirmationTitle: confirmationMessage });
+
+            this.props.refreshMoneyMarket(tokenToSupply.token.marketAddress);
         }
         else {
-            console.error(`${tokenToSupply.address} is not enabled, cannot supply`);
+            console.error(`${tokenToSupply.token.address} is not enabled, cannot supply`);
         }
     }
 
-    withdraw = (tokenToSupply: Token, amount: number, confirmationMessage: string) => {
+    withdraw = async (tokenToSupply: SupplyToken, amount: number, confirmationMessage: string) => {
         this.setState({ confirmationOpen: true, confirmationTitle: confirmationMessage });
+
+        const provider = await ProtocolProvider.getInstance();
+        const askoToken = new AskoRiskTokenService(provider, tokenToSupply.token.lowRiskAddress);
+
+        const amountInWei = ProtocolProvider.toWei(amount);
+        const currentBalance = await askoToken.getBalance(await provider.getSignerAddress());
+
+        if (amountInWei.gt(currentBalance)) {
+            this.setState({ confirmationOpen: true, confirmationTitle: "You are trying to withdraw more than you have deposited." });
+            return;
+        }
+
+        try {
+            await askoToken.withdraw(amountInWei);
+        } catch {
+            this.setState({ confirmationOpen: false, confirmationTitle: confirmationMessage });
+            this.props.refreshMoneyMarket(tokenToSupply.token.marketAddress);
+        }
+
         // TO-DO: Implement withdraw action in https://github.com/AskobarNetwork/Askolend/issues/23
     }
 
@@ -98,7 +167,51 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
         this.setState({ supplyOpen: false });
     }
 
+    createSupplyTokenList = (markets: string[] | undefined, tokens: any) => {
+        if (tokens === undefined || markets === undefined) {
+            return [];
+        }
+
+        const tokenList: Token[] = [];
+        for (const market of markets) {
+            const token = tokens[market];
+            if (token !== undefined) {
+                tokenList.push(token);
+            }
+        }
+
+        // ALR OR AHR
+        const supply: SupplyToken[] = [];
+        for (const token of tokenList) {
+
+            // Need high risk and low risk
+            supply.push({
+                key: "hr" + token.address,
+                title: token.asset + " (High Risk)",
+                token,
+                balance: token.highRiskBalance,
+                wallet: token.walletAmount,
+                apy: token.highRiskSupplyAPY,
+                lowRisk: false
+            })
+
+            supply.push({
+                key: "lr" + token.address,
+                title: token.asset + " (Low Risk)",
+                token,
+                balance: token.lowRiskBalance,
+                wallet: token.walletAmount,
+                apy: token.lowRiskSupplyAPY,
+                lowRisk: true
+            });
+        }
+
+        return supply;
+    }
+
     render() {
+        const supplyTokens: SupplyToken[] = this.createSupplyTokenList(this.props.moneyMarkets, this.props.askoTokens);
+
         return (
             <React.Fragment>
                 <ConfirmationDialog {...{
@@ -130,14 +243,15 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                 <TableCell>Asset</TableCell>
                                 <TableCell align='right'>APY</TableCell>
                                 <TableCell align='center'>Wallet</TableCell>
+                                <TableCell align='center'>Balance</TableCell>
                                 <TableCell align='center'>Collateral</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.props.tokenInfos?.map((token: any) => (
-                                <TableRow hover={true} key={token.value.asset} onClick={(event) => {
+                            {supplyTokens.map((token: any) => (
+                                <TableRow hover={true} key={token.key} onClick={(event) => {
                                     event.stopPropagation();
-                                    this.supplyClick(event, token.value)
+                                    this.supplyClick(event, token)
                                 }}>
                                     <TableCell align='left'>
                                         <Grid
@@ -146,17 +260,21 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
                                             justify='flex-start'
                                             alignItems='center'
                                         >
-                                            <Avatar src={getTokenLogoPngSrc(token.value.address)} alt={token.value.asset} /> &nbsp;
-                                            <Typography>{token.value.asset}</Typography>
+                                            <Avatar src={getTokenLogoPngSrc(token.token.address)} alt={token.token.asset} /> &nbsp;
+                                            <Typography>{token.title}</Typography>
                                         </Grid>
                                     </TableCell>
-                                    <TableCell align='right'>{token.value.apy + '%'}</TableCell>
-                                    <TableCell align='center'>{0}</TableCell>
+                                    <TableCell align='right'>{token.apy + '%'}</TableCell>
+                                    <TableCell align='center'>{token.wallet}</TableCell>
+                                    <TableCell align='center'>{token.balance}</TableCell>
                                     <TableCell align='center'>
-                                        <Switch checked={token.value.collateral} onClick={(event) => {
-                                            event.stopPropagation();
-                                            this.collateralSwitchClick(event, token.value);
-                                        }}></Switch>
+                                        {
+                                            token.lowRisk ?
+                                            <Switch checked={this.props.collateralMarket === token.token.marketAddress} onClick={(event) => {
+                                                event.stopPropagation();
+                                                this.collateralSwitchClick(event, token);
+                                            }}></Switch> : null
+                                        }
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -170,10 +288,23 @@ class SupplyMarketTableClass extends React.Component<ISupplyMarketTableProps, IS
 
 const mapStateToProps = (state: any) => {
     return {
-        tokenInfos: state.tokenInfo.tokenInfos,
+        moneyMarkets: state.moneyMarket.instances,
+        askoTokens: state.askoToken.tokens,
+        collateralMarket: state.collateral.market
     }
 }
 
-const SupplyMarketTable = connect(mapStateToProps, null)(SupplyMarketTableClass)
+const mapDispatchToProps = (dispatch: any) => {
+	return {
+		refreshMoneyMarket: (market: string) => {
+			dispatch(getTokenData(market));
+        },
+        setCollateralMarket: (market: string) => {
+            dispatch(setCollateralMarket(market));
+        }
+	}
+}
+
+const SupplyMarketTable = connect(mapStateToProps, mapDispatchToProps)(SupplyMarketTableClass)
 
 export { SupplyMarketTable };

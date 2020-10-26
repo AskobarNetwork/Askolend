@@ -61,7 +61,7 @@ class BorrowMarketTableClass extends React.Component<IBorrowMarketTableProps, IB
 
 const mapStateToProps = (state: any) => {
     return {
-        tokenInfos: state.tokenInfo.tokenInfos,
+        
     }
 }
 

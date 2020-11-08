@@ -4,7 +4,7 @@ const UniswapOracleFactory = artifacts.require("UniswapOracleFactory");
 const FakeLink = artifacts.require("FakeLink");
 const FakeAugur = artifacts.require("FakeAugur");
 
-module.exports = async deployer => {
+module.exports = async (deployer) => {
   await deployer.deploy(
     MoneyMarketControl,
     UniswapOracleFactory.address,
@@ -36,7 +36,7 @@ module.exports = async deployer => {
     "3000000000000000000",
     8409600,
     50,
-    "2000000000000000000",
+    "1000000000000000000",
     FakeAugur.address
   );
   console.log("FakeAugur Asko Low Risk Token Created");
@@ -49,7 +49,7 @@ module.exports = async deployer => {
     "4000000000000000000",
     16819200,
     50,
-    "3000000000000000000",
+    "1000000000000000000",
     FakeLink.address
   );
   console.log("FakeLink Asko High Risk Token Created");
@@ -59,7 +59,7 @@ module.exports = async deployer => {
     "5000000000000000000",
     33638400,
     50,
-    "4000000000000000000",
+    "1000000000000000000",
     FakeLink.address
   );
   console.log("FakeLink Asko Low Risk Token Created");

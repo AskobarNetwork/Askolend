@@ -10,24 +10,24 @@ The AskoRiskTokenI contract an abstract contract MoneyMarketControl uses to inte
     This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits
 **/
 
- abstract contract AskoRiskTokenI {
+abstract contract AskoRiskTokenI {
+    uint256 public liquidationIncentiveMantissa;
 
-     uint public liquidationIncentiveMantissa;
+    function getAssetAdd() public view virtual returns (address);
 
- function getAssetAdd() public view virtual returns (address);
+    function borrowBalanceCurrent(address account)
+        public
+        virtual
+        returns (uint256);
 
- function borrowBalanceCurrent(address account) public virtual returns (uint);
+    function exchangeRateCurrent() public virtual returns (uint256);
 
-function exchangeRateCurrent() public virtual returns (uint);
-
-
-function _liquidateFor(
-  address _borrower,
-  address _liquidator,
-  address _forAssetAdd,
-  address _forArt,
-  uint _amountOfThisToken,
-  uint _minAmount
-) external
-virtual;
+    function _liquidateFor(
+        address _borrower,
+        address _liquidator,
+        address _forAssetAdd,
+        address _forArt,
+        uint256 _amountOfThisToken,
+        uint256 _minAmount
+    ) external virtual;
 }

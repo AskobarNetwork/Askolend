@@ -11,30 +11,28 @@ The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory u
     SafeMath instances
 **/
 
- abstract contract UniswapOracleFactoryI {
-
-/**
+abstract contract UniswapOracleFactoryI {
+    /**
 @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
         a new asset is whitelisted
 @param token is the address of the first token in the token pair for this oracle
 @dev this function is marked as virtual as it is an abstracted function
 **/
 
-    function createNewOracle(
-      address token
-    )
-    public
-    virtual
-    returns(address);
+    function createNewOracle(address token) public virtual returns (address);
 
-/**
+    /**
 @notice getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingPrice(address _MMI) public virtual view returns(uint);
+    function getUnderlyingPrice(address _MMI)
+        public
+        view
+        virtual
+        returns (uint256);
 
-/**
+    /**
 @notice swapERC20 is an external function that swaps one ERC20 token for another
         using WETH as a medium of exchange.
 @param _tokenA is the address of the token being exchanged from
@@ -46,18 +44,15 @@ The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory u
 @dev _amountOutMin will need to be atleast enough to cover the cost of collateral liquidation
       (loan amount +i nterest) and its liquidation fee amount.
 **/
-  function swapERC20(
-    address _tokenA,
-    address _tokenB,
-    address _to,
-    uint _amountIn,
-    uint _amountOutMin
-  )
-  virtual
-  external
-  ;
+    function swapERC20(
+        address _tokenA,
+        address _tokenB,
+        address _to,
+        uint256 _amountIn,
+        uint256 _amountOutMin
+    ) external virtual;
 
-  /**
+    /**
   @notice linkMMI is used to link a MoneyMarketInstance to its oracle in the oracle factory contract
   @param _MMI is the address of the MoneyMarketInstance
   @param _asset is the address of the MoneyMarketInstancesunderlying asset

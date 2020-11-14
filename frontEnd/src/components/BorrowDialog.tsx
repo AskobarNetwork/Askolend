@@ -28,62 +28,62 @@ import { withStyles } from "@material-ui/styles";
 import { ProtocolProvider } from "web3";
 
 const styles = (theme: any) => ({
-	supplyDialog: {
+	borrowDialog: {
 		textAlign: "center",
 	},
 });
 
-interface ISupplyDialogProps {
-	supply: Function;
-	supplyClose: Function;
-	supplyEnable: Function;
-	supplyOpen: boolean;
-	token: SupplyToken | undefined;
+interface IBorrowDialogProps {
+	borrow: Function;
+	borrowClose: Function;
+	borrowEnable: Function;
+	borrowOpen: boolean;
+	token: any | undefined;
 	withdraw: Function;
 	classes?: any;
 }
 
-interface ISupplyDialogState {
+interface IBorrowDialogState {
 	amount: number;
-	supply: boolean;
+	borrow: boolean;
 	value: string;
 }
 
-class SupplyDialogClass extends React.Component<
-	ISupplyDialogProps,
-	ISupplyDialogState
+class BorrowDialogClass extends React.Component<
+	IBorrowDialogProps,
+	IBorrowDialogState
 > {
 	constructor(props: any) {
 		super(props);
 		this.state = {
 			amount: 0,
-			supply: true,
+			borrow: true,
 			value: "1",
 		};
 		this.handleChange.bind(this);
 	}
 
-	supplyEnable = (title: string) => {
-		this.props.supplyClose();
-		this.props.supplyEnable(
+	borrowEnable = (title: string) => {
+		this.props.borrowClose();
+		this.props.borrowEnable(
 			!this.props.token?.token.supplyEnabled,
 			this.props.token,
 			title
 		);
 	};
 
-	supply = (title: string) => {
-		this.props.supplyClose();
-		this.props.supply(this.props.token, this.state.amount, title);
+	borrow = (title: string) => {
+		this.props.borrowClose();
+		this.props.borrow(this.props.token, this.state.amount, title);
 	};
 
 	withdraw = (title: string) => {
-		this.props.supplyClose();
+		this.props.borrowClose();
 		this.props.withdraw(this.props.token, this.state.amount, title);
 	};
 
 	handleChange = (event: any, newValue: any) => {
-		this.setState({ supply: !this.state.supply, value: newValue });
+		this.setState({ borrow: !this.state.borrow, value: newValue });
 	};
 
 	canWithdraw = (): boolean => {
@@ -98,17 +98,16 @@ class SupplyDialogClass extends React.Component<
 
 	render() {
 		const Message =
-			this.props.token?.token.supplyEnabled === false &&
-			this.state.supply === true ? (
+			this.props.token?.supplyEnabled === false &&
+			this.state.borrow === true ? (
 				<Typography variant="subtitle1">
-					To supply or repay {this.props.token?.title} you must enable it first.
+					To borrow or repay {this.props.token?.asset} you must enable it first.
 				</Typography>
 			) : (
 				<React.Fragment>
 					<Typography variant="subtitle1">
-						{this.state.supply ? "Supply" : "Withdraw"} {this.state.amount}{" "}
-						{this.props.token?.token.name} to the{" "}
-						{this.props.token?.lowRisk ? "Low Risk" : "High Risk"} Market.
+						{this.state.borrow ? "Borrow" : "Repay"} {this.state.amount}{" "}
+						{this.props.token?.name}
 					</Typography>
 					{/* <Typography>{"Current Balance: "} {this.props.token?.balance}</Typography> */}
 					<TextField
@@ -124,9 +123,9 @@ class SupplyDialogClass extends React.Component<
 
 		return (
 			<Dialog
-				className={this.props.classes.supplyDialog}
-				open={this.props.supplyOpen}
-				onClose={() => this.props.supplyClose()}
+				className={this.props.classes.borrowDialog}
+				open={this.props.borrowOpen}
+				onClose={() => this.props.borrowClose()}
 				transitionDuration={0}
 				onClick={(event) => event.stopPropagation()}
 				hideBackdrop={true}
@@ -134,17 +133,17 @@ class SupplyDialogClass extends React.Component<
 			>
 				<DialogTitle>
 					<Grid container justify="flex-end">
-						<IconButton onClick={() => this.props.supplyClose()}>
+						<IconButton onClick={() => this.props.borrowClose()}>
 							<CloseIcon />
 						</IconButton>
 					</Grid>
 					<Grid container direction="row" justify="center" alignItems="center">
 						<Avatar
-							src={getTokenLogoPngSrc(this.props.token?.token.address || "")}
-							alt={this.props.token?.token.asset}
+							src={getTokenLogoPngSrc(this.props.token?.address || "")}
+							alt={this.props.token?.asset}
 						/>{" "}
 						&nbsp;
-						<Typography>{this.props.token?.title}</Typography>
+						<Typography>{this.props.token?.asset}</Typography>
 					</Grid>
 				</DialogTitle>
 				<DialogContent className={this.props.classes.tabs}>
@@ -152,15 +151,15 @@ class SupplyDialogClass extends React.Component<
 						{Message}
 						<TabContext value={this.state.value}>
 							<TabList onChange={this.handleChange} variant="fullWidth">
-								<Tab label="Supply" value="1" />
-								<Tab label="Withdraw" value="2" />
+								<Tab label="Borrow" value="1" />
+								<Tab label="Repay" value="2" />
 							</TabList>
 							<TabPanel value="1">
 								<Table>
 									<TableBody>
 										<TableRow>
-											<TableCell>Supply APY</TableCell>
-											<TableCell>{this.props.token?.apy}%</TableCell>
+											<TableCell>Borrow APY</TableCell>
+											<TableCell>"APY"</TableCell>
 										</TableRow>
 									</TableBody>
 								</Table>
@@ -169,8 +168,8 @@ class SupplyDialogClass extends React.Component<
 								<Table>
 									<TableBody>
 										<TableRow>
-											<TableCell>Supply APY</TableCell>
-											<TableCell>{this.props.token?.apy}%</TableCell>
+											<TableCell>Borrow APY</TableCell>
+											<TableCell>"APY"</TableCell>
 										</TableRow>
 										{/* { this.props.token?.lowRisk ? 
                                         <TableRow>
@@ -205,25 +204,24 @@ class SupplyDialogClass extends React.Component<
 								fullWidth={true}
 								variant="contained"
 								disabled={
-									(this.props.token?.token.supplyEnabled &&
-										this.state.amount <= 0) ||
-									(!this.state.supply && !this.canWithdraw())
+									(this.props.token?.supplyEnabled && this.state.amount <= 0) ||
+									(!this.state.borrow && !this.canWithdraw())
 								}
 								onClick={() =>
-									this.state.supply === true
-										? this.props.token?.token.supplyEnabled === false
-											? this.supplyEnable(
-													`Enable ${this.props.token?.token.asset} as Supply`
+									this.state.borrow === true
+										? this.props.token?.supplyEnabled === false
+											? this.borrowEnable(
+													`Enable ${this.props.token?.asset} as Supply`
 											  )
-											: this.supply(`Supply ${this.props.token?.token.asset}`)
-										: this.withdraw(`Withdraw ${this.props.token?.token.asset}`)
+											: this.borrow(`Supply ${this.props.token?.asset}`)
+										: this.withdraw(`Withdraw ${this.props.token?.asset}`)
 								}
 							>
-								{this.state.supply === true
-									? this.props.token?.token.supplyEnabled === false
+								{this.state.borrow === true
+									? this.props.token?.supplyEnabled === false
 										? "Enable"
-										: "Supply"
-									: "Withdraw"}
+										: "Borrow"
+									: "Repay"}
 							</Button>
 						</Grid>
 						<Table>
@@ -236,20 +234,11 @@ class SupplyDialogClass extends React.Component<
 										alignItems="center"
 									>
 										<TableCell>
-											{this.state.supply === true
-												? "Wallet Balance"
-												: "Protocol Balance"}
+											{this.state.borrow === true
+												? "Currently Borrowing"
+												: "Wallet Balance"}
 										</TableCell>
-										<TableCell>
-											{this.state.supply === true
-												? this.props.token?.wallet
-												: this.props.token?.balance}{" "}
-											{this.state.supply === true
-												? this.props.token?.token.asset
-												: this.props.token?.token.asset +
-												  "-" +
-												  (this.props.token?.lowRisk ? "LR" : "HR")}
-										</TableCell>
+										<TableCell>PLACEHOLDER</TableCell>
 									</Grid>
 								</TableRow>
 							</TableBody>
@@ -266,10 +255,10 @@ const mapStateToProps = (state: any) => {
 };
 
 // @ts-ignore
-const UnconnectedSupplyDialogClass: any = withStyles(styles)(SupplyDialogClass);
-const SupplyDialog = connect(
+const UnconnectedBorrowDialogClass: any = withStyles(styles)(BorrowDialogClass);
+const BorrowDialog = connect(
 	mapStateToProps,
 	null
-)(UnconnectedSupplyDialogClass);
+)(UnconnectedBorrowDialogClass);
 
-export { SupplyDialog };
+export { BorrowDialog };

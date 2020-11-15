@@ -10,24 +10,18 @@ The MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses t
     This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits
 **/
 
- abstract contract MoneyMarketInstanceI {
+abstract contract MoneyMarketInstanceI {
+    function _setUpAHR(
+        address _InterestRateModel,
+        uint256 _fee,
+        uint256 _initialExchangeRate
+    ) public virtual;
 
-   function _setUpAHR(
-       address _InterestRateModel,
-       uint _fee,
-       uint _initialExchangeRate
-     )
-     public
-     virtual;
+    function _setUpALR(
+        address _InterestRateModel,
+        uint256 _fee,
+        uint256 _initialExchangeRate
+    ) public virtual;
 
-     function _setUpALR(
-         address _InterestRateModel,
-         uint256 _fee,
-         uint _initialExchangeRate
-       )
-       public
-       virtual;
-
-       function getAssetAdd() public view virtual returns (address);
-
+    function getAssetAdd() public view virtual returns (address);
 }

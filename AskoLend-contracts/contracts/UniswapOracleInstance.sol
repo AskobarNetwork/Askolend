@@ -46,8 +46,8 @@ contract UniswapOracleInstance is Ownable {
           uint112 reserve0;
           uint112 reserve1;
           (reserve0, reserve1, blockTimestampLast) = _pair.getReserves();
-      ///   require(reserve0 != 0 && reserve1 != 0, 'ExampleOracleSimple: NO_RESERVES'); // ensure that there's liquidity in the pair
-    update();
+          require(reserve0 != 0 && reserve1 != 0, 'ExampleOracleSimple: NO_RESERVES'); // ensure that there's liquidity in the pair
+          update();
       }
 
 /**
@@ -78,7 +78,7 @@ contract UniswapOracleInstance is Ownable {
 **/
       function consult() external returns (uint price) {
         update();
-        price = price0Average.mul(1).decode144();
+        price = price0Average.mul(1 ether).decode144();
       }
 
     }

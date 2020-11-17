@@ -59,10 +59,10 @@ class BorrowMarketTableClass extends React.Component<
 			// testing only: must fetch this data dynamically
 			tokens: ["FakeLink", "FakeAugur"],
 			addresses: [
-				"0x925875a558D6181788587d851ab3E653C09A0B06",
-				"0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9",
+				"0x42e3a2720497153a02Def9a413AdB2a02CCDed28",
+				"0xD8f9A6e9d0cF5BF339b8ACf62B47fFE5947bd36E",
 			],
-			control: "0x67065c77F3320aBF53bC19796a66d7DfB2232EBf",
+			control: "0x34fA066c91A833C584BC4466d3999b8807B70C7C",
 			collateralopen: false,
 			confirmationOpen: false,
 			confirmationTitle: "",

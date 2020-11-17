@@ -182,6 +182,7 @@ class SupplyMarketTableClass extends React.Component<
 		amount: number,
 		confirmationMessage: string
 	) => {
+		console.log("WITHDRAWFUNC: ",tokenToSupply)
 		this.setState({
 			confirmationOpen: true,
 			confirmationTitle: confirmationMessage,
@@ -190,7 +191,7 @@ class SupplyMarketTableClass extends React.Component<
 		const provider = await ProtocolProvider.getInstance();
 		const askoToken = new AskoRiskTokenService(
 			provider,
-			tokenToSupply.token.lowRiskAddress
+			tokenToSupply.lowRisk ? tokenToSupply.token.lowRiskAddress : tokenToSupply.token.highRiskAddress
 		);
 
 		const amountInWei = ProtocolProvider.toWei(amount);

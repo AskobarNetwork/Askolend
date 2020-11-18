@@ -82,14 +82,14 @@ class BorrowMarketTableClass extends React.Component<
 	};
 
 	mountRun = async () => {
-		const provider = await ProtocolProvider.getInstance();
-		const moneyMarket = new MoneyMarketInstanceService(
-			provider,
-			this.state.addresses[0]
-		);
-		console.log("MONEYMARKET! ", moneyMarket);
+		// const provider = await ProtocolProvider.getInstance();
+		// const moneyMarket = new MoneyMarketInstanceService(
+		// 	provider,
+		// 	this.state.addresses[0]
+		// );
+		// console.log("MONEYMARKET! ", moneyMarket);
 
-		console.log("PROPS!! ", this.props);
+		// console.log("PROPS!! ", this.props);
 	};
 
 

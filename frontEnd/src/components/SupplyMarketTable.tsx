@@ -70,11 +70,11 @@ class SupplyMarketTableClass extends React.Component<
 		//     selectedToken: token,
 		// });
 
-		if (this.props.collateralMarket === token.token.marketAddress) {
+		if (this.props.collateralMarket === token.token.lowRiskAddress) {
 			this.props.setCollateralMarket(undefined);
 		} else {
-			console.log("set" + token.token.marketAddress);
-			this.props.setCollateralMarket(token.token.marketAddress);
+			console.log("set" + token.token.lowRiskAddress);
+			this.props.setCollateralMarket(token.token.lowRiskAddress);
 		}
 		console.log("COLSWITCH!! ", this.props.collateralMarket);
 
@@ -346,7 +346,7 @@ class SupplyMarketTableClass extends React.Component<
 											<Switch
 												checked={
 													this.props.collateralMarket ===
-													token.token.marketAddress
+													token.token.lowRiskAddress
 												}
 												onClick={(event) => {
 													event.stopPropagation();

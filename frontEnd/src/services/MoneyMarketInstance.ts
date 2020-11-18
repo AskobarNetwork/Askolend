@@ -103,6 +103,7 @@ export class MoneyMarketInstanceService {
 
 		// const transactionObject = await this.contract.borrow(amount, collateralAddress);
 
+		
 		const transactionObject = await this.contract.borrow(amount, collateralAddress);
 
 		console.log("BORROWINSTANCE")

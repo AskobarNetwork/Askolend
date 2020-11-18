@@ -103,7 +103,9 @@ class BorrowDialogClass extends React.Component<
 			console.log(BigNumber.from(this.state.amount));
 			console.log(address)
 		let x1;
-		x1 = await moneyMarket.getBorrow(BigNumber.from(this.state.amount), address)}
+		x1 = await moneyMarket.getBorrow((BigNumber.from(this.state.amount).mul(BigNumber.from(10^18))), address)
+		console.log("x1 ",x1)
+	}
 		console.log("BORROWCALL2")
 		// console.log(x1);
 	}

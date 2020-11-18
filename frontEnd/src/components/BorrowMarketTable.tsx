@@ -47,6 +47,7 @@ interface IBorrowMarketTableState {
 	confirmationTitle: string;
 	selectedToken: SupplyToken | undefined;
 	borrowOpen: boolean;
+
 }
 
 class BorrowMarketTableClass extends React.Component<
@@ -69,6 +70,7 @@ class BorrowMarketTableClass extends React.Component<
 			selectedToken: undefined,
 			borrowOpen: false,
 		};
+		// console.log("MARKETCHECK!! ",this.props.market)
 	}
 
 	componentDidMount = async () => {
@@ -90,6 +92,8 @@ class BorrowMarketTableClass extends React.Component<
 		console.log("PROPS!! ", this.props);
 	};
 
+
+
 	borrowClick = (event: React.MouseEvent, token: any) => {
 		console.log("TOKEN_BORROWCLICK", token);
 		this.props.refreshMoneyMarket(token.marketAddress);
@@ -105,6 +109,8 @@ class BorrowMarketTableClass extends React.Component<
 
 	borrow = async () => {
 		console.log("BORROW FIRE");
+		const provider = await ProtocolProvider.getInstance();
+		
 	};
 
 	borrowEnable = async () => {
@@ -154,6 +160,7 @@ class BorrowMarketTableClass extends React.Component<
 						borrowEnable: this.borrowEnable,
 						borrowOpen: this.state.borrowOpen,
 						token: this.state.selectedToken,
+						collateralAddress: this.props.collateralMarket
 					}}
 				/>
 
@@ -163,7 +170,7 @@ class BorrowMarketTableClass extends React.Component<
 							<TableRow>
 								<TableCell>Asset</TableCell>
 								<TableCell align="right">APY</TableCell>
-								<TableCell align="center">Wallet</TableCell>
+								<TableCell align="center">Borrowing</TableCell>
 								<TableCell align="right">Liquidity</TableCell>
 							</TableRow>
 						</TableHead>
@@ -202,7 +209,7 @@ class BorrowMarketTableClass extends React.Component<
 										<TableCell align="right">
 											{Number(token.lowRiskBorrowAPY) + "%"}
 										</TableCell>
-										<TableCell align="center">{token.walletAmount}</TableCell>
+										<TableCell align="center">{token.borrowedAmount}</TableCell>
 										<TableCell align="right">
 											{"$" +
 												(Number(token.lowRiskBalance) *

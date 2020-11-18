@@ -13,7 +13,7 @@ import {
 	TextField,
 	Typography,
 } from "@material-ui/core";
-
+import { BigNumber, ethers } from "ethers";
 import CloseIcon from "@material-ui/icons/Close";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -22,6 +22,7 @@ import TabContext from "@material-ui/lab/TabContext";
 import TabList from "@material-ui/lab/TabList";
 import TabPanel from "@material-ui/lab/TabPanel";
 import { SupplyToken, Token } from "../models";
+import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
 import { connect } from "react-redux";
 import { getTokenLogoPngSrc } from "../models";
 import { withStyles } from "@material-ui/styles";
@@ -35,12 +36,14 @@ const styles = (theme: any) => ({
 
 interface IBorrowDialogProps {
 	borrow: Function;
+	repay: Function;
 	borrowClose: Function;
 	borrowEnable: Function;
 	borrowOpen: boolean;
 	token: any | undefined;
 	withdraw: Function;
 	classes?: any;
+	collateralAddress?: string;
 }
 
 interface IBorrowDialogState {
@@ -61,6 +64,7 @@ class BorrowDialogClass extends React.Component<
 			value: "1",
 		};
 		this.handleChange.bind(this);
+		this.borrowCall.bind(this)
 	}
 
 	borrowEnable = (title: string) => {
@@ -70,6 +74,9 @@ class BorrowDialogClass extends React.Component<
 			this.props.token,
 			title
 		);
+		console.log("SUPPLY ENABLED ",this.props.token?.token.supplyEnabled)
+		console.log("BORROW ENABLED ",this.props.token?.token.borrowEnabled)
+
 	};
 
 	borrow = (title: string) => {
@@ -77,13 +84,33 @@ class BorrowDialogClass extends React.Component<
 		this.props.borrow(this.props.token, this.state.amount, title);
 	};
 
-	withdraw = (title: string) => {
+	repay = (title: string) => {
 		this.props.borrowClose();
-		this.props.withdraw(this.props.token, this.state.amount, title);
+		this.props.repay(this.props.token, this.state.amount, title);
 	};
+
+	borrowCall =  async () => {
+		const provider = await ProtocolProvider.getInstance();
+		const moneyMarket = new MoneyMarketInstanceService(
+			provider,
+			this.props.token?.marketAddress
+		);
+		// ^^ which address is used here?
+		console.log("MARKETADDRESS! ",this.props.token?.marketAddress)
+		let address = this.props.collateralAddress ? this.props.collateralAddress : "";
+		console.log("BORROWCALL1")
+		if (address!== "" && address !== undefined){
+			console.log(BigNumber.from(this.state.amount));
+			console.log(address)
+		let x1;
+		x1 = await moneyMarket.getBorrow(BigNumber.from(this.state.amount), address)}
+		console.log("BORROWCALL2")
+		// console.log(x1);
+	}
 
 	handleChange = (event: any, newValue: any) => {
 		this.setState({ borrow: !this.state.borrow, value: newValue });
+		console.log("BTOKEN!",this.props.token)
 	};
 
 	canWithdraw = (): boolean => {
@@ -205,7 +232,8 @@ class BorrowDialogClass extends React.Component<
 								variant="contained"
 								disabled={
 									(this.props.token?.supplyEnabled && this.state.amount <= 0) ||
-									(!this.state.borrow && !this.canWithdraw())
+									(!this.state.borrow)
+									// && !this.canWithdraw()
 								}
 								onClick={() =>
 									this.state.borrow === true
@@ -213,8 +241,8 @@ class BorrowDialogClass extends React.Component<
 											? this.borrowEnable(
 													`Enable ${this.props.token?.asset} as Supply`
 											  )
-											: this.borrow(`Supply ${this.props.token?.asset}`)
-										: this.withdraw(`Withdraw ${this.props.token?.asset}`)
+											: this.borrowCall()
+										: this.repay(`Withdraw ${this.props.token?.asset}`)
 								}
 							>
 								{this.state.borrow === true

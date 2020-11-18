@@ -76,6 +76,8 @@ class SupplyMarketTableClass extends React.Component<
 			console.log("set" + token.token.marketAddress);
 			this.props.setCollateralMarket(token.token.marketAddress);
 		}
+		console.log("COLSWITCH!! ", this.props.collateralMarket);
+
 	};
 
 	collateralSet = (
@@ -89,6 +91,7 @@ class SupplyMarketTableClass extends React.Component<
 				confirmationTitle: confirmationMessage,
 			});
 			// TO-DO: Implement collateral action in https://github.com/AskobarNetwork/Askolend/issues/22
+
 		} else {
 			console.warn(
 				`Collateral for ${collateral.address} is already set to ${collateral.collateral}, no action taken`

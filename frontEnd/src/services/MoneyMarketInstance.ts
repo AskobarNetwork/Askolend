@@ -72,6 +72,54 @@ export class MoneyMarketInstanceService {
 		return await this.contract.divisor();
 	};
 
-	//borrow
-	//repay
+	// getBorrowBalALR = async (
+	// 	address: String
+	// ): Promise<providers.TransactionReceipt> => {
+	// 	const transactionObject = await this.contract.ALR().BorrowBalanceCurrent(address);
+
+	// 	return (await this.provider.getProvider()).waitForTransaction(
+	// 		transactionObject.hash
+	// 	);
+	// };
+
+
+	// getBorrowBalAHR = async (
+	// 	address: String
+	// ): Promise<providers.TransactionReceipt> => {
+	// 	const transactionObject = await this.contract.AHR().BorrowBalanceCurrent(address);
+
+	// 	return (await this.provider.getProvider()).waitForTransaction(
+	// 		transactionObject.hash
+	// 	);
+	// };
+
+	getBorrow = async (
+		amount: BigNumber,
+		collateralAddress: String
+	): Promise<providers.TransactionReceipt> => {
+
+		console.log(amount," ",collateralAddress);
+		console.log("CONTRACT", this.contract)
+
+		// const transactionObject = await this.contract.borrow(amount, collateralAddress);
+
+		const transactionObject = await this.contract.borrow(amount, collateralAddress);
+
+		console.log("BORROWINSTANCE")
+
+		return (await this.provider.getProvider()).waitForTransaction(
+			transactionObject.hash
+		);
+	};
+
+	getRepay = async (
+		amount: BigNumber,
+	): Promise<providers.TransactionReceipt> => {
+		const transactionObject = await this.contract.repay(amount);
+
+		return (await this.provider.getProvider()).waitForTransaction(
+			transactionObject.hash
+		);
+	};
+
 }

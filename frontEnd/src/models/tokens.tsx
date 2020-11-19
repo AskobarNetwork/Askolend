@@ -28,6 +28,7 @@ export interface Token {
         lowRiskAddress: string,
         highRiskAddress: string,
         walletAmount: string,
+   
 
         // collateral: boolean,
         // liquidity: number,
@@ -64,7 +65,9 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
 
     let borrowedAmount = "0";
     try {
-        borrowedAmount = fromWei(await lowRisk.borrowBalancePrior(userAddress));
+        let borrowedALR = fromWei(await lowRisk.borrowBalancePrior(userAddress));
+        let borrowedAHR = fromWei(await lowRisk.borrowBalancePrior(userAddress));
+        borrowedAmount = (Number(borrowedAHR)+Number(borrowedALR)).toString()
     } catch (ex) {
         console.log("get borrow balance prior")
     }
@@ -90,7 +93,8 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
         marketAddress: moneyMarket.address,
         lowRiskAddress: lowRisk.address,
         highRiskAddress: highRisk.address,
-        walletAmount
+        walletAmount,
+
     } as Token;
     
 }

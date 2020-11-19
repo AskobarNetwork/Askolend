@@ -21,6 +21,7 @@ export function getTokenData(marketAddress: string) {
 		const token = await createToken(
 			new MoneyMarketInstanceService(provider, marketAddress)
 		);
+		console.log("MARKETADDRESS!! ",marketAddress)
 		dispatch(tokenDataRetrieved(marketAddress, token));
 	};
 }

@@ -7,6 +7,7 @@ export class MoneyMarketControlService {
 
     constructor(public provider: ProtocolProvider, controlAddress: string) {
         this.contract = provider.getContract("MoneyMarketControl", controlAddress)
+        console.log("MMCS address: ",controlAddress)
     }
 
     get address(): string {

@@ -47,6 +47,7 @@ interface IBorrowMarketTableState {
 	confirmationTitle: string;
 	selectedToken: SupplyToken | undefined;
 	borrowOpen: boolean;
+
 }
 
 class BorrowMarketTableClass extends React.Component<
@@ -59,16 +60,17 @@ class BorrowMarketTableClass extends React.Component<
 			// testing only: must fetch this data dynamically
 			tokens: ["FakeLink", "FakeAugur"],
 			addresses: [
-				"0x925875a558D6181788587d851ab3E653C09A0B06",
-				"0xe41a91eFfD31bdda4e91C5FE076C9B53DD4024f9",
+				"0x42e3a2720497153a02Def9a413AdB2a02CCDed28",
+				"0xD8f9A6e9d0cF5BF339b8ACf62B47fFE5947bd36E",
 			],
-			control: "0x67065c77F3320aBF53bC19796a66d7DfB2232EBf",
+			control: "0x34fA066c91A833C584BC4466d3999b8807B70C7C",
 			collateralopen: false,
 			confirmationOpen: false,
 			confirmationTitle: "",
 			selectedToken: undefined,
 			borrowOpen: false,
 		};
+		// console.log("MARKETCHECK!! ",this.props.market)
 	}
 
 	componentDidMount = async () => {
@@ -80,15 +82,17 @@ class BorrowMarketTableClass extends React.Component<
 	};
 
 	mountRun = async () => {
-		const provider = await ProtocolProvider.getInstance();
-		const moneyMarket = new MoneyMarketInstanceService(
-			provider,
-			this.state.addresses[0]
-		);
-		console.log("MONEYMARKET! ", moneyMarket);
+		// const provider = await ProtocolProvider.getInstance();
+		// const moneyMarket = new MoneyMarketInstanceService(
+		// 	provider,
+		// 	this.state.addresses[0]
+		// );
+		// console.log("MONEYMARKET! ", moneyMarket);
 
-		console.log("PROPS!! ", this.props);
+		// console.log("PROPS!! ", this.props);
 	};
+
+
 
 	borrowClick = (event: React.MouseEvent, token: any) => {
 		console.log("TOKEN_BORROWCLICK", token);
@@ -105,6 +109,8 @@ class BorrowMarketTableClass extends React.Component<
 
 	borrow = async () => {
 		console.log("BORROW FIRE");
+		const provider = await ProtocolProvider.getInstance();
+		
 	};
 
 	borrowEnable = async () => {
@@ -154,6 +160,7 @@ class BorrowMarketTableClass extends React.Component<
 						borrowEnable: this.borrowEnable,
 						borrowOpen: this.state.borrowOpen,
 						token: this.state.selectedToken,
+						collateralAddress: this.props.collateralMarket
 					}}
 				/>
 
@@ -163,7 +170,7 @@ class BorrowMarketTableClass extends React.Component<
 							<TableRow>
 								<TableCell>Asset</TableCell>
 								<TableCell align="right">APY</TableCell>
-								<TableCell align="center">Wallet</TableCell>
+								<TableCell align="center">Borrowing</TableCell>
 								<TableCell align="right">Liquidity</TableCell>
 							</TableRow>
 						</TableHead>
@@ -202,7 +209,7 @@ class BorrowMarketTableClass extends React.Component<
 										<TableCell align="right">
 											{Number(token.lowRiskBorrowAPY) + "%"}
 										</TableCell>
-										<TableCell align="center">{token.walletAmount}</TableCell>
+										<TableCell align="center">{token.borrowedAmount}</TableCell>
 										<TableCell align="right">
 											{"$" +
 												(Number(token.lowRiskBalance) *

@@ -70,12 +70,14 @@ class SupplyMarketTableClass extends React.Component<
 		//     selectedToken: token,
 		// });
 
-		if (this.props.collateralMarket === token.token.marketAddress) {
+		if (this.props.collateralMarket === token.token.lowRiskAddress) {
 			this.props.setCollateralMarket(undefined);
 		} else {
-			console.log("set" + token.token.marketAddress);
-			this.props.setCollateralMarket(token.token.marketAddress);
+			console.log("set" + token.token.lowRiskAddress);
+			this.props.setCollateralMarket(token.token.lowRiskAddress);
 		}
+		console.log("COLSWITCH!! ", this.props.collateralMarket);
+
 	};
 
 	collateralSet = (
@@ -89,6 +91,7 @@ class SupplyMarketTableClass extends React.Component<
 				confirmationTitle: confirmationMessage,
 			});
 			// TO-DO: Implement collateral action in https://github.com/AskobarNetwork/Askolend/issues/22
+
 		} else {
 			console.warn(
 				`Collateral for ${collateral.address} is already set to ${collateral.collateral}, no action taken`
@@ -182,6 +185,7 @@ class SupplyMarketTableClass extends React.Component<
 		amount: number,
 		confirmationMessage: string
 	) => {
+		console.log("WITHDRAWFUNC: ",tokenToSupply)
 		this.setState({
 			confirmationOpen: true,
 			confirmationTitle: confirmationMessage,
@@ -190,7 +194,7 @@ class SupplyMarketTableClass extends React.Component<
 		const provider = await ProtocolProvider.getInstance();
 		const askoToken = new AskoRiskTokenService(
 			provider,
-			tokenToSupply.token.lowRiskAddress
+			tokenToSupply.lowRisk ? tokenToSupply.token.lowRiskAddress : tokenToSupply.token.highRiskAddress
 		);
 
 		const amountInWei = ProtocolProvider.toWei(amount);
@@ -342,7 +346,7 @@ class SupplyMarketTableClass extends React.Component<
 											<Switch
 												checked={
 													this.props.collateralMarket ===
-													token.token.marketAddress
+													token.token.lowRiskAddress
 												}
 												onClick={(event) => {
 													event.stopPropagation();

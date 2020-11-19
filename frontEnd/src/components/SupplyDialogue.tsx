@@ -79,6 +79,7 @@ class SupplyDialogClass extends React.Component<
 
 	withdraw = (title: string) => {
 		this.props.supplyClose();
+		console.log("WDT: ",this.props.token, " ",title)
 		this.props.withdraw(this.props.token, this.state.amount, title);
 	};
 

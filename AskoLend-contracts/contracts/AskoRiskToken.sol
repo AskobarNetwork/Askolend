@@ -6,6 +6,7 @@ import "./compound/Exponential.sol";
 import "./compound/InterestRateModel.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./MoneyMarketInstance.sol";
+import "./interfaces/MoneyMarketFactoryI.sol";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title AskoRiskToken

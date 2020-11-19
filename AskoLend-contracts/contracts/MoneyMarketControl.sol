@@ -164,8 +164,8 @@ contract MoneyMarketControl is Ownable, Exponential {
             )
         );
         isALR[address(_MMI)] = true;
-
         _MMI._setUpALR(interestRateModel, _fee, _initialExchangeRate);
+        _ALRtracker[_MMI.ALR()] = address(_MMI);
         emit ALRcreated(_assetContractAdd, interestRateModel);
     }
 
@@ -251,16 +251,14 @@ contract MoneyMarketControl is Ownable, Exponential {
         determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
 @param _borrower is the address whos collateral value we are looking up
 @param _ALR is the address of the ALR token where collateral value is being looked up
-@dev this function can only be called by a MoneyMarketInstance.
  **/
     function checkAvailibleCollateralValue(address _borrower, address _ALR)
         external
         view
-        onlyMMI
         returns (uint256)
     {
-        //instantiate the MoneyMakerInstance calling this function
-        MoneyMarketInstanceI MMI = MoneyMarketInstanceI(msg.sender);
+        //instantiate the MoneyMakerInstance of the collateral ALR
+        MoneyMarketInstanceI MMI = MoneyMarketInstanceI(_ALRtracker[_ALR]);
         //retreive the address of its asset
         address asset = MMI.getAssetAdd();
         //retrieve USD price of this asset

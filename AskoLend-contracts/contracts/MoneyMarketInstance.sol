@@ -35,6 +35,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
 
     mapping(address => uint256) lockedCollateral;
     mapping(address => address) collateralLockedALR;
+    mapping(address => bool) cantCollateralize;
     /**
 @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Factory contract
 **/
@@ -236,9 +237,11 @@ contract MoneyMarketInstance is Ownable, Exponential {
 @param _collateral is the address of the ALR token being used as collateral
 **/
     function borrow(uint256 _amount, address _collateral) public {
+        //require that the collateral a user is looking to use is the same as the type they already have a loan in
+        //OR that their cantCollateralize mapping is false
         require(
             _collateral == collateralLockedALR[msg.sender] ||
-                collateralLockedALR[msg.sender] == address(0)
+                cantCollateralize[msg.sender] == false
         );
         //check that the user has enough collateral in input moeny market
         uint256 collateralValue = MMF.checkAvailibleCollateralValue(
@@ -272,6 +275,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
         );
         //track which ALR is locked
         collateralLockedALR[msg.sender] = _collateral;
+        cantCollateralize[msg.sender] = true;
         //borrow half from each pool
         AHR.borrow(half, msg.sender);
         ALR.borrow(half, msg.sender);
@@ -326,6 +330,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
                 );
                 //reset collateralLockedALR address to zero so the user can use a different ALR address in future borrows
                 collateralLockedALR[msg.sender] = address(0);
+                cantCollateralize[msg.sender] = false;
                 //reset locked collateral amount
                 lockedCollateral[msg.sender] = 0;
             }

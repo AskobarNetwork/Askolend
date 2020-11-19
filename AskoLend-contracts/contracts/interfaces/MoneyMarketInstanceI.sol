@@ -11,6 +11,8 @@ The MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses t
 **/
 
 abstract contract MoneyMarketInstanceI {
+    address public ALR;
+
     function _setUpAHR(
         address _InterestRateModel,
         uint256 _fee,

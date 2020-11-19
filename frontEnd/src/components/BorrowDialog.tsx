@@ -68,14 +68,14 @@ class BorrowDialogClass extends React.Component<
 	}
 
 	borrowEnable = (title: string) => {
-		this.props.borrowClose();
-		this.props.borrowEnable(
-			!this.props.token?.token.supplyEnabled,
-			this.props.token,
-			title
-		);
-		console.log("SUPPLY ENABLED ",this.props.token?.token.supplyEnabled)
-		console.log("BORROW ENABLED ",this.props.token?.token.borrowEnabled)
+		// this.props.borrowClose();
+		// this.props.borrowEnable(
+		// 	!this.props.token?.token.supplyEnabled,
+		// 	this.props.token,
+		// 	title
+		// );
+		// console.log("SUPPLY ENABLED ",this.props.token?.token.supplyEnabled)
+		// console.log("BORROW ENABLED ",this.props.token?.token.borrowEnabled)
 
 	};
 

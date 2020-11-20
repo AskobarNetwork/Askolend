@@ -239,10 +239,10 @@ contract MoneyMarketInstance is Ownable, Exponential {
     function borrow(uint256 _amount, address _collateral) public {
         //require that the collateral a user is looking to use is the same as the type they already have a loan in
         //OR that their cantCollateralize mapping is false
-        require(
-            _collateral == collateralLockedALR[msg.sender] ||
-                cantCollateralize[msg.sender] == false
-        );
+        //  require(
+        //      _collateral == collateralLockedALR[msg.sender] ||
+        //    cantCollateralize[msg.sender] == false
+        //    );
         //check that the user has enough collateral in input moeny market
         uint256 collateralValue = MMF.checkAvailibleCollateralValue(
             msg.sender,

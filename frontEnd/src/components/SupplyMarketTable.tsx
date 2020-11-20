@@ -15,7 +15,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { connect } from "react-redux";
-
+import { BigNumber, ethers } from "ethers";
 import memoize from "memoize-one";
 import { ProtocolProvider } from "web3";
 import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
@@ -65,31 +65,43 @@ class SupplyMarketTableClass extends React.Component<
 	};
 
 	collateralSwitchClick = (event: React.MouseEvent, token: SupplyToken) => {
-		// this.setState({
-		//     collateralopen: !this.state.collateralopen,
-		//     selectedToken: token,
-		// });
+		this.setState({
+		    collateralopen: !this.state.collateralopen,
+		    selectedToken: token,
+		});
 
-		if (this.props.collateralMarket === token.token.lowRiskAddress) {
-			this.props.setCollateralMarket(undefined);
-		} else {
-			console.log("set" + token.token.lowRiskAddress);
-			this.props.setCollateralMarket(token.token.lowRiskAddress);
-		}
-		console.log("COLSWITCH!! ", this.props.collateralMarket);
+		// change collateral market in state
+		
+		// if (this.props.collateralMarket === token.token.lowRiskAddress) {
+		// 	this.props.setCollateralMarket(undefined);
+		// } else {
+		// 	console.log("set" + token.token.lowRiskAddress);
+		// 	this.props.setCollateralMarket(token.token.lowRiskAddress);
+		// }
+		// console.log("COLSWITCH!! ", this.props.collateralMarket);
 
 	};
 
-	collateralSet = (
+	collateralSet = async (
 		collateralized: boolean,
-		collateral: Token,
-		confirmationMessage: string
+		collateral: any,
+		confirmationMessage: string,
+		amount: number,
 	) => {
-		if (collateralized !== collateral.collateral) {
+		if (collateralized !== collateral.token.collateral) {
 			this.setState({
 				confirmationOpen: true,
 				confirmationTitle: confirmationMessage,
 			});
+			const provider = await ProtocolProvider.getInstance();
+			const moneyMarket = new MoneyMarketInstanceService(
+			provider,
+			collateral.token.marketAddress)
+			let receipt = await moneyMarket.setCollateral(BigNumber.from(amount).mul(BigNumber.from(10**9)).mul(BigNumber.from(10**9)))
+			console.log("receipt ",receipt)
+			if (receipt.status === 1) {
+
+			}
 			// TO-DO: Implement collateral action in https://github.com/AskobarNetwork/Askolend/issues/22
 
 		} else {

@@ -10,6 +10,7 @@ import {
 	TableRow,
 	Tooltip,
 	Typography,
+	TextField
 } from "@material-ui/core";
 
 import CloseIcon from "@material-ui/icons/Close";
@@ -36,37 +37,54 @@ interface ICollateralDialogProps {
 	collateralClose: Function;
 	collateralSet: Function;
 	collateralOpen: boolean;
-	token: Token | undefined;
+	token: any;
 	classes?: any;
+}
+
+interface ICollateralDialogState {
+	amount: number;
 }
 
 class CollateralDialogClass extends React.Component<
 	ICollateralDialogProps,
-	{}
+	ICollateralDialogState
 > {
+
+	constructor(props: any) {
+		super(props);
+		this.state = {
+			amount: 0,
+		};
+	}
+
 	collateralSet = (title: string) => {
 		this.props.collateralClose();
+		console.log("COLLATERAL_SET :",!this.props.token?.token.collateral," ",this.props.token," ",title," ",this.state.amount)
 		this.props.collateralSet(
-			!this.props.token?.collateral,
+			!this.props.token?.token.collateral,
 			this.props.token,
-			title
+			title,
+			this.state.amount
 		);
 	};
 
 	render() {
 		const buttonTooltip =
-			this.props.token?.collateral === false
-				? `Enable ${this.props.token?.name} as collateral`
-				: `Disable ${this.props.token?.asset}`;
-		const enable = this.props.token?.collateral === false ? true : false;
+			this.props.token?.token.collateral === false
+				? `Enable ${this.props.token?.token.name} as collateral`
+				: `Disable ${this.props.token?.token.asset}`;
+		const enable = this.props.token?.token.collateral === false ? true : false;
+		console.log(this.props.token);
+		console.log("ENABLE_COLLATERAL: ",enable);
 		const message =
-			this.props.token?.collateral === false
+			this.props.token?.token.collateral === false
 				? enableCollateralMessage
 				: disableCollateralMessage;
 		const title =
-			this.props.token?.collateral === false
+			this.props.token?.token.collateral === false
 				? "Enable" + titlePostfix
 				: "Disable" + titlePostfix;
+		console.log("TITLE: ",title)
 
 		return (
 			<Dialog
@@ -88,6 +106,14 @@ class CollateralDialogClass extends React.Component<
 				</DialogTitle>
 				<DialogContent>
 					<Typography variant="subtitle1">{message}</Typography>
+					<TextField
+						type="number"
+						value={this.state.amount}
+						InputProps={{ inputProps: { min: 0 } }}
+						onChange={(event: any) => {
+							this.setState({ amount: Number(event.target.value) });
+						}}
+					/>
 					<Table>
 						<TableBody>
 							<TableRow>

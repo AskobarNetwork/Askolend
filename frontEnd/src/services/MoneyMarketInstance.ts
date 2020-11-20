@@ -123,4 +123,14 @@ export class MoneyMarketInstanceService {
 		);
 	};
 
+	setCollateral = async (
+		amount:BigNumber
+	): Promise<providers.TransactionReceipt> => {
+		const transactionObject = await this.contract.collateralizeALR(amount);
+
+		return (await (await this.provider.getProvider()).waitForTransaction(
+			transactionObject.hash
+		))
+	}
+
 }

@@ -11,7 +11,7 @@ import {
 	TableCell,
 	TableRow,
 	TextField,
-	Typography,
+	Typography
 } from "@material-ui/core";
 import { BigNumber, ethers } from "ethers";
 import CloseIcon from "@material-ui/icons/Close";
@@ -97,13 +97,18 @@ class BorrowDialogClass extends React.Component<
 		);
 		// ^^ which address is used here?
 		console.log("MARKETADDRESS! ",this.props.token?.marketAddress)
-		let address = this.props.collateralAddress ? this.props.collateralAddress : "";
+		console.log("COLLATERALADDESS! ",this.props.collateralAddress)
+		console.log("PROPS! ",this.props)
+		// let address = this.props.collateralAddress ? this.props.collateralAddress : "";
+		// temp, testing for correct collateral address
+		// low risk address***
+		let address = "0x0a971ea06be3f770282ad00D305e9a6dB8DbD90c"
 		console.log("BORROWCALL1")
 		if (address!== "" && address !== undefined){
 			console.log(BigNumber.from(this.state.amount));
 			console.log(address)
 		let x1;
-		x1 = await moneyMarket.getBorrow((BigNumber.from(this.state.amount).mul(BigNumber.from(10^18))), address)
+		x1 = await moneyMarket.getBorrow((BigNumber.from(this.state.amount).mul(BigNumber.from(10**9)).mul(BigNumber.from(10**9))), address)
 		console.log("x1 ",x1)
 	}
 		console.log("BORROWCALL2")

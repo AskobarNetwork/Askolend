@@ -21,22 +21,22 @@ module.exports = async (deployer) => {
   await MMC.whitelistAsset(FakeAugur.address, "FakeAugur", "FAG");
   console.log("FakeAugur White Listed");
   await MMC.setUpAHR(
-    "1000000000000000000", //base rate per year(approx target base APR)
-    "2000000000000000000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "2000000000000000000", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    4204800, //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+    "20000000000000000", //base rate per year(approx target base APR)
+    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
     50, //fee this is the fee % value
     "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
     FakeAugur.address //asset address
   );
   console.log("FakeAugur Asko High Risk Token Created");
   await MMC.setUpALR(
-    "2000000000000000000",
-    "3000000000000000000",
-    "3000000000000000000",
-    8409600,
-    50,
-    "1000000000000000000",
+    "20000000000000000", //base rate per year(approx target base APR)
+    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+    50, //fee this is the fee % value
+    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
     FakeAugur.address
   );
   console.log("FakeAugur Asko Low Risk Token Created");
@@ -44,22 +44,22 @@ module.exports = async (deployer) => {
   await MMC.whitelistAsset(FakeLink.address, "FakeLink", "FAL");
   console.log("FakeLink White Listed");
   await MMC.setUpAHR(
-    "3000000000000000000",
-    "4000000000000000000",
-    "4000000000000000000",
-    16819200,
-    50,
-    "1000000000000000000",
+    "20000000000000000", //base rate per year(approx target base APR)
+    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+    50, //fee this is the fee % value
+    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
     FakeLink.address
   );
   console.log("FakeLink Asko High Risk Token Created");
   await MMC.setUpALR(
-    "4000000000000000000",
-    "5000000000000000000",
-    "5000000000000000000",
-    33638400,
-    50,
-    "1000000000000000000",
+    "20000000000000000", //base rate per year(approx target base APR)
+    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+    50, //fee this is the fee % value
+    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
     FakeLink.address
   );
   console.log("FakeLink Asko Low Risk Token Created");

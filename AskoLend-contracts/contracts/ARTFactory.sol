@@ -24,6 +24,7 @@ contract ARTFactory {
                 _asset,
                 _UOF,
                 _MMF,
+                msg.sender,
                 _assetNameAHR,
                 _assetSymbolAHR,
                 _isALR,

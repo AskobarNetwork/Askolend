@@ -102,13 +102,14 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         address _asset,
         address _oracleFactory,
         address _MoneyMarketControl,
+        address _MoneyMarketInstance,
         string memory _tokenName,
         string memory _tokenSymbol,
         bool _isALR,
         uint256 _initialExchangeRate
     ) public ERC20(_tokenName, _tokenSymbol) {
         asset = IERC20(_asset); //instanciate the asset as a usable ERC20 contract instance
-        MMI = MoneyMarketInstanceI(msg.sender); //instanciates this contracts MoneyMarketInstance contract
+        MMI = MoneyMarketInstanceI(_MoneyMarketInstance); //instanciates this contracts MoneyMarketInstance contract
         interestRateModel = InterestRateModel(_interestRateModel); //instanciates the this contracts interest rate model as a contract
         UOF = UniswapOracleFactoryI(_oracleFactory); //instantiatesthe UniswapOracleFactory as a contract
         MMF = MoneyMarketFactoryI(_MoneyMarketControl);

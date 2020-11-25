@@ -63,7 +63,7 @@ class BorrowMarketTableClass extends React.Component<
 				"0x42e3a2720497153a02Def9a413AdB2a02CCDed28",
 				"0xD8f9A6e9d0cF5BF339b8ACf62B47fFE5947bd36E",
 			],
-			control: "0x91E96c82eE5b6C673080d5801608FBEFE17C1Bfe",
+			control: "0x15aa072f87C124C9faE038CeE4232D315a497283",
 			collateralopen: false,
 			confirmationOpen: false,
 			confirmationTitle: "",

@@ -102,7 +102,7 @@ class BorrowDialogClass extends React.Component<
 		// let address = this.props.collateralAddress ? this.props.collateralAddress : "";
 		// temp, testing for correct collateral address
 		// low risk address***
-		let address = "0x0a971ea06be3f770282ad00D305e9a6dB8DbD90c"
+		let address = "0x7F5f36889C50892406b609Cf8Dfd0e7c340a842D"
 		console.log("BORROWCALL1")
 		if (address!== "" && address !== undefined){
 			console.log(BigNumber.from(this.state.amount));

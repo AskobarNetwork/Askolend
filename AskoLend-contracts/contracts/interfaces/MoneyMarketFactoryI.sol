@@ -23,8 +23,9 @@ abstract contract MoneyMarketFactoryI {
    **/
     function createMMI(
         address _assetContractAdd,
-        address _owner,
         address _oracleFactory,
+        address _owner,
+        address _ARTF,
         string memory _assetName,
         string memory _assetSymbol
     ) public virtual returns (address);
@@ -67,4 +68,10 @@ abstract contract MoneyMarketFactoryI {
     ) external virtual;
 
     function _checkIfALR(address __inQ) external view virtual returns (bool);
+
+    function checkCollateralizedALR(address _borrower, address _ALR)
+        public
+        view
+        virtual
+        returns (uint256);
 }

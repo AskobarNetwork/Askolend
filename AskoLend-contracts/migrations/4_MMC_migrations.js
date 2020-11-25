@@ -1,6 +1,7 @@
 const MoneyMarketFactory = artifacts.require("MoneyMarketFactory");
 const MoneyMarketControl = artifacts.require("MoneyMarketControl");
 const UniswapOracleFactory = artifacts.require("UniswapOracleFactory");
+const ARTFactory = artifacts.require("ARTFactory");
 const FakeLink = artifacts.require("FakeLink");
 const FakeAugur = artifacts.require("FakeAugur");
 
@@ -8,7 +9,8 @@ module.exports = async (deployer) => {
   await deployer.deploy(
     MoneyMarketControl,
     UniswapOracleFactory.address,
-    MoneyMarketFactory.address
+    MoneyMarketFactory.address,
+    ARTFactory.address
   );
   console.log("Money Market Control Deployed!");
   UOF = await UniswapOracleFactory.deployed();

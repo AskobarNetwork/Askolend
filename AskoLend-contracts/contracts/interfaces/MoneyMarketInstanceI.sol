@@ -26,4 +26,6 @@ abstract contract MoneyMarketInstanceI {
     ) public virtual;
 
     function getAssetAdd() public view virtual returns (address);
+
+    function checkIfALR(address _inQuestion) public view virtual returns (bool);
 }

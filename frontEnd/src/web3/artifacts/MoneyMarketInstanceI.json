@@ -72,28 +72,47 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_inQuestion",
+          "type": "address"
+        }
+      ],
+      "name": "checkIfALR",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"ALR\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_InterestRateModel\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_initialExchangeRate\",\"type\":\"uint256\"}],\"name\":\"_setUpAHR\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_InterestRateModel\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_initialExchangeRate\",\"type\":\"uint256\"}],\"name\":\"_setUpALR\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAssetAdd\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{},\"notice\":\"The MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses to interface with a MoneyMarketInstance. This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketInstanceI.sol\":\"MoneyMarketInstanceI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketInstanceI.sol\":{\"keccak256\":\"0xa1d7adf77be48c8001f411e7d72892e00d2c120c69c635348700f5e177a97b64\",\"urls\":[\"bzz-raw://e05474c77d490c22721ca4da14b49a2871bbf315df64021585f48df490cc0b59\",\"dweb:/ipfs/QmP6eo67qkf2AgDXSNGjk4xzQHTufQAgo1iaKpugoUu3qG\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"ALR\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_InterestRateModel\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_initialExchangeRate\",\"type\":\"uint256\"}],\"name\":\"_setUpAHR\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_InterestRateModel\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_initialExchangeRate\",\"type\":\"uint256\"}],\"name\":\"_setUpALR\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_inQuestion\",\"type\":\"address\"}],\"name\":\"checkIfALR\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAssetAdd\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{},\"notice\":\"The MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses to interface with a MoneyMarketInstance. This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*\"}},\"settings\":{\"compilationTarget\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketInstanceI.sol\":\"MoneyMarketInstanceI\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketInstanceI.sol\":{\"keccak256\":\"0x0db9bce2c38bffdb96106015132d5d36b26949139954d9158eb74d33d545f957\",\"urls\":[\"bzz-raw://cbe0c36dfcf66c236a286c09801c73db726b90f91758a807ab4dae7bcb4ec787\",\"dweb:/ipfs/QmfFm54MPDns8kv29QM1Gdp81h1f8HL3TKcTcgQf1comGR\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.6.0;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title MoneyMarketInstanceI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses to interface\n    with a MoneyMarketInstance.\n    This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits\n**/\n\nabstract contract MoneyMarketInstanceI {\n    address public ALR;\n\n    function _setUpAHR(\n        address _InterestRateModel,\n        uint256 _fee,\n        uint256 _initialExchangeRate\n    ) public virtual;\n\n    function _setUpALR(\n        address _InterestRateModel,\n        uint256 _fee,\n        uint256 _initialExchangeRate\n    ) public virtual;\n\n    function getAssetAdd() public view virtual returns (address);\n}\n",
+  "source": "pragma solidity ^0.6.0;\n\n////////////////////////////////////////////////////////////////////////////////////////////\n/// @title MoneyMarketInstanceI\n/// @author Christopher Dixon\n////////////////////////////////////////////////////////////////////////////////////////////\n/**\nThe MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses to interface\n    with a MoneyMarketInstance.\n    This is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits\n**/\n\nabstract contract MoneyMarketInstanceI {\n    address public ALR;\n\n    function _setUpAHR(\n        address _InterestRateModel,\n        uint256 _fee,\n        uint256 _initialExchangeRate\n    ) public virtual;\n\n    function _setUpALR(\n        address _InterestRateModel,\n        uint256 _fee,\n        uint256 _initialExchangeRate\n    ) public virtual;\n\n    function getAssetAdd() public view virtual returns (address);\n\n    function checkIfALR(address _inQuestion) public view virtual returns (bool);\n}\n",
   "sourcePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketInstanceI.sol",
   "ast": {
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketInstanceI.sol",
     "exportedSymbols": {
       "MoneyMarketInstanceI": [
-        5323
+        5695
       ]
     },
-    "id": 5324,
+    "id": 5696,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5296,
+        "id": 5661,
         "literals": [
           "solidity",
           "^",
@@ -101,7 +120,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:14"
+        "src": "0:23:16"
       },
       {
         "abstract": true,
@@ -109,15 +128,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 5297,
+          "id": 5662,
           "nodeType": "StructuredDocumentation",
-          "src": "273:233:14",
+          "src": "273:233:16",
           "text": "The MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses to interface\nwith a MoneyMarketInstance.\nThis is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*"
         },
         "fullyImplemented": false,
-        "id": 5323,
+        "id": 5695,
         "linearizedBaseContracts": [
-          5323
+          5695
         ],
         "name": "MoneyMarketInstanceI",
         "nodeType": "ContractDefinition",
@@ -125,13 +144,13 @@
           {
             "constant": false,
             "functionSelector": "c27d4df3",
-            "id": 5299,
+            "id": 5664,
             "mutability": "mutable",
             "name": "ALR",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 5323,
-            "src": "553:18:14",
+            "scope": 5695,
+            "src": "553:18:16",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -139,10 +158,10 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 5298,
+              "id": 5663,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "553:7:14",
+              "src": "553:7:16",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -156,7 +175,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "dcc716bd",
-            "id": 5308,
+            "id": 5673,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -164,18 +183,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5306,
+              "id": 5671,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5301,
+                  "id": 5666,
                   "mutability": "mutable",
                   "name": "_InterestRateModel",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5308,
-                  "src": "606:26:14",
+                  "scope": 5673,
+                  "src": "606:26:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -183,10 +202,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5300,
+                    "id": 5665,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "606:7:14",
+                    "src": "606:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -198,13 +217,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5303,
+                  "id": 5668,
                   "mutability": "mutable",
                   "name": "_fee",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5308,
-                  "src": "642:12:14",
+                  "scope": 5673,
+                  "src": "642:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -212,10 +231,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5302,
+                    "id": 5667,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "642:7:14",
+                    "src": "642:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -226,13 +245,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5305,
+                  "id": 5670,
                   "mutability": "mutable",
                   "name": "_initialExchangeRate",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5308,
-                  "src": "664:28:14",
+                  "scope": 5673,
+                  "src": "664:28:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -240,10 +259,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5304,
+                    "id": 5669,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "664:7:14",
+                    "src": "664:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -253,16 +272,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "596:102:14"
+              "src": "596:102:16"
             },
             "returnParameters": {
-              "id": 5307,
+              "id": 5672,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "713:0:14"
+              "src": "713:0:16"
             },
-            "scope": 5323,
-            "src": "578:136:14",
+            "scope": 5695,
+            "src": "578:136:16",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
@@ -271,7 +290,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "1f432cf5",
-            "id": 5317,
+            "id": 5682,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -279,18 +298,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5315,
+              "id": 5680,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5310,
+                  "id": 5675,
                   "mutability": "mutable",
                   "name": "_InterestRateModel",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5317,
-                  "src": "748:26:14",
+                  "scope": 5682,
+                  "src": "748:26:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -298,10 +317,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5309,
+                    "id": 5674,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "748:7:14",
+                    "src": "748:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -313,13 +332,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5312,
+                  "id": 5677,
                   "mutability": "mutable",
                   "name": "_fee",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5317,
-                  "src": "784:12:14",
+                  "scope": 5682,
+                  "src": "784:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -327,10 +346,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5311,
+                    "id": 5676,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "784:7:14",
+                    "src": "784:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -341,13 +360,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5314,
+                  "id": 5679,
                   "mutability": "mutable",
                   "name": "_initialExchangeRate",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5317,
-                  "src": "806:28:14",
+                  "scope": 5682,
+                  "src": "806:28:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -355,10 +374,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5313,
+                    "id": 5678,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "806:7:14",
+                    "src": "806:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -368,16 +387,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "738:102:14"
+              "src": "738:102:16"
             },
             "returnParameters": {
-              "id": 5316,
+              "id": 5681,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "855:0:14"
+              "src": "855:0:16"
             },
-            "scope": 5323,
-            "src": "720:136:14",
+            "scope": 5695,
+            "src": "720:136:16",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
@@ -386,7 +405,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4c20ac74",
-            "id": 5322,
+            "id": 5687,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -394,24 +413,24 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5318,
+              "id": 5683,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "882:2:14"
+              "src": "882:2:16"
             },
             "returnParameters": {
-              "id": 5321,
+              "id": 5686,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5320,
+                  "id": 5685,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5322,
-                  "src": "914:7:14",
+                  "scope": 5687,
+                  "src": "914:7:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -419,10 +438,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5319,
+                    "id": 5684,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "914:7:14",
+                    "src": "914:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -433,33 +452,121 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "913:9:14"
+              "src": "913:9:16"
             },
-            "scope": 5323,
-            "src": "862:61:14",
+            "scope": 5695,
+            "src": "862:61:16",
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "67612843",
+            "id": 5694,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "checkIfALR",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 5690,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5689,
+                  "mutability": "mutable",
+                  "name": "_inQuestion",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 5694,
+                  "src": "949:19:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5688,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "949:7:16",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "948:21:16"
+            },
+            "returnParameters": {
+              "id": 5693,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5692,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 5694,
+                  "src": "999:4:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5691,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "999:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "998:6:16"
+            },
+            "scope": 5695,
+            "src": "929:76:16",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 5324,
-        "src": "508:417:14"
+        "scope": 5696,
+        "src": "508:499:16"
       }
     ],
-    "src": "0:926:14"
+    "src": "0:1008:16"
   },
   "legacyAST": {
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/interfaces/MoneyMarketInstanceI.sol",
     "exportedSymbols": {
       "MoneyMarketInstanceI": [
-        5323
+        5695
       ]
     },
-    "id": 5324,
+    "id": 5696,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5296,
+        "id": 5661,
         "literals": [
           "solidity",
           "^",
@@ -467,7 +574,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:14"
+        "src": "0:23:16"
       },
       {
         "abstract": true,
@@ -475,15 +582,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 5297,
+          "id": 5662,
           "nodeType": "StructuredDocumentation",
-          "src": "273:233:14",
+          "src": "273:233:16",
           "text": "The MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses to interface\nwith a MoneyMarketInstance.\nThis is necissary to reduce the size of the contracts during deployment to avoid Gas Block limits*"
         },
         "fullyImplemented": false,
-        "id": 5323,
+        "id": 5695,
         "linearizedBaseContracts": [
-          5323
+          5695
         ],
         "name": "MoneyMarketInstanceI",
         "nodeType": "ContractDefinition",
@@ -491,13 +598,13 @@
           {
             "constant": false,
             "functionSelector": "c27d4df3",
-            "id": 5299,
+            "id": 5664,
             "mutability": "mutable",
             "name": "ALR",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 5323,
-            "src": "553:18:14",
+            "scope": 5695,
+            "src": "553:18:16",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -505,10 +612,10 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 5298,
+              "id": 5663,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "553:7:14",
+              "src": "553:7:16",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -522,7 +629,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "dcc716bd",
-            "id": 5308,
+            "id": 5673,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -530,18 +637,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5306,
+              "id": 5671,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5301,
+                  "id": 5666,
                   "mutability": "mutable",
                   "name": "_InterestRateModel",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5308,
-                  "src": "606:26:14",
+                  "scope": 5673,
+                  "src": "606:26:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -549,10 +656,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5300,
+                    "id": 5665,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "606:7:14",
+                    "src": "606:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -564,13 +671,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5303,
+                  "id": 5668,
                   "mutability": "mutable",
                   "name": "_fee",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5308,
-                  "src": "642:12:14",
+                  "scope": 5673,
+                  "src": "642:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -578,10 +685,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5302,
+                    "id": 5667,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "642:7:14",
+                    "src": "642:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -592,13 +699,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5305,
+                  "id": 5670,
                   "mutability": "mutable",
                   "name": "_initialExchangeRate",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5308,
-                  "src": "664:28:14",
+                  "scope": 5673,
+                  "src": "664:28:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -606,10 +713,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5304,
+                    "id": 5669,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "664:7:14",
+                    "src": "664:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -619,16 +726,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "596:102:14"
+              "src": "596:102:16"
             },
             "returnParameters": {
-              "id": 5307,
+              "id": 5672,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "713:0:14"
+              "src": "713:0:16"
             },
-            "scope": 5323,
-            "src": "578:136:14",
+            "scope": 5695,
+            "src": "578:136:16",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
@@ -637,7 +744,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "1f432cf5",
-            "id": 5317,
+            "id": 5682,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -645,18 +752,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5315,
+              "id": 5680,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5310,
+                  "id": 5675,
                   "mutability": "mutable",
                   "name": "_InterestRateModel",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5317,
-                  "src": "748:26:14",
+                  "scope": 5682,
+                  "src": "748:26:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -664,10 +771,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5309,
+                    "id": 5674,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "748:7:14",
+                    "src": "748:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -679,13 +786,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5312,
+                  "id": 5677,
                   "mutability": "mutable",
                   "name": "_fee",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5317,
-                  "src": "784:12:14",
+                  "scope": 5682,
+                  "src": "784:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -693,10 +800,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5311,
+                    "id": 5676,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "784:7:14",
+                    "src": "784:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -707,13 +814,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5314,
+                  "id": 5679,
                   "mutability": "mutable",
                   "name": "_initialExchangeRate",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5317,
-                  "src": "806:28:14",
+                  "scope": 5682,
+                  "src": "806:28:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -721,10 +828,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5313,
+                    "id": 5678,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "806:7:14",
+                    "src": "806:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -734,16 +841,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "738:102:14"
+              "src": "738:102:16"
             },
             "returnParameters": {
-              "id": 5316,
+              "id": 5681,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "855:0:14"
+              "src": "855:0:16"
             },
-            "scope": 5323,
-            "src": "720:136:14",
+            "scope": 5695,
+            "src": "720:136:16",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
@@ -752,7 +859,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4c20ac74",
-            "id": 5322,
+            "id": 5687,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -760,24 +867,24 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5318,
+              "id": 5683,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "882:2:14"
+              "src": "882:2:16"
             },
             "returnParameters": {
-              "id": 5321,
+              "id": 5686,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5320,
+                  "id": 5685,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5322,
-                  "src": "914:7:14",
+                  "scope": 5687,
+                  "src": "914:7:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -785,10 +892,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5319,
+                    "id": 5684,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "914:7:14",
+                    "src": "914:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -799,20 +906,108 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "913:9:14"
+              "src": "913:9:16"
             },
-            "scope": 5323,
-            "src": "862:61:14",
+            "scope": 5695,
+            "src": "862:61:16",
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "67612843",
+            "id": 5694,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "checkIfALR",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 5690,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5689,
+                  "mutability": "mutable",
+                  "name": "_inQuestion",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 5694,
+                  "src": "949:19:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5688,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "949:7:16",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "948:21:16"
+            },
+            "returnParameters": {
+              "id": 5693,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5692,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 5694,
+                  "src": "999:4:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5691,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "999:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "998:6:16"
+            },
+            "scope": 5695,
+            "src": "929:76:16",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 5324,
-        "src": "508:417:14"
+        "scope": 5696,
+        "src": "508:499:16"
       }
     ],
-    "src": "0:926:14"
+    "src": "0:1008:16"
   },
   "compiler": {
     "name": "solc",
@@ -820,7 +1015,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2020-11-19T04:48:23.041Z",
+  "updatedAt": "2020-11-25T02:17:15.583Z",
   "devdoc": {
     "methods": {}
   },

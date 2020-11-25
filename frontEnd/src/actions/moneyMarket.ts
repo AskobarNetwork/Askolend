@@ -16,7 +16,7 @@ function instancesFound(instances: any) {
 	return { type: MONEYMARKET_GETINSTANCES_FINISH, instances: instances };
 }
 
-const controlAddress = "0x15aa072f87C124C9faE038CeE4232D315a497283";
+const controlAddress = "0xE159B064eF95b2cFce15C539f4A055dAdc20d833";
 
 export function getMoneyMarketInstances() {
 	return async function (dispatch: any) {

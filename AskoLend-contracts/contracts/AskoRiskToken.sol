@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./compound/Exponential.sol";
 import "./compound/InterestRateModel.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
-import "./MoneyMarketInstance.sol";
+import "./interfaces/MoneyMarketInstanceI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,7 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
 **/
 
 contract AskoRiskToken is Ownable, ERC20, Exponential {
+    using SafeMath for uint256;
     uint256 internal initialExchangeRateMantissa;
     uint256 public reserveFactorMantissa;
     uint256 public accrualBlockNumber;
@@ -27,14 +28,14 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
     uint256 public totalBorrows;
     uint256 public totalReserves;
     uint256 public constant borrowRateMaxMantissa = 0.0005e16;
-    uint256 public constant reserveFactorMaxMantissa = 1e18;
     uint256 public liquidationIncentiveMantissa = .001e18; //.001
+    uint256 public one = 1e18;
 
     bool public isALR;
 
     IERC20 public asset;
     InterestRateModel public interestRateModel;
-    MoneyMarketInstance public MMI;
+    MoneyMarketInstanceI public MMI;
     MoneyMarketFactoryI public MMF;
     UniswapOracleFactoryI public UOF;
 
@@ -107,7 +108,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         uint256 _initialExchangeRate
     ) public ERC20(_tokenName, _tokenSymbol) {
         asset = IERC20(_asset); //instanciate the asset as a usable ERC20 contract instance
-        MMI = MoneyMarketInstance(msg.sender); //instanciates this contracts MoneyMarketInstance contract
+        MMI = MoneyMarketInstanceI(msg.sender); //instanciates this contracts MoneyMarketInstance contract
         interestRateModel = InterestRateModel(_interestRateModel); //instanciates the this contracts interest rate model as a contract
         UOF = UniswapOracleFactoryI(_oracleFactory); //instantiatesthe UniswapOracleFactory as a contract
         MMF = MoneyMarketFactoryI(_MoneyMarketControl);
@@ -748,5 +749,22 @@ redeemAmount = _amount x exchangeRateCurrent
 **/
     function getAssetAdd() public view returns (address) {
         return address(asset);
+    }
+
+    function getUSDCWorthOfART(uint256 _USDCAmount) public returns (uint256) {
+        //get USDC price of the asset
+        uint256 priceofAsset = UOF.getUnderlyingPrice(address(asset));
+        //calculate 1 USDC value of the asset
+        uint256 oneUSDCAmountOfAsset = one.div(priceofAsset);
+        //calculate ART value of one USDC
+        MathError mathErr;
+        uint256 oneUSDCOfART;
+
+        (mathErr, oneUSDCOfART) = mulScalarTruncate(
+            Exp({mantissa: exchangeRateCurrent()}),
+            oneUSDCAmountOfAsset
+        );
+        //return one ART USD value multiplied by the input USDC amount
+        return oneUSDCOfART.mul(_USDCAmount);
     }
 }

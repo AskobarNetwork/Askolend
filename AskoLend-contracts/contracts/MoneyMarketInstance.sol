@@ -6,7 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./compound/Exponential.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";
-import "./AskoRiskToken.sol";
+import "./interfaces/AskoRiskTokenI.sol";
+import "./interfaces/ARTFactoryI.sol";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketInstance
@@ -28,10 +29,11 @@ contract MoneyMarketInstance is Ownable, Exponential {
     string public assetSymbol;
 
     IERC20 public asset;
-    AskoRiskToken public AHR;
-    AskoRiskToken public ALR;
+    AskoRiskTokenI public AHR;
+    AskoRiskTokenI public ALR;
     MoneyMarketFactoryI public MMF;
     UniswapOracleFactoryI public UOF;
+    ARTFactoryI public ARTF;
 
     mapping(address => uint256) lockedCollateral;
     mapping(address => address) collateralLockedALR;
@@ -63,6 +65,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
         address _assetContractAdd,
         address _oracleFactory,
         address _owner,
+        address _ARTF,
         string memory _assetName,
         string memory _assetSymbol
     ) public {
@@ -72,6 +75,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
         UOF = UniswapOracleFactoryI(_oracleFactory);
         MMF = MoneyMarketFactoryI(_owner);
         asset = IERC20(_assetContractAdd);
+        ARTF = ARTFactoryI(_ARTF);
     }
 
     /**
@@ -99,15 +103,17 @@ contract MoneyMarketInstance is Ownable, Exponential {
         string memory assetNameAHR = string(ahrname);
         string memory assetSymbolAHR = string(ahrsymbol);
         //un-encode concated string
-        AHR = new AskoRiskToken( //creates new Asko High Risk Token Contract
-            _InterestRateModel,
-            address(asset),
-            address(UOF),
-            address(MMF),
-            assetNameAHR,
-            assetSymbolAHR,
-            false,
-            _initialExchangeRate
+        AHR = AskoRiskTokenI(
+            ARTF.createART( //creates new Asko High Risk Token Contract
+                _InterestRateModel,
+                address(asset),
+                address(UOF),
+                address(MMF),
+                assetNameAHR,
+                assetSymbolAHR,
+                false,
+                _initialExchangeRate
+            )
         );
     }
 
@@ -136,15 +142,17 @@ contract MoneyMarketInstance is Ownable, Exponential {
         string memory assetNameALR = string(alrname);
         string memory assetSymbolALR = string(alrsymbol);
         //un-encode concated string
-        ALR = new AskoRiskToken( //creates new Asko Low Risk Token Contract
-            _InterestRateModel,
-            address(asset),
-            address(UOF),
-            address(MMF),
-            assetNameALR,
-            assetSymbolALR,
-            true,
-            _initialExchangeRate
+        ALR = AskoRiskTokenI(
+            ARTF.createART( //creates new Asko High Risk Token Contract
+                _InterestRateModel,
+                address(asset),
+                address(UOF),
+                address(MMF),
+                assetNameALR,
+                assetSymbolALR,
+                true,
+                _initialExchangeRate
+            )
         );
     }
 
@@ -231,6 +239,21 @@ contract MoneyMarketInstance is Ownable, Exponential {
         emit LentToALR(msg.sender, _amount);
     }
 
+    //struct used to avoid stack too deep errors
+    struct borrowVars {
+        uint256 collateralValue;
+        uint256 borrowBalAHR;
+        uint256 borrowBalALR;
+        uint256 totalFutureAmountOwed;
+        uint256 priceOfAsset;
+        uint256 assetAmountValOwed;
+        uint256 amountValue; // Note: reverts on error
+        uint256 amountOfALR;
+        uint256 halfVal;
+        uint256 collateralNeeded;
+        uint256 half;
+    }
+
     /**
 @notice borrow is used to take out a loan from in MoneyMarketInstance's underlying asset
 @param _amount is the amount of asset being barrowed
@@ -239,47 +262,59 @@ contract MoneyMarketInstance is Ownable, Exponential {
     function borrow(uint256 _amount, address _collateral) public {
         //require that the collateral a user is looking to use is the same as the type they already have a loan in
         //OR that their cantCollateralize mapping is false
-        //  require(
-        //      _collateral == collateralLockedALR[msg.sender] ||
-        //    cantCollateralize[msg.sender] == false
-        //    );
-        //check that the user has enough collateral in input moeny market
-        uint256 collateralValue = MMF.checkAvailibleCollateralValue(
+        require(
+            _collateral == collateralLockedALR[msg.sender] ||
+                cantCollateralize[msg.sender] == false
+        );
+        borrowVars memory vars;
+        //check that the user has enough collateral in input money market
+        //this returns the USDC price of their asset
+        vars.collateralValue = MMF.checkAvailibleCollateralValue(
             msg.sender,
             _collateral
         );
+
         //get current borrow balances for each ART
-        uint256 borrowBalAHR = AHR.borrowBalanceCurrent(msg.sender);
-        uint256 borrowBalALR = ALR.borrowBalanceCurrent(msg.sender);
+        vars.borrowBalAHR = AHR.borrowBalanceCurrent(msg.sender);
+        vars.borrowBalALR = ALR.borrowBalanceCurrent(msg.sender);
         //calculate the new amount that would be owed if borrow suceeds
-        uint256 totalFutureAmountOwed = borrowBalAHR.add(
-            borrowBalALR.add(_amount)
+        vars.totalFutureAmountOwed = vars.borrowBalAHR.add(
+            vars.borrowBalALR.add(_amount)
         );
         //check current asset price
-        uint256 priceOfAsset = UOF.getUnderlyingPrice(address(asset));
+        vars.priceOfAsset = UOF.getUnderlyingPrice(address(asset));
         //get the usd price value of _amount
-        uint256 assetAmountValOwed = priceOfAsset.mul(totalFutureAmountOwed);
+        vars.assetAmountValOwed = vars.priceOfAsset.mul(
+            vars.totalFutureAmountOwed
+        );
+        //get USDC value of _amount
+        vars.amountValue = vars.priceOfAsset.mul(_amount);
+        //instantiate collateral ALR contract
+        AskoRiskTokenI collateALR = AskoRiskTokenI(_collateral);
+        //get collateral ALR amount for loan value
+        vars.amountOfALR = collateALR.getUSDCWorthOfART(vars.amountValue);
         //divide amount value by 3
-        uint256 halfVal = assetAmountValOwed.div(2);
+        vars.halfVal = vars.assetAmountValOwed.div(2);
         //add 1/2 value to asset value to get 150% asset value
-        uint256 collateralNeeded = assetAmountValOwed.add(halfVal);
+        vars.collateralNeeded = vars.assetAmountValOwed.add(vars.halfVal);
         //require collateral value to be greater than 150% of the amount value of loan
-        require(collateralValue >= collateralNeeded);
+        require(vars.collateralValue >= vars.collateralNeeded);
         //cut amount of tokens in half
-        uint256 half = _amount.div(2);
+        vars.half = _amount.div(2);
         //lock the collateral needed for this loan so it cant be "double spent"
-        MMF.lockCollateral(msg.sender, _collateral, collateralNeeded);
+        MMF.lockCollateral(msg.sender, _collateral, vars.amountOfALR);
+        MMF.trackCollateralDown(msg.sender, _collateral, vars.amountOfALR);
         //track locked amount
         lockedCollateral[msg.sender] = lockedCollateral[msg.sender].add(
-            collateralNeeded
+            vars.amountOfALR
         );
         //track which ALR is locked
         collateralLockedALR[msg.sender] = _collateral;
         cantCollateralize[msg.sender] = true;
         //borrow half from each pool
-        AHR.borrow(half, msg.sender);
-        ALR.borrow(half, msg.sender);
-        emit Borrow(msg.sender, half, half);
+        AHR.borrow(vars.half, msg.sender);
+        ALR.borrow(vars.half, msg.sender);
+        emit Borrow(msg.sender, vars.half, vars.half);
     }
 
     /**
@@ -328,6 +363,11 @@ contract MoneyMarketInstance is Ownable, Exponential {
                     collateralLockedALR[msg.sender],
                     lockedCollateral[msg.sender]
                 );
+                MMF.trackCollateralUp(
+                    msg.sender,
+                    collateralLockedALR[msg.sender],
+                    lockedCollateral[msg.sender]
+                );
                 //reset collateralLockedALR address to zero so the user can use a different ALR address in future borrows
                 collateralLockedALR[msg.sender] = address(0);
                 cantCollateralize[msg.sender] = false;
@@ -346,6 +386,16 @@ contract MoneyMarketInstance is Ownable, Exponential {
         ALR.burn(msg.sender, _amount);
         MMF.trackCollateralUp(msg.sender, address(ALR), _amount);
         emit Collateralized(msg.sender, _amount);
+    }
+
+    function decollateralizeALR(uint256 _amount) public {
+        uint256 availibleCollateral = MMF.checkCollateralizedALR(
+            msg.sender,
+            address(ALR)
+        );
+        require(_amount <= availibleCollateral);
+        MMF.trackCollateralDown(msg.sender, address(ALR), _amount);
+        ALR.mint(msg.sender, _amount);
     }
 
     /**

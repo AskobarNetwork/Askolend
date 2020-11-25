@@ -30,4 +30,20 @@ abstract contract AskoRiskTokenI {
         uint256 _amountOfThisToken,
         uint256 _minAmount
     ) external virtual;
+
+    function mint(address _account, uint256 _amount) public virtual;
+
+    function borrow(uint256 _borrowAmount, address _borrower) external virtual;
+
+    function repayBorrow(uint256 repayAmount, address borrower)
+        external
+        virtual
+        returns (uint256);
+
+    function getUSDCWorthOfART(uint256 _USDCAmount)
+        public
+        virtual
+        returns (uint256);
+
+    function burn(address _account, uint256 _amount) public virtual;
 }

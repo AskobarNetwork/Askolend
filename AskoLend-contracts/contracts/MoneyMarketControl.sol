@@ -24,7 +24,7 @@ contract MoneyMarketControl is Ownable, Exponential {
     using SafeMath for uint256;
 
     uint256 public instanceCount; //tracks the number of instances
-
+    address public ARTF;
     UniswapOracleFactoryI public Oracle; //oracle factory contract interface
     MoneyMarketFactoryI public MMF;
 
@@ -55,9 +55,14 @@ contract MoneyMarketControl is Ownable, Exponential {
         is used to set up Oracle variables for the MoneyMarketFactory contract.
 @param _oracle is the address for the UniswapOracleFactorycontract
 **/
-    constructor(address _oracle, address _MMF) public {
+    constructor(
+        address _oracle,
+        address _MMF,
+        address _ARTF
+    ) public {
         Oracle = UniswapOracleFactoryI(_oracle);
         MMF = MoneyMarketFactoryI(_MMF);
+        ARTF = _ARTF;
     }
 
     /**
@@ -81,6 +86,7 @@ contract MoneyMarketControl is Ownable, Exponential {
             _assetContractAdd,
             address(Oracle),
             address(this),
+            ARTF,
             _assetName,
             _assetSymbol
         );
@@ -243,6 +249,22 @@ contract MoneyMarketControl is Ownable, Exponential {
     ) external onlyMMI {
         lockedCollateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .sub(_amount);
+    }
+
+    function checkCollateralizedALR(address _borrower, address _ALR)
+        public
+        view
+        returns (uint256)
+    {
+        return collateralTracker[_borrower][_ALR];
+    }
+
+    function checkLockedCollateral(address _borrower, address _ALR)
+        public
+        view
+        returns (uint256)
+    {
+        return lockedCollateralTracker[_borrower][_ALR];
     }
 
     /**

@@ -194,7 +194,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _borrower,
         address _ALR,
         uint256 _amount
-    ) external {
+    ) external onlyMMI {
         require(isMMI[msg.sender] || isALR[msg.sender]);
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .add(_amount);
@@ -211,7 +211,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _borrower,
         address _ALR,
         uint256 _amount
-    ) external {
+    ) external onlyMMI {
         require(isMMI[msg.sender] || isALR[msg.sender]);
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .sub(_amount);
@@ -284,17 +284,11 @@ contract MoneyMarketControl is Ownable, Exponential {
         //retreive the address of its asset
         address asset = MMI.getAssetAdd();
         //retrieve USD price of this asset
-        uint256 priceOfAsset = Oracle.getUnderlyingPrice(asset);
+        uint256 priceOfAsset = Oracle.getUnderlyingPriceofAsset(asset);
         //retrieve the amount of the asset locked as collateral
         uint256 amountOfAssetCollat = collateralTracker[_borrower][_ALR];
-        //retreive the amount of locked collateral that is loaned against
-        uint256 amountOfLockedCollat = lockedCollateralTracker[_borrower][_ALR];
-        //determine availible collateral
-        uint256 availibleCollateral = amountOfAssetCollat.sub(
-            amountOfLockedCollat
-        );
         //multiply the amount of availible collateral by the asset price and return it
-        return availibleCollateral.mul(priceOfAsset);
+        return amountOfAssetCollat.mul(priceOfAsset);
     }
 
     function _checkIfALR(address __inQ) external view returns (bool) {

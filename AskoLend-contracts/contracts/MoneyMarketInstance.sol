@@ -269,6 +269,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
         borrowVars memory vars;
         //check that the user has enough collateral in input money market
         //this returns the USDC price of their asset
+
         vars.collateralValue = MMF.checkAvailibleCollateralValue(
             msg.sender,
             _collateral
@@ -282,7 +283,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
             vars.borrowBalALR.add(_amount)
         );
         //check current asset price
-        vars.priceOfAsset = UOF.getUnderlyingPrice(address(asset));
+        vars.priceOfAsset = UOF.getUnderlyingPriceofAsset(address(asset));
         //get the usd price value of _amount
         vars.assetAmountValOwed = vars.priceOfAsset.mul(
             vars.totalFutureAmountOwed

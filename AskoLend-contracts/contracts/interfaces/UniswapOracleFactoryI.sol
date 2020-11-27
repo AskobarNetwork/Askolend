@@ -22,11 +22,22 @@ abstract contract UniswapOracleFactoryI {
     function createNewOracle(address token) public virtual returns (address);
 
     /**
-@notice getUnderlyingPrice allows for the price retrieval of a MoneyMarketInstances underlying asset
+@notice getUnderlyingPriceofAsset allows for the price retrieval of a MoneyMarketInstances underlying asset
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingPrice(address _MMI)
+    function getUnderlyingPriceofAsset(address _MMI)
+        public
+        view
+        virtual
+        returns (uint256);
+
+    /**
+@notice getUnderlyingAssetPriceOfUSDC allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
+@param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
+@return returns the price of the asset
+**/
+    function getUnderlyingAssetPriceOfUSDC(address _MMI)
         public
         view
         virtual

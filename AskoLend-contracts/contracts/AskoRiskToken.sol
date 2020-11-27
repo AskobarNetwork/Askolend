@@ -647,8 +647,10 @@ redeemAmount = _amount x exchangeRateCurrent
         vars.assetColat = _ARTcollateralized.getAssetAdd();
 
         //Read oracle prices for borrowed and collateral markets
-        uint256 priceBorrowedMantissa = UOF.getUnderlyingPrice(address(asset));
-        uint256 priceCollateralMantissa = UOF.getUnderlyingPrice(
+        uint256 priceBorrowedMantissa = UOF.getUnderlyingPriceofAsset(
+            address(asset)
+        );
+        uint256 priceCollateralMantissa = UOF.getUnderlyingPriceofAsset(
             vars.assetColat
         );
         require(priceBorrowedMantissa != 0 && priceCollateralMantissa != 0);
@@ -753,11 +755,10 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     function getUSDCWorthOfART(uint256 _USDCAmount) public returns (uint256) {
-        //get USDC price of the asset
-        uint256 priceofAsset = UOF.getUnderlyingPrice(address(asset));
-        //calculate 1 USDC value of the asset
-        uint256 oneUSDCAmountOfAsset = one.div(priceofAsset);
-        //calculate ART value of one USDC
+        //get asset price of USDC
+        uint256 oneUSDCAmountOfAsset = UOF.getUnderlyingAssetPriceOfUSDC(
+            address(asset)
+        );
         MathError mathErr;
         uint256 oneUSDCOfART;
 

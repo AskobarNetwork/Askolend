@@ -134,7 +134,7 @@ contract CompoundLens {
 
         return CTokenUnderlyingPrice({
             cToken: address(cToken),
-            underlyingPrice: priceOracle.getUnderlyingPrice(cToken)
+            underlyingPrice: priceOracle.getUnderlyingPriceofAsset(cToken)
         });
     }
 

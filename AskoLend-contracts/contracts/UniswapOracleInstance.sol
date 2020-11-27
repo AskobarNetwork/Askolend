@@ -95,4 +95,13 @@ contract UniswapOracleInstance is Ownable {
         update();
         price = price0Average.mul(1).decode144();
     }
+
+    /**
+@notice consult returns the price of a token in USDC
+@return price is the price of one asset in USDC(example 1WETH in USDC)
+**/
+    function consultUSDC() external returns (uint256 price) {
+        update();
+        price = price1Average.mul(1).decode144();
+    }
 }

@@ -17,7 +17,7 @@ import TableRow from "@material-ui/core/TableRow";
 import { connect } from "react-redux";
 import { BigNumber, ethers } from "ethers";
 import memoize from "memoize-one";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../web3";
 import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
 import { getTokenData } from "actions/askoToken";
 import { ERC20Service } from "services/erc20";

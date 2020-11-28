@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../../src/web3";
 
 
 export class MoneyMarketControlService {

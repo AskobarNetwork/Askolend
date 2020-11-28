@@ -26,7 +26,7 @@ import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
 import { connect } from "react-redux";
 import { getTokenLogoPngSrc } from "../models";
 import { withStyles } from "@material-ui/styles";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../web3";
 
 const styles = (theme: any) => ({
 	borrowDialog: {

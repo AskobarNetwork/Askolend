@@ -16,7 +16,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { connect } from "react-redux";
 import { getTokenLogoPngSrc, Token, SupplyToken } from "../models";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../web3";
 import { MoneyMarketControlService } from "services/MoneyMarketControl";
 import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
 import { getTokenData } from "actions/askoToken";
@@ -63,7 +63,7 @@ class BorrowMarketTableClass extends React.Component<
 				"0x42e3a2720497153a02Def9a413AdB2a02CCDed28",
 				"0xD8f9A6e9d0cF5BF339b8ACf62B47fFE5947bd36E",
 			],
-			control: "0xC2b97342709762E9fb5FAd391ed8369242Ee4585",
+			control: "0x0d14aA1BF9Fb66eA3dD775c225E226dF90Dd03c7",
 			collateralopen: false,
 			confirmationOpen: false,
 			confirmationTitle: "",

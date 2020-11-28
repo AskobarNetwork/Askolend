@@ -5,7 +5,7 @@ import Button from "@material-ui/core/Button";
 import React from "react";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../web3";
 import { connect } from "react-redux";
 import { makeWeb3Connection } from "../actions";
 import { withStyles } from "@material-ui/styles";

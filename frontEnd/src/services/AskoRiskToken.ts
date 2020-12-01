@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from "ethers";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../web3";
 import { ERC20Service } from "./erc20";
 
 

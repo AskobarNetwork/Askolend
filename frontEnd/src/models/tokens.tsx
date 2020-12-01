@@ -2,7 +2,8 @@ import { BigNumber, ethers } from "ethers";
 import { AskoRiskTokenService } from "services/AskoRiskToken";
 import { ERC20Service } from "services/erc20";
 import { MoneyMarketInstanceService } from "services/MoneyMarketInstance";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../../src/web3";
+console.log(ProtocolProvider,"PROTOCOL_PROVIDER")
 
 const fromWei = ProtocolProvider.fromWei;
 

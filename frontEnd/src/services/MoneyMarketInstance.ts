@@ -1,6 +1,6 @@
 import { BigNumber, Contract, providers } from "ethers";
 import { Token } from "models";
-import { ProtocolProvider } from "web3";
+import { ProtocolProvider } from "../web3";
 
 export class MoneyMarketInstanceService {
 	contract: Contract;

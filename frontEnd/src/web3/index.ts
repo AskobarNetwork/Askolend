@@ -7,6 +7,8 @@ const contractAddresses = {
 };
 
 type ContractName = keyof typeof contractAddresses;
+	console.log("PROVIDER_CLASS_FIRE")
+
 
 export class ProtocolProvider {
 	private static ABI_BASE_ROUTE = "./artifacts";

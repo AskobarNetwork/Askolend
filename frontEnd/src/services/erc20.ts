@@ -1,7 +1,7 @@
 import { Contract, ethers, BigNumber, providers } from 'ethers'
 import { isContract, isAddress } from 'utils/tools'
 import { AssetToken } from 'utils/types'
-import { ProtocolProvider } from 'web3'
+import { ProtocolProvider } from '../web3'
 
 
 class ERC20Service {

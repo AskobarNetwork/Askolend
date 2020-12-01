@@ -283,12 +283,10 @@ contract MoneyMarketControl is Ownable, Exponential {
         MoneyMarketInstanceI MMI = MoneyMarketInstanceI(_ALRtracker[_ALR]);
         //retreive the address of its asset
         address asset = MMI.getAssetAdd();
-        //retrieve USD price of this asset
-        uint256 priceOfAsset = Oracle.getUnderlyingPriceofAsset(asset);
         //retrieve the amount of the asset locked as collateral
         uint256 amountOfAssetCollat = collateralTracker[_borrower][_ALR];
-        //multiply the amount of availible collateral by the asset price and return it
-        return amountOfAssetCollat.mul(priceOfAsset);
+        //retrieve USD price of this asset
+        return Oracle.getUnderlyingPriceofAsset(asset, amountOfAssetCollat);
     }
 
     function _checkIfALR(address __inQ) external view returns (bool) {

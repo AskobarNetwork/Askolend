@@ -63,11 +63,14 @@ contract UniswapOracleFactory is Ownable {
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingPriceofAsset(address _MMI) public returns (uint256) {
+    function getUnderlyingPriceofAsset(address _MMI, uint256 _amount)
+        public
+        returns (uint256)
+    {
         UniswapOracleInstance oracle = UniswapOracleInstance(
             instanceTracker[_MMI]
         );
-        return oracle.consult();
+        return oracle.consult(_amount);
     }
 
     /**
@@ -75,14 +78,14 @@ contract UniswapOracleFactory is Ownable {
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingAssetPriceOfUSDC(address _MMI)
+    function getUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
         public
         returns (uint256)
     {
         UniswapOracleInstance oracle = UniswapOracleInstance(
             instanceTracker[_MMI]
         );
-        return oracle.consultUSDC();
+        return oracle.consultUSDC(_amount);
     }
 
     /**

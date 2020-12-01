@@ -19,7 +19,7 @@
  */
 
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-const infuraKey = "e0e633489112408b9b101e8fae548573";
+const infuraKey = "129b2fc423614d9b8f01b61551799a64";
 const mnemonic =
   "life extend whale clown walnut leopard nut purse frame dwarf ecology inherit";
 
@@ -97,7 +97,7 @@ module.exports = {
         // See the solidity docs for advice about optimization and evmVersion
         optimizer: {
           enabled: true,
-          runs: 1,
+          runs: 100,
         },
         //  evmVersion: "byzantium"
       },

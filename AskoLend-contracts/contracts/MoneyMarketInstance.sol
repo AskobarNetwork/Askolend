@@ -282,14 +282,16 @@ contract MoneyMarketInstance is Ownable, Exponential {
         vars.totalFutureAmountOwed = vars.borrowBalAHR.add(
             vars.borrowBalALR.add(_amount)
         );
-        //check current asset price
-        vars.priceOfAsset = UOF.getUnderlyingPriceofAsset(address(asset));
-        //get the usd price value of _amount
-        vars.assetAmountValOwed = vars.priceOfAsset.mul(
+        //check current asset USDC value of whats owed
+        vars.assetAmountValOwed = UOF.getUnderlyingPriceofAsset(
+            address(asset),
             vars.totalFutureAmountOwed
         );
         //get USDC value of _amount
-        vars.amountValue = vars.priceOfAsset.mul(_amount);
+        vars.amountValue = UOF.getUnderlyingPriceofAsset(
+            address(asset),
+            _amount
+        );
         //instantiate collateral ALR contract
         AskoRiskTokenI collateALR = AskoRiskTokenI(_collateral);
         //get collateral ALR amount for loan value

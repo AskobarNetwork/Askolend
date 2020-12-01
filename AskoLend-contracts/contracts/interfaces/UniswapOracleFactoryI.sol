@@ -26,7 +26,7 @@ abstract contract UniswapOracleFactoryI {
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingPriceofAsset(address _MMI)
+    function getUnderlyingPriceofAsset(address _MMI, uint256 _amount)
         public
         view
         virtual
@@ -37,7 +37,7 @@ abstract contract UniswapOracleFactoryI {
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingAssetPriceOfUSDC(address _MMI)
+    function getUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
         public
         view
         virtual

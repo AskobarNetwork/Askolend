@@ -15,8 +15,7 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
 **/
 
 contract UniswapOracleFactory is Ownable {
-    address
-        public uniswap_router_add = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    address public uniswap_router_add;
     address public usdc_add;
     address public factory;
     IUniswapV2Router02 public uniswapRouter;
@@ -29,10 +28,15 @@ contract UniswapOracleFactory is Ownable {
 @param usdcAdd is the address of the ERC20 USDC address
 @param _uniFactoryAdd is the address of the uniswap factory contract
 **/
-    constructor(address usdcAdd, address _uniFactoryAdd) public {
+    constructor(
+        address usdcAdd,
+        address _uniFactoryAdd,
+        address _router
+    ) public {
         uniswapRouter = IUniswapV2Router02(uniswap_router_add);
         usdc_add = usdcAdd;
         factory = _uniFactoryAdd;
+        uniswap_router_add = _router;
     }
 
     /**

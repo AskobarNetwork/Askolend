@@ -285,7 +285,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 **/
     function borrowBalanceCurrent(address account) public returns (uint256) {
         accrueInterest();
-        borrowBalancePrior(account);
+        return borrowBalancePrior(account);
     }
 
     /**
@@ -524,8 +524,6 @@ redeemAmount = _amount x exchangeRateCurrent
         external
         onlyMMInstance
     {
-        // _collateral the address of the ALR the user has staked as collateral?
-        accrueInterest();
         //Fail if protocol has insufficient underlying cash
         require(getCashPrior() > _borrowAmount);
         //create local vars storage
@@ -571,10 +569,10 @@ redeemAmount = _amount x exchangeRateCurrent
     {
         //create local vars storage
         RepayBorrowLocalVars memory vars;
-        //We remember the original borrowerIndex for verification purposes
-        vars.borrowerIndex = accountBorrows[borrower].interestIndex;
         //We fetch the amount the borrower owes, with accumulated interest
         vars.accountBorrows = borrowBalanceCurrent(borrower);
+        //We remember the original borrowerIndex for verification purposes
+        vars.borrowerIndex = accountBorrows[borrower].interestIndex;
         //If repayAmount == 0, repayAmount = accountBorrows
 
         if (repayAmount == 0) {
@@ -597,7 +595,7 @@ redeemAmount = _amount x exchangeRateCurrent
         );
         /* We write the previously calculated values into storage */
         accountBorrows[borrower].principal = vars.accountBorrowsNew;
-        accountBorrows[borrower].interestIndex = borrowIndex;
+        accountBorrows[borrower].interestIndex = vars.borrowerIndex;
         totalBorrows = vars.totalBorrowsNew;
         emit Repayed(borrower, vars.repayAmount);
         return vars.repayAmount;

@@ -352,7 +352,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
                 payAmountALR = ALR.repayBorrow(amountToALR, msg.sender); //pay off ALR
                 uint256 amountToAHR = _repayAmount.sub(amountToALR); //calculate AHR amount
                 payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
-                //if payAmountAHR is greater than 0 transfer asset from the user to this contract
+                //if payAmountAHR is greater than 0 transfer asset from the user to the AHR contract
                 if (payAmountAHR > 0) {
                     asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
                 }

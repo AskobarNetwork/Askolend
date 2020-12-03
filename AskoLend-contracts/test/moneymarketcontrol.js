@@ -1,5 +1,6 @@
 console.log("in tests");
 const Web3 = require("web3");
+const utils = require("./utils.js");
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 const FakeAugur = artifacts.require("FakeAugur");
 const FakeLink = artifacts.require("FakeLink");
@@ -11,7 +12,8 @@ const MoneyMarketControl = artifacts.require("MoneyMarketControl");
 
 contract("MoneyMarketControl", (accounts) => {
   console.log("starting tests");
-
+  const ONE_DAY = 1000 * 86400;
+  const ONE_YEAR = 365 * ONE_DAY;
   let account_one = accounts[0];
   let account_two = accounts[1];
   let augur;
@@ -180,18 +182,27 @@ contract("MoneyMarketControl", (accounts) => {
       "Link ALR borrow bal before repay: " +
         web3.utils.fromWei(linkBorrowedALR, "ether")
     );
+    await utils.increaseTime(ONE_YEAR);
+
+    await linkMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_one});
+    await linkMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_one});
+    console.log("Repaying 20 Link");
     await linkMMI.repay(web3.utils.toWei("20"), {
       from: account_one,
     });
     let linkBorrowedAHRafter = await linkAHR.borrowBalancePrior(account_one);
     console.log(
-      "Link borrow  bal after repay: " +
+      "Link AHR borrow bal after repay: " +
         web3.utils.fromWei(linkBorrowedAHRafter, "ether")
     );
     let linkBorrowedALRafter = await linkALR.borrowBalancePrior(account_one);
     console.log(
-      "Link borrow bal after repay: " +
-        web3.utils.fromWei(linkBorrowedAHRafter, "ether")
+      "Link ALR borrow bal after repay: " +
+        web3.utils.fromWei(linkBorrowedALRafter, "ether")
+    );
+    let linkBalAfter = await link.balanceOf(account_one);
+    console.log(
+      "Link bal after repay: " + web3.utils.fromWei(linkBalAfter, "ether")
     );
 
     //  await linkMMI.decollateralizeALR(web3.utils.toWei("100"), {

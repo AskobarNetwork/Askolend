@@ -1,6 +1,6 @@
 pragma solidity ^0.6.2;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@uniswap/lib/contracts/libraries/FixedPoint.sol";
@@ -20,6 +20,8 @@ contract UniswapOracleInstance is Ownable {
     IUniswapV2Pair public pair;
     address public token0;
     address public token1;
+    address public tokenA;
+    bool public firstRun;
 
     uint256 public price0CumulativeLast;
     uint256 public price1CumulativeLast;
@@ -43,11 +45,15 @@ contract UniswapOracleInstance is Ownable {
         IUniswapV2Pair _pair = IUniswapV2Pair(
             UniswapV2Library.pairFor(_factory, _tokenA, _tokenB)
         );
+        tokenA = _tokenA;
         pair = _pair;
         token0 = _pair.token0();
         token1 = _pair.token1();
-        price0CumulativeLast = _pair.price0CumulativeLast(); // fetch the current accumulated price value (1 / 0)
-        price1CumulativeLast = _pair.price1CumulativeLast(); // fetch the current accumulated price value (0 / 1)
+        if (token0 == _tokenA) {
+            price0CumulativeLast = _pair.price0CumulativeLast(); // fetch the current accumulated price value (1 / 0)
+        } else {
+            price0CumulativeLast = _pair.price1CumulativeLast(); // fetch the current accumulated price value (0 / 1)
+        }
         uint112 reserve0;
         uint112 reserve1;
         (reserve0, reserve1, blockTimestampLast) = _pair.getReserves();
@@ -55,7 +61,9 @@ contract UniswapOracleInstance is Ownable {
             reserve0 != 0 && reserve1 != 0,
             "ExampleOracleSimple: NO_RESERVES"
         ); // ensure that there's liquidity in the pair
+        firstRun = true;
         update();
+        firstRun = false;
     }
 
     /**
@@ -71,18 +79,25 @@ contract UniswapOracleInstance is Ownable {
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
 
         //check if this is the first update
-        if (timeElapsed >= PERIOD) {
+        if (timeElapsed >= PERIOD || firstRun == true) {
             // ensure that at least one full period has passed since the last update
             // cumulative price is in (uq112x112 price * seconds) units so we simply wrap it after division by time elapsed
-            price0Average = FixedPoint.uq112x112(
-                uint224((price0Cumulative - price0CumulativeLast) / timeElapsed)
-            );
-            price1Average = FixedPoint.uq112x112(
-                uint224((price1Cumulative - price1CumulativeLast) / timeElapsed)
-            );
+            if (token0 == tokenA) {
+                price0Average = FixedPoint.uq112x112(
+                    uint224(
+                        (price0Cumulative - price0CumulativeLast) / timeElapsed
+                    )
+                );
+                price0CumulativeLast = price0Cumulative;
+            } else {
+                price0Average = FixedPoint.uq112x112(
+                    uint224(
+                        (price1Cumulative - price0CumulativeLast) / timeElapsed
+                    )
+                );
+                price0CumulativeLast = price1Cumulative;
+            }
 
-            price0CumulativeLast = price0Cumulative;
-            price1CumulativeLast = price1Cumulative;
             blockTimestampLast = blockTimestamp;
         }
     }
@@ -93,6 +108,14 @@ contract UniswapOracleInstance is Ownable {
 **/
     function consult(uint256 _amount) external returns (uint256 price) {
         update();
+        price = price0Average.mul(_amount).decode144();
+    }
+
+    /**
+    @notice consult returns the price of a token in USDC
+    @return price is the price of one asset in USDC(example 1WETH in USDC)
+    **/
+    function viewPrice(uint256 _amount) external view returns (uint256 price) {
         price = price0Average.mul(_amount).decode144();
     }
 

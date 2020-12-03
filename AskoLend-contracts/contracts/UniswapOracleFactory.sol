@@ -1,6 +1,6 @@
 pragma solidity ^0.6.2;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "@uniswap/v2-periphery/contracts/UniswapV2Router02.sol";
 import "./UniswapOracleInstance.sol";
 
@@ -75,6 +75,22 @@ contract UniswapOracleFactory is Ownable {
             instanceTracker[_MMI]
         );
         return oracle.consult(_amount);
+    }
+
+    /**
+    @notice viewUnderlyingPriceofAsset allows for the price retrieval of a MoneyMarketInstances underlying asset without the gas cost of calculating with update
+    @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
+    @return returns the price of the asset
+    **/
+    function viewUnderlyingPriceofAsset(address _MMI, uint256 _amount)
+        public
+        view
+        returns (uint256)
+    {
+        UniswapOracleInstance oracle = UniswapOracleInstance(
+            instanceTracker[_MMI]
+        );
+        return oracle.viewPrice(_amount);
     }
 
     /**

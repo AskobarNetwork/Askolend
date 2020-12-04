@@ -235,6 +235,13 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
                 totalBorrows,
                 totalReserves
             );
+        } else {
+            emit InterestAccrued(
+                accrualBlockNumber,
+                borrowIndex,
+                totalBorrows,
+                totalReserves
+            );
         }
     }
 
@@ -762,18 +769,97 @@ redeemAmount = _amount x exchangeRateCurrent
 
     function getUSDCWorthOfART(uint256 _USDCAmount) public returns (uint256) {
         //get asset price of USDC
-        uint256 oneUSDCAmountOfAsset = UOF.getUnderlyingAssetPriceOfUSDC(
+        uint256 USDCAmountOfAsset = UOF.getUnderlyingAssetPriceOfUSDC(
             address(asset),
-            1
+            _USDCAmount
         );
         MathError mathErr;
-        uint256 oneUSDCOfART;
+        uint256 USDCOfART;
 
-        (mathErr, oneUSDCOfART) = mulScalarTruncate(
-            Exp({mantissa: exchangeRateCurrent()}),
-            oneUSDCAmountOfAsset
+        (mathErr, USDCOfART) = divScalarByExpTruncate(
+            USDCAmountOfAsset,
+            Exp({mantissa: exchangeRatePrior()})
         );
         //return one ART USD value multiplied by the input USDC amount
-        return oneUSDCOfART.mul(_USDCAmount);
+        return USDCOfART;
+    }
+
+    function viewUSDCWorthOfART(uint256 _USDCAmount)
+        public
+        view
+        returns (uint256)
+    {
+        //get asset price of USDC
+        uint256 USDCAmountOfAsset = UOF.viewUnderlyingAssetPriceOfUSDC(
+            address(asset),
+            _USDCAmount
+        );
+        MathError mathErr;
+        uint256 USDCOfART;
+
+        (mathErr, USDCOfART) = divScalarByExpTruncate(
+            USDCAmountOfAsset,
+            Exp({mantissa: exchangeRatePrior()})
+        );
+
+        //return one ART USD value multiplied by the input USDC amount
+
+        return USDCOfART;
+    }
+
+    function convertToART(uint256 _amountOfAsset) public returns (uint256) {
+        //We get the current exchange rate and calculate the number of AHR to be minted:
+        //mintTokens = _amount / exchangeRate
+        MathError mathErr;
+        uint256 artTokens;
+        (mathErr, artTokens) = divScalarByExpTruncate(
+            _amountOfAsset,
+            Exp({mantissa: exchangeRateCurrent()})
+        );
+        return artTokens;
+    }
+
+    function viewConvertToART(uint256 _amountOfAsset)
+        public
+        view
+        returns (uint256)
+    {
+        //We get the current exchange rate and calculate the number of AHR to be minted:
+        //mintTokens = _amount / exchangeRate
+        MathError mathErr;
+        uint256 artTokens;
+        (mathErr, artTokens) = divScalarByExpTruncate(
+            _amountOfAsset,
+            Exp({mantissa: exchangeRatePrior()})
+        );
+        return artTokens;
+    }
+
+    function convertFromART(uint256 _amountOfART) public returns (uint256) {
+        //We get the current exchange rate and calculate the number of AHR to be minted:
+        //mintTokens = _amount / exchangeRate
+        MathError mathErr;
+        uint256 artTokens;
+        (mathErr, artTokens) = mulScalarTruncate(
+            Exp({mantissa: exchangeRateCurrent()}),
+            _amountOfART
+        );
+        return artTokens;
+    }
+
+    function viewConvertFromART(uint256 _amountOfART)
+        public
+        view
+        returns (uint256)
+    {
+        //We get the current exchange rate and calculate the number of AHR to be minted:
+        //mintTokens = _amount / exchangeRate
+        MathError mathErr;
+        uint256 artTokens;
+        (mathErr, artTokens) = mulScalarTruncate(
+            Exp({mantissa: exchangeRatePrior()}),
+            _amountOfART
+        );
+        return artTokens;
     }
 }

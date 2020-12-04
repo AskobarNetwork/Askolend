@@ -247,7 +247,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _ALR,
         uint256 _amount
     ) external onlyMMI {
-        lockedCollateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
+        lockedCollateralTracker[_borrower][_ALR] = lockedCollateralTracker[_borrower][_ALR]
             .sub(_amount);
     }
 
@@ -291,5 +291,21 @@ contract MoneyMarketControl is Ownable, Exponential {
 
     function _checkIfALR(address __inQ) external view returns (bool) {
         return isALR[__inQ];
+    }
+
+    function viewCollateral(address _account, address _alr)
+        public
+        view
+        returns (uint256)
+    {
+        return collateralTracker[_account][_alr];
+    }
+
+    function viewLockedcollateral(address _account, address _alr)
+        public
+        view
+        returns (uint256)
+    {
+        return lockedCollateralTracker[_account][_alr];
     }
 }

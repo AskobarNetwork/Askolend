@@ -109,6 +109,22 @@ contract UniswapOracleFactory is Ownable {
     }
 
     /**
+    @notice getUnderlyingAssetPriceOfUSDC allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
+    @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
+    @return returns the price of the asset
+    **/
+    function viewUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
+        public
+        view
+        returns (uint256)
+    {
+        UniswapOracleInstance oracle = UniswapOracleInstance(
+            instanceTracker[_MMI]
+        );
+        return oracle.viewUSDC(_amount);
+    }
+
+    /**
 @notice getPathForERC20Swap is an internal function used to create a uniswap trade path for two input
         ERC20 tokens using WETH as a medium of exchange.
 @param _tokenA is the address of the token being exchanged from

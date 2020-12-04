@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./MoneyMarketInstance.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";

@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./compound/Exponential.sol";
 import "./compound/InterestRateModel.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
@@ -285,7 +285,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 **/
     function borrowBalanceCurrent(address account) public returns (uint256) {
         accrueInterest();
-        borrowBalancePrior(account);
+        return borrowBalancePrior(account);
     }
 
     /**
@@ -445,7 +445,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @notice mint is a modified function that only the owner of this contract(its MoneyMarketInstance) can call.
         This function allows an amount of AskoRiskToken token to be minted when called.
 @param _account is the account the AHR is being minted to
-@param _amount is the amount of AHR being minted
+@param _amount is the amount of stablecoin being input
 **/
     function mint(address _account, uint256 _amount) public onlyMMInstance {
         //declare struct
@@ -454,6 +454,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         vars.exchangeRateMantissa = exchangeRateCurrent();
         //We get the current exchange rate and calculate the number of AHR to be minted:
         //mintTokens = _amount / exchangeRate
+
         (vars.mathErr, vars.mintTokens) = divScalarByExpTruncate(
             _amount,
             Exp({mantissa: vars.exchangeRateMantissa})
@@ -473,7 +474,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @param _amount is the amount of ART being exchanged
 **/
     function redeem(uint256 _amount) public {
-        accrueInterest();
         require(_amount != 0);
 
         RedeemLocalVars memory vars;
@@ -486,9 +486,9 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 We calculate the exchange rate and the amount of underlying to be redeemed:
 redeemAmount = _amount x exchangeRateCurrent
 */
-        (vars.mathErr, vars.redeemAmount) = mulScalarTruncate(
-            Exp({mantissa: vars.exchangeRateMantissa}),
-            _amount
+        (vars.mathErr, vars.redeemAmount) = divScalarByExpTruncate(
+            _amount,
+            Exp({mantissa: vars.exchangeRateMantissa})
         );
         //Fail if protocol has insufficient cash
         require(getCashPrior() >= vars.redeemAmount);
@@ -524,8 +524,6 @@ redeemAmount = _amount x exchangeRateCurrent
         external
         onlyMMInstance
     {
-        // _collateral the address of the ALR the user has staked as collateral?
-        accrueInterest();
         //Fail if protocol has insufficient underlying cash
         require(getCashPrior() > _borrowAmount);
         //create local vars storage
@@ -569,14 +567,14 @@ redeemAmount = _amount x exchangeRateCurrent
         onlyMMInstance
         returns (uint256)
     {
-        accrueInterest();
         //create local vars storage
         RepayBorrowLocalVars memory vars;
-        //We remember the original borrowerIndex for verification purposes
-        vars.borrowerIndex = accountBorrows[borrower].interestIndex;
         //We fetch the amount the borrower owes, with accumulated interest
         vars.accountBorrows = borrowBalanceCurrent(borrower);
+        //We remember the original borrowerIndex for verification purposes
+        vars.borrowerIndex = accountBorrows[borrower].interestIndex;
         //If repayAmount == 0, repayAmount = accountBorrows
+
         if (repayAmount == 0) {
             vars.repayAmount = vars.accountBorrows;
         } else {
@@ -597,7 +595,7 @@ redeemAmount = _amount x exchangeRateCurrent
         );
         /* We write the previously calculated values into storage */
         accountBorrows[borrower].principal = vars.accountBorrowsNew;
-        accountBorrows[borrower].interestIndex = borrowIndex;
+        accountBorrows[borrower].interestIndex = vars.borrowerIndex;
         totalBorrows = vars.totalBorrowsNew;
         emit Repayed(borrower, vars.repayAmount);
         return vars.repayAmount;

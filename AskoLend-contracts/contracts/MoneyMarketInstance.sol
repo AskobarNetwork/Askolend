@@ -1,8 +1,8 @@
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./compound/Exponential.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";
@@ -24,6 +24,8 @@ contract MoneyMarketInstance is Ownable, Exponential {
     uint256 public divisor;
     uint256 public fee_AHR;
     uint256 public fee_ALR;
+    address public ahr;
+    address public alr;
 
     string public assetName;
     string public assetSymbol;
@@ -115,6 +117,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
                 _initialExchangeRate
             )
         );
+        ahr = address(AHR);
     }
 
     /**
@@ -154,6 +157,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
                 _initialExchangeRate
             )
         );
+        alr = address(ALR);
     }
 
     /**
@@ -329,27 +333,29 @@ contract MoneyMarketInstance is Ownable, Exponential {
         uint256 accountBorrowsALR = ALR.borrowBalanceCurrent(msg.sender);
         uint256 accountBorrowsAHR = AHR.borrowBalanceCurrent(msg.sender);
         uint256 totalBorrows = accountBorrowsALR.add(accountBorrowsAHR);
-        require(_repayAmount <= totalBorrows);
+        //    require(_repayAmount <= totalBorrows, "Repaying too much");
         uint256 payAmountAHR;
         uint256 payAmountALR;
         if (accountBorrowsALR != 0) {
             //if amount owed to ALR isnt zero
             if (accountBorrowsALR >= _repayAmount) {
-                //check if repay amount is greater than ALR borrow balance
-                payAmountALR = ALR.repayBorrow(_repayAmount, msg.sender); //if it is repay amount to ALR
                 //transfer asset from the user to this contract
-                asset.transferFrom(msg.sender, address(ALR), payAmountALR);
+                asset.transferFrom(msg.sender, address(ALR), _repayAmount);
+                payAmountALR = ALR.repayBorrow(_repayAmount, msg.sender); // repay amount to ALR
+
                 emit Repayed(msg.sender, 0, _repayAmount);
             } else {
                 //if not
                 uint256 amountToALR = _repayAmount.sub(accountBorrowsALR); //calculate amount needed to pay off ALR
-                payAmountALR = ALR.repayBorrow(amountToALR, msg.sender); //pay off ALR
                 //transfer asset from the user to this contract
                 asset.transferFrom(msg.sender, address(ALR), payAmountALR);
+                payAmountALR = ALR.repayBorrow(amountToALR, msg.sender); //pay off ALR
                 uint256 amountToAHR = _repayAmount.sub(amountToALR); //calculate AHR amount
                 payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
-                //transfer asset from the user to this contract
-                asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
+                //if payAmountAHR is greater than 0 transfer asset from the user to the AHR contract
+                if (payAmountAHR > 0) {
+                    asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
+                }
                 emit Repayed(msg.sender, payAmountAHR, payAmountALR);
             }
         } else {

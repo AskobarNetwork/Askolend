@@ -69,4 +69,10 @@ abstract contract UniswapOracleFactoryI {
   @param _asset is the address of the MoneyMarketInstancesunderlying asset
   **/
     function linkMMI(address _MMI, address _asset) public virtual;
+
+    function viewUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
+        public
+        view
+        virtual
+        returns (uint256);
 }

@@ -51,8 +51,10 @@ contract UniswapOracleInstance is Ownable {
         token1 = _pair.token1();
         if (token0 == _tokenA) {
             price0CumulativeLast = _pair.price0CumulativeLast(); // fetch the current accumulated price value (1 / 0)
+            price1CumulativeLast = _pair.price1CumulativeLast();
         } else {
             price0CumulativeLast = _pair.price1CumulativeLast(); // fetch the current accumulated price value (0 / 1)
+            price1CumulativeLast = _pair.price0CumulativeLast();
         }
         uint112 reserve0;
         uint112 reserve1;
@@ -88,14 +90,26 @@ contract UniswapOracleInstance is Ownable {
                         (price0Cumulative - price0CumulativeLast) / timeElapsed
                     )
                 );
+                price1Average = FixedPoint.uq112x112(
+                    uint224(
+                        (price1Cumulative - price1CumulativeLast) / timeElapsed
+                    )
+                );
                 price0CumulativeLast = price0Cumulative;
+                price1CumulativeLast = price1Cumulative;
             } else {
                 price0Average = FixedPoint.uq112x112(
                     uint224(
                         (price1Cumulative - price0CumulativeLast) / timeElapsed
                     )
                 );
+                price1Average = FixedPoint.uq112x112(
+                    uint224(
+                        (price0Cumulative - price1CumulativeLast) / timeElapsed
+                    )
+                );
                 price0CumulativeLast = price1Cumulative;
+                price1CumulativeLast = price0Cumulative;
             }
 
             blockTimestampLast = blockTimestamp;
@@ -125,6 +139,14 @@ contract UniswapOracleInstance is Ownable {
 **/
     function consultUSDC(uint256 _amount) external returns (uint256 price) {
         update();
+        price = price1Average.mul(_amount).decode144();
+    }
+
+    /**
+    @notice consult returns the price of a token in USDC
+    @return price is the price of one asset in USDC(example 1WETH in USDC)
+    **/
+    function viewUSDC(uint256 _amount) external view returns (uint256 price) {
         price = price1Average.mul(_amount).decode144();
     }
 }

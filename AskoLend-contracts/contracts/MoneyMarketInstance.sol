@@ -167,6 +167,14 @@ contract MoneyMarketInstance is Ownable, Exponential {
         return address(asset);
     }
 
+    function viewLockedCollateralizedALR(address _account)
+        public
+        view
+        returns (uint256)
+    {
+        return lockedCollateral[_account];
+    }
+
     /**
   @notice setFee allows the owner of this contract to set the fee
   @param  _fee is the input number representing the fee
@@ -298,7 +306,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
         );
         //instantiate collateral ALR contract
         AskoRiskTokenI collateALR = AskoRiskTokenI(_collateral);
-        //get collateral ALR amount for loan value
+        //get collateral ALR amount for
         vars.amountOfALR = collateALR.getUSDCWorthOfART(vars.amountValue);
         //divide amount value by 3
         vars.halfVal = vars.assetAmountValOwed.div(2);
@@ -333,78 +341,99 @@ contract MoneyMarketInstance is Ownable, Exponential {
         uint256 accountBorrowsALR = ALR.borrowBalanceCurrent(msg.sender);
         uint256 accountBorrowsAHR = AHR.borrowBalanceCurrent(msg.sender);
         uint256 totalBorrows = accountBorrowsALR.add(accountBorrowsAHR);
-        //    require(_repayAmount <= totalBorrows, "Repaying too much");
+        require(_repayAmount <= totalBorrows, "Repaying too much");
         uint256 payAmountAHR;
         uint256 payAmountALR;
-        if (accountBorrowsALR != 0) {
-            //if amount owed to ALR isnt zero
-            if (accountBorrowsALR >= _repayAmount) {
-                //transfer asset from the user to this contract
-                asset.transferFrom(msg.sender, address(ALR), _repayAmount);
-                payAmountALR = ALR.repayBorrow(_repayAmount, msg.sender); // repay amount to ALR
 
-                emit Repayed(msg.sender, 0, _repayAmount);
-            } else {
-                //if not
-                uint256 amountToALR = _repayAmount.sub(accountBorrowsALR); //calculate amount needed to pay off ALR
-                //transfer asset from the user to this contract
-                asset.transferFrom(msg.sender, address(ALR), payAmountALR);
-                payAmountALR = ALR.repayBorrow(amountToALR, msg.sender); //pay off ALR
-                uint256 amountToAHR = _repayAmount.sub(amountToALR); //calculate AHR amount
-                payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
-                //if payAmountAHR is greater than 0 transfer asset from the user to the AHR contract
-                if (payAmountAHR > 0) {
-                    asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
-                }
-                emit Repayed(msg.sender, payAmountAHR, payAmountALR);
+        ///////////////repay all///////////////
+        if (_repayAmount == 0) {
+            if (accountBorrowsALR != 0) {
+                asset.transferFrom(msg.sender, address(ALR), accountBorrowsALR);
+                payAmountALR = ALR.repayBorrow(accountBorrowsALR, msg.sender); // repay amount to ALR
             }
+            asset.transferFrom(msg.sender, address(AHR), accountBorrowsAHR);
+            payAmountAHR = AHR.repayBorrow(accountBorrowsAHR, msg.sender); //pay off towards AHR
+            emit Repayed(msg.sender, accountBorrowsAHR, accountBorrowsALR);
         } else {
-            //if amount owed to ALR IS zero
-            payAmountAHR = AHR.repayBorrow(_repayAmount, msg.sender); //pay towards AHR
-            //transfer asset from the user to this contract
-            asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
+            ///////////////repay ALR///////////////////
+            if (accountBorrowsALR != 0) {
+                //if amount owed to ALR isnt zero
+                if (accountBorrowsALR >= _repayAmount) {
+                    //if repay amount is less than whats owed in ALR
+                    //transfer asset from the user to this contract
+                    asset.transferFrom(msg.sender, address(ALR), _repayAmount);
+                    payAmountALR = ALR.repayBorrow(_repayAmount, msg.sender); // repay amount to ALR
 
-            if (accountBorrowsAHR == 0) {
-                //if the loan is fully payed off
-                //unlock the users locked collateral for this loan
-                MMF.unlockCollateral(
-                    msg.sender,
-                    collateralLockedALR[msg.sender],
-                    lockedCollateral[msg.sender]
-                );
-                MMF.trackCollateralUp(
-                    msg.sender,
-                    collateralLockedALR[msg.sender],
-                    lockedCollateral[msg.sender]
-                );
-                //reset collateralLockedALR address to zero so the user can use a different ALR address in future borrows
-                collateralLockedALR[msg.sender] = address(0);
-                cantCollateralize[msg.sender] = false;
-                //reset locked collateral amount
-                lockedCollateral[msg.sender] = 0;
+                    emit Repayed(msg.sender, 0, _repayAmount);
+                } else {
+                    ///////////////repay all of ALR && some AHR///////////////////
+                    //if repay amount is MORE than ALR owed
+                    uint256 amountToAHR = _repayAmount.sub(accountBorrowsALR); //calculate amount going to AHR
+                    asset.transferFrom(
+                        msg.sender,
+                        address(ALR),
+                        accountBorrowsALR
+                    ); //transfer remaining ALR bal to ALR
+                    payAmountALR = ALR.repayBorrow(0, msg.sender); //pay off ALR
+                    asset.transferFrom(msg.sender, address(AHR), amountToAHR); // transfer remaining payment amount to AHR
+                    payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
+                    //if payAmountAHR is greater than 0 transfer asset from the user to the AHR contract
+                    emit Repayed(msg.sender, payAmountAHR, payAmountALR);
+                }
+            } else {
+                //if amount owed to ALR is zero
+                //transfer asset from the user to this contract
+                asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
+                payAmountAHR = AHR.repayBorrow(_repayAmount, msg.sender); //pay towards AHR
+                emit Repayed(msg.sender, payAmountAHR, 0);
             }
-            emit Repayed(msg.sender, payAmountAHR, 0);
+        }
+        //////////////fully repayed logic/////////////
+        if (
+            accountBorrowsAHR.sub(payAmountAHR) == 0 &&
+            accountBorrowsALR.sub(payAmountALR) == 0
+        ) {
+            //if the loan is fully payed off
+            //unlock the users locked collateral for this loan
+            MMF.unlockCollateral(
+                msg.sender,
+                collateralLockedALR[msg.sender],
+                lockedCollateral[msg.sender]
+            );
+
+            MMF.trackCollateralUp(
+                msg.sender,
+                collateralLockedALR[msg.sender],
+                lockedCollateral[msg.sender]
+            );
+            //reset collateralLockedALR address to zero so the user can use a different ALR address in future borrows
+            collateralLockedALR[msg.sender] = address(0);
+            cantCollateralize[msg.sender] = false;
+            //reset locked collateral amount
+            lockedCollateral[msg.sender] = 0;
         }
     }
 
     /**
 @notice collateralizeALR allows a user to collateralize the ALR they hold in a specific money market
-@param _amount is the amount of ALR being collateralized
+@param _amount is the amount of asset being collateralized
 **/
     function collateralizeALR(uint256 _amount) public {
-        ALR.burn(msg.sender, _amount);
-        MMF.trackCollateralUp(msg.sender, address(ALR), _amount);
+        uint256 alrVal = ALR.convertToART(_amount);
+        ALR.burn(msg.sender, alrVal);
+        MMF.trackCollateralUp(msg.sender, address(ALR), alrVal);
         emit Collateralized(msg.sender, _amount);
     }
 
     function decollateralizeALR(uint256 _amount) public {
+        uint256 alrVal = ALR.convertToART(_amount);
         uint256 availibleCollateral = MMF.checkCollateralizedALR(
             msg.sender,
             address(ALR)
         );
-        require(_amount <= availibleCollateral);
-        MMF.trackCollateralDown(msg.sender, address(ALR), _amount);
-        ALR.mint(msg.sender, _amount);
+        require(alrVal <= availibleCollateral);
+        MMF.trackCollateralDown(msg.sender, address(ALR), alrVal);
+        ALR.mint(msg.sender, alrVal);
     }
 
     /**

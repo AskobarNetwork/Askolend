@@ -46,4 +46,20 @@ abstract contract AskoRiskTokenI {
         returns (uint256);
 
     function burn(address _account, uint256 _amount) public virtual;
+
+    function viewUSDCWorthOfART(uint256 _USDCAmount)
+        public
+        view
+        virtual
+        returns (uint256);
+
+    function convertToART(uint256 _amountOfAsset)
+        public
+        virtual
+        returns (uint256);
+
+    function convertFromART(uint256 _amountOfART)
+        public
+        virtual
+        returns (uint256);
 }

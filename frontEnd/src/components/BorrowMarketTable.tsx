@@ -38,9 +38,9 @@ interface IBorrowMarketTableProps {
 }
 
 interface IBorrowMarketTableState {
-	tokens: string[];
-	addresses: string[];
-	control: string;
+	// tokens: string[];
+	// addresses: string[];
+	// control: string;
 	//
 	collateralopen: boolean;
 	confirmationOpen: boolean;
@@ -58,12 +58,12 @@ class BorrowMarketTableClass extends React.Component<
 		super(props);
 		this.state = {
 			// testing only: must fetch this data dynamically
-			tokens: ["FakeLink", "FakeAugur"],
-			addresses: [
-				"0x42e3a2720497153a02Def9a413AdB2a02CCDed28",
-				"0xD8f9A6e9d0cF5BF339b8ACf62B47fFE5947bd36E",
-			],
-			control: "0x0d14aA1BF9Fb66eA3dD775c225E226dF90Dd03c7",
+			// tokens: ["FakeLink", "FakeAugur"],
+			// addresses: [
+			// 	"0x42e3a2720497153a02Def9a413AdB2a02CCDed28",
+			// 	"0xD8f9A6e9d0cF5BF339b8ACf62B47fFE5947bd36E",
+			// ],
+			// control: "0xc2A39163417354604990441163B0637160d7894c",
 			collateralopen: false,
 			confirmationOpen: false,
 			confirmationTitle: "",
@@ -90,6 +90,8 @@ class BorrowMarketTableClass extends React.Component<
 		// console.log("MONEYMARKET! ", moneyMarket);
 
 		// console.log("PROPS!! ", this.props);
+		console.log("BORROW_MONEY_MARKETS",this.props.moneyMarkets)
+		console.log("BORROW_ASKO_TOKENS",this.props.askoTokens)
 	};
 
 
@@ -117,10 +119,16 @@ class BorrowMarketTableClass extends React.Component<
 		console.log("BORROW_ENABLE FIRE");
 	};
 
+	createBorrowTokenList = () =>{
+
+	}
+
 	render() {
 		{
 			this.mountRun();
 		}
+
+	
 		// const supplyTokens: SupplyToken[] = this.createSupplyTokenList(
 		// 	this.props.moneyMarkets,
 		// 	this.props.askoTokens

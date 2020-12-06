@@ -22,14 +22,11 @@ abstract contract AskoRiskTokenI {
 
     function exchangeRateCurrent() public virtual returns (uint256);
 
-    function _liquidateFor(
+    function _liquidate(
+        uint256 _liquidateValue,
         address _borrower,
-        address _liquidator,
-        address _forAssetAdd,
-        address _forArt,
-        uint256 _amountOfThisToken,
-        uint256 _minAmount
-    ) external virtual;
+        address _liquidator
+    ) public virtual;
 
     function mint(address _account, uint256 _amount) public virtual;
 
@@ -62,4 +59,6 @@ abstract contract AskoRiskTokenI {
         public
         virtual
         returns (uint256);
+
+    function balanceOf(address _account) public virtual returns (uint256);
 }

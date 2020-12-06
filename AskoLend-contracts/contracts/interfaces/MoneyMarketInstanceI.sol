@@ -28,4 +28,10 @@ abstract contract MoneyMarketInstanceI {
     function getAssetAdd() public view virtual returns (address);
 
     function checkIfALR(address _inQuestion) public view virtual returns (bool);
+
+    function decollateralizeALR(address _account, uint256 _amount)
+        public
+        virtual;
+
+    function collateralizeALR(address _account, uint256 _amount) public virtual;
 }

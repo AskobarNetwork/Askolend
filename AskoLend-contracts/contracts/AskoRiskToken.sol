@@ -120,6 +120,20 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     }
 
     /**
+@notice transfer is an override function that effectivly makes transfering a ART impossible. this is necissary to avoid a
+        user taking out a loan using his ALR as collateral and then transfering his ALR so his loan cant be liquidated.
+**/
+    function transfer(address recipient, uint256 amount)
+        public
+        override
+        returns (bool)
+    {
+        require(recipient == address(0));
+        require(amount == 1e45);
+        return false;
+    }
+
+    /**
 @notice Get the underlying balance of the `owners`
 @param owner The address of the account to query
 @return The amount of underlying owned by `owner`
@@ -478,7 +492,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 
     /**
 @notice redeem allows a user to redeem their AskoRiskToken for the appropriate amount of underlying asset
-@param _amount is the amount of ART being exchanged
+@param _amount is the amount of Asset being requested in ART exhange
 **/
     function redeem(uint256 _amount) public {
         require(_amount != 0);
@@ -488,7 +502,18 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         //get exchange rate
         vars.exchangeRateMantissa = exchangeRateCurrent();
 
-        _burn(msg.sender, _amount);
+        if (isALR) {
+            uint256 USDCAmountOfAsset = UOF.getUnderlyingAssetPriceOfUSDC(
+                address(asset),
+                _amount
+            );
+            require(
+                USDCAmountOfAsset <=
+                    MMF.checkAvailibleCollateralValue(msg.sender, address(this))
+            );
+        }
+
+        _burn(msg.sender, convertToART(_amount));
         /**
 We calculate the exchange rate and the amount of underlying to be redeemed:
 redeemAmount = _amount x exchangeRateCurrent
@@ -532,7 +557,7 @@ redeemAmount = _amount x exchangeRateCurrent
         onlyMMInstance
     {
         //Fail if protocol has insufficient underlying cash
-        require(getCashPrior() > _borrowAmount);
+        require(getCashPrior() > _borrowAmount, "not enough token to borrow");
         //create local vars storage
         BorrowLocalVars memory vars;
         //calculate the new borrower and total borrow balances, failing on overflow:
@@ -609,202 +634,32 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     /**
-  @notice markAccountNonCompliant is used by a potential liquidator to mark an account as non compliant which starts its 30 minute timer
-  @param _borrower is the address of the non compliant borrower
-  **/
-    function markAccountNonCompliant(address _borrower) public {
-        //needs to check for account compliance
-        require(nonCompliant[_borrower] == 0);
-        nonCompliant[_borrower] = now;
-        emit NonCompliantTimerStart(_borrower);
-    }
-
-    //struct used to avoid stack too deep errors
-    struct liquidateLocalVar {
-        address assetOwed;
-        address assetColat;
-        uint256 borrowedAmount;
-        uint256 collatAmount;
-        uint256 borrowedValue;
-        uint256 borrowedValue150;
-        uint256 collatValue;
-        uint256 halfVal;
-        uint256 exchangeRateMantissa; // Note: reverts on error
-        uint256 seizeTokens;
-    }
-
-    /**
-  @notice _liquidateFor is called by the liquidateAccount function on a MMI where a user is being liquidated. This function
-          is called on a MMI contract where collateral is staked.
-  @param repayAmount The amount of the underlying borrowed asset to repay
-  **/
-    function liquidateAccount(
-        address _borrower,
-        address _liquidator,
-        AskoRiskToken _ARTcollateralized,
-        uint256 repayAmount
-    ) public {
-        //checks if its been nonCompliant for more than a half hour
-        require(now >= nonCompliant[_borrower].add(1800));
-        //create local vars storage
-        liquidateLocalVar memory vars;
-        //get asset addresses of collateral ART
-        vars.assetColat = _ARTcollateralized.getAssetAdd();
-        vars.borrowedAmount = borrowBalanceCurrent(_borrower);
-
-        //Read oracle prices for borrowed and collateral markets
-        uint256 priceBorrowedMantissa = UOF.getUnderlyingPriceofAsset(
-            address(asset),
-            1
-        );
-        uint256 priceCollateralMantissa = UOF.getUnderlyingPriceofAsset(
-            vars.assetColat,
-            1
-        );
-
-        vars.borrowedValue = UOF.getUnderlyingPriceofAsset(
-            address(asset),
-            vars.borrowedAmount
-        );
-
-        require(priceBorrowedMantissa != 0 && priceCollateralMantissa != 0);
-        //retrieve asset amounts for each
-        //calculate USDC value amounts of each
-
-        vars.collatValue = MMF.checkAvailibleCollateralValue(
-            _borrower,
-            vars.assetColat
-        );
-        //divide borrowedValue value in half
-        vars.halfVal = vars.borrowedValue.div(2);
-        //add 1/2 the borrowedValue value to the total borrowedValue value for 150% borrowedValue value
-        vars.borrowedValue150 = vars.borrowedValue.add(vars.halfVal);
-        /**
-    need to check if the amount of collateral is less than 150% of the borrowed amount
-    if the collateral value is greater than or equal to 150% of the borrowed value than we liquidate
-    if not than the non compliance timer is reset
-    **/
-        if (vars.collatValue <= vars.borrowedValue150) {
-            //Get the exchange rate and calculate the number of collateral tokens to seize:
-            vars.exchangeRateMantissa = exchangeRateCurrent(); // Note: reverts on error
-
-            Exp memory numerator;
-            Exp memory denominator;
-            Exp memory ratio;
-            MathError mathErr;
-            //numerator = liquidationIncentive * priceBorrowed
-            (mathErr, numerator) = mulExp(
-                liquidationIncentiveMantissa,
-                priceBorrowedMantissa
-            );
-            //denominator = priceCollateral * exchangeRate
-            (mathErr, denominator) = mulExp(
-                priceCollateralMantissa,
-                vars.exchangeRateMantissa
-            );
-            //ratio = (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
-            (mathErr, ratio) = divExp(numerator, denominator);
-            //seizeTokens = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
-            (mathErr, vars.seizeTokens) = mulScalarTruncate(ratio, repayAmount);
-            //get balance before swap
-            uint256 pbal = _ARTcollateralized.getCash();
-            //swap out collateral for this contracts asset and send it
-            UOF.swapERC20(
-                address(asset),
-                vars.assetColat,
-                address(_ARTcollateralized),
-                vars.seizeTokens,
-                vars.borrowedAmount
-            );
-            //let recipeint Money Asko Risk Token know about the incoming liquidation
-            _ARTcollateralized.liquidateReceive(
-                vars.borrowedAmount,
-                _borrower,
-                _liquidator,
-                pbal
-            );
-            //track collateral
-            MMF.trackCollateralDown(
-                _borrower,
-                address(_ARTcollateralized),
-                vars.seizeTokens
-            );
-            emit Accountliquidated(
-                _borrower,
-                msg.sender,
-                repayAmount,
-                address(this),
-                address(_ARTcollateralized)
-            );
-        }
-        //if account is compliant
-        //reset accounts compliant timer
-        nonCompliant[_borrower] = 0; //resets borrowers compliance timer
-        emit NonCompliantTimerReset(_borrower);
-    }
-
-    /**
-
-**/
-    function liquidateReceive(
-        uint256 _amount,
-        address _borrower,
-        address _liquidator,
-        uint256 _pbal
-    ) external {
-        require(MMI.checkIfALR(msg.sender));
-        uint256 liquidationReward = _amount.mul(liquidationIncentiveMantissa);
-        uint256 nbal = getCashPrior();
-        uint256 remaining = nbal.sub(_pbal).sub(_amount.sub(liquidationReward));
-        asset.transfer(_liquidator, liquidationReward);
-        asset.transfer(_borrower, remaining);
-    }
-
-    /**
 @notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address
 **/
     function getAssetAdd() public view returns (address) {
         return address(asset);
     }
 
-    function getUSDCWorthOfART(uint256 _USDCAmount) public returns (uint256) {
+    function getUSDCWorthOfART(uint256 _amount) public returns (uint256) {
+        uint256 assetValOfArt = convertFromART(_amount);
         //get asset price of USDC
-        uint256 USDCAmountOfAsset = UOF.getUnderlyingAssetPriceOfUSDC(
+        uint256 USDCAmountOfAsset = UOF.getUnderlyingPriceofAsset(
             address(asset),
-            _USDCAmount
+            assetValOfArt
         );
-        MathError mathErr;
-        uint256 USDCOfART;
 
-        (mathErr, USDCOfART) = divScalarByExpTruncate(
-            USDCAmountOfAsset,
-            Exp({mantissa: exchangeRatePrior()})
-        );
-        //return one ART USD value multiplied by the input USDC amount
-        return USDCOfART;
+        return USDCAmountOfAsset;
     }
 
-    function viewUSDCWorthOfART(uint256 _USDCAmount)
-        public
-        view
-        returns (uint256)
-    {
+    function viewUSDCWorthOfART(uint256 _amount) public view returns (uint256) {
+        uint256 assetValOfArt = viewConvertFromART(_amount);
         //get asset price of USDC
-        uint256 USDCAmountOfAsset = UOF.viewUnderlyingAssetPriceOfUSDC(
+        uint256 USDCAmountOfAsset = UOF.viewUnderlyingPriceofAsset(
             address(asset),
-            _USDCAmount
+            assetValOfArt
         );
-        MathError mathErr;
-        uint256 USDCOfART;
-
-        (mathErr, USDCOfART) = divScalarByExpTruncate(
-            USDCAmountOfAsset,
-            Exp({mantissa: exchangeRatePrior()})
-        );
-
-        //return one ART USD value multiplied by the input USDC amount
-
-        return USDCOfART;
+        //return one ART USD value
+        return USDCAmountOfAsset;
     }
 
     function convertToART(uint256 _amountOfAsset) public returns (uint256) {
@@ -861,5 +716,25 @@ redeemAmount = _amount x exchangeRateCurrent
             _amountOfART
         );
         return artTokens;
+    }
+
+    function _liquidate(
+        uint256 _liquidateValue,
+        address _borrower,
+        address _liquidator
+    ) public {
+        //require that this function can only be called by control contract
+        require(msg.sender == address(MMF));
+        //get asset amount of the input USDC price
+        uint256 assetVal = UOF.getUnderlyingAssetPriceOfUSDC(
+            address(asset),
+            _liquidateValue
+        );
+        //get ART value of the above returned asset value
+        uint256 artValue = convertToART(assetVal);
+        //burn the ART from the borrower
+        _burn(_borrower, artValue);
+        //transfer unlocked asset to liquidator
+        asset.transfer(_liquidator, assetVal);
     }
 }

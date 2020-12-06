@@ -34,7 +34,6 @@ contract MoneyMarketControl is Ownable, Exponential {
     mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
     mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
     mapping(address => mapping(address => uint256)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
-    mapping(address => mapping(address => uint256)) lockedCollateralTracker; //tracks user to a market to an amount of collateral locked in a market
     mapping(address => bool) isMMI;
     mapping(address => bool) isALR;
 
@@ -187,7 +186,7 @@ contract MoneyMarketControl is Ownable, Exponential {
 @notice trackCollateralUp is an external function used bya MMI to track collateral amounts globally
 @param _borrower is the address of the corrower
 @param _ALR is the address of the seller
-@param _amount is the amount of ALR being collateralized
+@param _amount is the amount of USDC being collateralized
 @dev this function can only be called by a MoneyMarketInstance.
 **/
     function trackCollateralUp(
@@ -195,7 +194,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _ALR,
         uint256 _amount
     ) external onlyMMI {
-        require(isMMI[msg.sender] || isALR[msg.sender]);
+        require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .add(_amount);
     }
@@ -204,7 +203,7 @@ contract MoneyMarketControl is Ownable, Exponential {
  @notice trackCollateralDown is an external function used bya MMI to track collateral amounts globally
  @param _borrower is the address of the corrower
  @param _ALR is the address of the seller
- @param _amount is the amount of ALR being collateralized
+ @param _amount is the amount of USDC being collateralized
  @dev this function can only be called by a MoneyMarketInstance.
  **/
     function trackCollateralDown(
@@ -212,43 +211,13 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _ALR,
         uint256 _amount
     ) external onlyMMI {
-        require(isMMI[msg.sender] || isALR[msg.sender]);
-        collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
-            .sub(_amount);
-    }
-
-    /**
-@notice lockCollateral is used by an MMI when a user borrows against their collateral to track collateral amounts
-        globally.
-@param _borrower is the address of the corrower
-@param _ALR is the address of the seller
-@param _amount is the amount of ALR  collateral being "locked" in a borrow
-@dev this function can only be called by a MoneyMarketInstance.
-**/
-    function lockCollateral(
-        address _borrower,
-        address _ALR,
-        uint256 _amount
-    ) external onlyMMI {
-        lockedCollateralTracker[_borrower][_ALR] = lockedCollateralTracker[_borrower][_ALR]
-            .add(_amount);
-    }
-
-    /**
- @notice unlockCollateral is used by an MMI when a user pays a loan off to unlock their borrowed against collateral so that
-          it can be borrowed against again
- @param _borrower is the address of the corrower
- @param _ALR is the address of the seller
- @param _amount is the amount of ALR  collateral being "unlocked" from a repay
- @dev this function can only be called by a MoneyMarketInstance.
- **/
-    function unlockCollateral(
-        address _borrower,
-        address _ALR,
-        uint256 _amount
-    ) external onlyMMI {
-        lockedCollateralTracker[_borrower][_ALR] = lockedCollateralTracker[_borrower][_ALR]
-            .sub(_amount);
+        require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
+        if (collateralTracker[_borrower][_ALR] > _amount) {
+            collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
+                .sub(_amount);
+        } else {
+            collateralTracker[_borrower][_ALR] = 0;
+        }
     }
 
     function checkCollateralizedALR(address _borrower, address _ALR)
@@ -257,14 +226,6 @@ contract MoneyMarketControl is Ownable, Exponential {
         returns (uint256)
     {
         return collateralTracker[_borrower][_ALR];
-    }
-
-    function checkLockedCollateral(address _borrower, address _ALR)
-        public
-        view
-        returns (uint256)
-    {
-        return lockedCollateralTracker[_borrower][_ALR];
     }
 
     /**
@@ -276,23 +237,27 @@ contract MoneyMarketControl is Ownable, Exponential {
  **/
     function checkAvailibleCollateralValue(address _borrower, address _ALR)
         external
-        view
         returns (uint256)
     {
-        //instantiate the MoneyMakerInstance of the collateral ALR
-        MoneyMarketInstanceI MMI = MoneyMarketInstanceI(_ALRtracker[_ALR]);
-        //retreive the address of its asset
-        address asset = MMI.getAssetAdd();
-        //retrieve the amount of the asset locked as collateral
-        uint256 amountOfAssetCollat = collateralTracker[_borrower][_ALR];
-        //retrieve USD price of this asset
-        return Oracle.getUnderlyingPriceofAsset(asset, amountOfAssetCollat);
+        //instantiate art token
+        AskoRiskTokenI _ART = AskoRiskTokenI(_ALR);
+        //get borrowers art balance
+        uint256 artBal = _ART.balanceOf(_borrower);
+        //get USDC value of art balance
+        uint256 usdcValOfBalance = _ART.getUSDCWorthOfART(artBal);
+        //retrieve the amount of the USDC value they have borrowed
+        uint256 usdcValLocked = collateralTracker[_borrower][_ALR];
+        //retrieve USDC availible collateral
+        return usdcValOfBalance.sub(usdcValLocked);
     }
 
     function _checkIfALR(address __inQ) external view returns (bool) {
         return isALR[__inQ];
     }
 
+    /**
+tells you the USDC value of their locked ALR
+**/
     function viewCollateral(address _account, address _alr)
         public
         view
@@ -301,11 +266,13 @@ contract MoneyMarketControl is Ownable, Exponential {
         return collateralTracker[_account][_alr];
     }
 
-    function viewLockedcollateral(address _account, address _alr)
-        public
-        view
-        returns (uint256)
-    {
-        return lockedCollateralTracker[_account][_alr];
+    function liquidateTrigger(
+        uint256 _liquidateValue,
+        address _borrower,
+        address _liquidator,
+        AskoRiskTokenI _ALR
+    ) public onlyMMI {
+        collateralTracker[_borrower][address(_ALR)] = 0;
+        _ALR._liquidate(_liquidateValue, _borrower, _liquidator);
     }
 }

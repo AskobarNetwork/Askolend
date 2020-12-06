@@ -55,18 +55,6 @@ abstract contract MoneyMarketFactoryI {
         uint256 _amount
     ) external virtual;
 
-    function lockCollateral(
-        address _borrower,
-        address _ALR,
-        uint256 _amount
-    ) external virtual;
-
-    function unlockCollateral(
-        address _borrower,
-        address _ALR,
-        uint256 _amount
-    ) external virtual;
-
     function _checkIfALR(address __inQ) external view virtual returns (bool);
 
     function checkCollateralizedALR(address _borrower, address _ALR)
@@ -74,4 +62,11 @@ abstract contract MoneyMarketFactoryI {
         view
         virtual
         returns (uint256);
+
+    function liquidateTrigger(
+        uint256 _liquidateValue,
+        address _borrower,
+        address _liquidator,
+        address _ALR
+    ) public virtual;
 }

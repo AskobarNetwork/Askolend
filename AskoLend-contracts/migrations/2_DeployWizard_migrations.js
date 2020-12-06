@@ -150,4 +150,12 @@ module.exports = async (deployer) => {
     FakeLink.address
   );
   console.log("FakeLink Asko Low Risk Token Created");
+
+  console.log(
+    "Uniswap oracle factory address: " + UniswapOracleFactory.address
+  );
+  console.log("FakeUSDC address: " + FakeUSDC.address);
+  console.log("FakeLink address: " + FakeLink.address);
+  console.log("FakeAugur address: " + FakeAugur.address);
+  console.log("Money Market Control: " + MoneyMarketControl.address);
 };

@@ -253,14 +253,12 @@ contract MoneyMarketInstance is Ownable, Exponential {
 
     //struct used to avoid stack too deep errors
     struct borrowVars {
-        uint256 collateralValue;
         uint256 borrowBalAHR;
         uint256 borrowBalALR;
         uint256 totalFutureAmountOwed;
-        uint256 priceOfAsset;
+        uint256 availibleCollateralValue;
         uint256 assetAmountValOwed;
         uint256 amountValue; // Note: reverts on error
-        uint256 amountOfALR;
         uint256 halfVal;
         uint256 collateralNeeded;
         uint256 half;
@@ -276,16 +274,12 @@ contract MoneyMarketInstance is Ownable, Exponential {
         //OR that their cantCollateralize mapping is false
         require(
             _collateral == collateralLockedALR[msg.sender] ||
-                cantCollateralize[msg.sender] == false
+                cantCollateralize[msg.sender] == false,
+            "collateral not right"
         );
         borrowVars memory vars;
         //check that the user has enough collateral in input money market
         //this returns the USDC price of their asset
-
-        vars.collateralValue = MMF.checkAvailibleCollateralValue(
-            msg.sender,
-            _collateral
-        );
 
         //get current borrow balances for each ART
         vars.borrowBalAHR = AHR.borrowBalanceCurrent(msg.sender);
@@ -304,25 +298,26 @@ contract MoneyMarketInstance is Ownable, Exponential {
             address(asset),
             _amount
         );
-        //instantiate collateral ALR contract
-        AskoRiskTokenI collateALR = AskoRiskTokenI(_collateral);
-        //get collateral ALR amount for
-        vars.amountOfALR = collateALR.getUSDCWorthOfART(vars.amountValue);
+        //get USDC value of availible collateral
+        vars.availibleCollateralValue = MMF.checkAvailibleCollateralValue(
+            msg.sender,
+            _collateral
+        );
+
         //divide amount value by 3
         vars.halfVal = vars.assetAmountValOwed.div(2);
         //add 1/2 value to asset value to get 150% asset value
         vars.collateralNeeded = vars.assetAmountValOwed.add(vars.halfVal);
         //require collateral value to be greater than 150% of the amount value of loan
-        require(vars.collateralValue >= vars.collateralNeeded);
+        require(
+            vars.availibleCollateralValue >= vars.collateralNeeded,
+            "not enough collateral"
+        );
+        //track USDC value being locked for the loan
+        MMF.trackCollateralUp(msg.sender, _collateral, vars.amountValue);
         //cut amount of tokens in half
         vars.half = _amount.div(2);
-        //lock the collateral needed for this loan so it cant be "double spent"
-        MMF.lockCollateral(msg.sender, _collateral, vars.amountOfALR);
-        MMF.trackCollateralDown(msg.sender, _collateral, vars.amountOfALR);
-        //track locked amount
-        lockedCollateral[msg.sender] = lockedCollateral[msg.sender].add(
-            vars.amountOfALR
-        );
+
         //track which ALR is locked
         collateralLockedALR[msg.sender] = _collateral;
         cantCollateralize[msg.sender] = true;
@@ -388,6 +383,25 @@ contract MoneyMarketInstance is Ownable, Exponential {
                 emit Repayed(msg.sender, payAmountAHR, 0);
             }
         }
+
+        ///////unlock collateral value logic/////////
+        uint256 repayedAmount;
+        if (_repayAmount == 0) {
+            repayedAmount = totalBorrows;
+        } else {
+            repayedAmount = _repayAmount;
+        }
+        ///get USDC value of what was repayed
+        uint256 _USDCvalRepayed = UOF.getUnderlyingPriceofAsset(
+            address(asset),
+            repayedAmount
+        );
+        ////track repayment in MMC
+        MMF.trackCollateralDown(
+            msg.sender,
+            collateralLockedALR[msg.sender],
+            _USDCvalRepayed
+        );
         //////////////fully repayed logic/////////////
         if (
             accountBorrowsAHR.sub(payAmountAHR) == 0 &&
@@ -395,17 +409,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
         ) {
             //if the loan is fully payed off
             //unlock the users locked collateral for this loan
-            MMF.unlockCollateral(
-                msg.sender,
-                collateralLockedALR[msg.sender],
-                lockedCollateral[msg.sender]
-            );
 
-            MMF.trackCollateralUp(
-                msg.sender,
-                collateralLockedALR[msg.sender],
-                lockedCollateral[msg.sender]
-            );
             //reset collateralLockedALR address to zero so the user can use a different ALR address in future borrows
             collateralLockedALR[msg.sender] = address(0);
             cantCollateralize[msg.sender] = false;
@@ -414,26 +418,74 @@ contract MoneyMarketInstance is Ownable, Exponential {
         }
     }
 
-    /**
-@notice collateralizeALR allows a user to collateralize the ALR they hold in a specific money market
-@param _amount is the amount of asset being collateralized
-**/
-    function collateralizeALR(uint256 _amount) public {
-        uint256 alrVal = ALR.convertToART(_amount);
-        ALR.burn(msg.sender, alrVal);
-        MMF.trackCollateralUp(msg.sender, address(ALR), alrVal);
-        emit Collateralized(msg.sender, _amount);
+    //struct used to avoid stack too deep errors
+    struct liquidateLocalVar {
+        uint256 accountBorrowsALR;
+        uint256 accountBorrowsAHR;
+        uint256 totalBorrows;
+        uint256 borrowedValue;
+        uint256 borrowedValue150;
+        uint256 collatValue;
+        uint256 halfVal;
+        uint256 payAmountALR; // Note: reverts on error
+        uint256 payAmountAHR;
     }
 
-    function decollateralizeALR(uint256 _amount) public {
-        uint256 alrVal = ALR.convertToART(_amount);
-        uint256 availibleCollateral = MMF.checkCollateralizedALR(
-            msg.sender,
-            address(ALR)
+    /**
+    @notice _liquidateFor is called by the liquidateAccount function on a MMI where a user is being liquidated. This function
+            is called on a MMI contract where collateral is staked.
+
+    **/
+    function liquidateAccount(
+        address _borrower,
+        AskoRiskTokenI _ARTcollateralized
+    ) public {
+        //create local vars storage
+        liquidateLocalVar memory vars;
+        require(msg.sender != _borrower, "you cant liquidate yourself");
+        //get current borrowed amount
+        uint256 accountBorrowsALR = ALR.borrowBalanceCurrent(_borrower);
+        uint256 accountBorrowsAHR = AHR.borrowBalanceCurrent(_borrower);
+        uint256 totalBorrows = accountBorrowsALR.add(accountBorrowsAHR);
+
+        //get USDC value of borrowed value
+        vars.borrowedValue = UOF.getUnderlyingPriceofAsset(
+            address(asset),
+            totalBorrows
         );
-        require(alrVal <= availibleCollateral);
-        MMF.trackCollateralDown(msg.sender, address(ALR), alrVal);
-        ALR.mint(msg.sender, alrVal);
+        //get usdc collateral value
+        vars.collatValue = MMF.checkAvailibleCollateralValue(
+            _borrower,
+            address(_ARTcollateralized)
+        );
+        //divide borrowedValue value in half
+        vars.halfVal = vars.borrowedValue.div(2);
+        //add 1/2 the borrowedValue value to the total borrowedValue value for 150% borrowedValue value
+        vars.borrowedValue150 = vars.borrowedValue.add(vars.halfVal);
+        /**
+      need to check if the amount of collateral is less than 150% of the borrowed amount
+      if the collateral value is greater than or equal to 150% of the borrowed value than we liquidate
+      **/
+        if (vars.collatValue < vars.borrowedValue150) {
+            //transfer asset from msg.sender to repay loan
+            asset.transferFrom(msg.sender, address(ALR), accountBorrowsALR);
+            asset.transferFrom(msg.sender, address(AHR), accountBorrowsAHR);
+            MMF.liquidateTrigger(
+                vars.borrowedValue,
+                _borrower,
+                msg.sender,
+                address(_ARTcollateralized)
+            );
+            vars.payAmountALR = ALR.repayBorrow(0, _borrower); //pay off ALR
+            vars.payAmountAHR = AHR.repayBorrow(0, _borrower); //pay off  AHR
+
+            //track collateral
+            MMF.trackCollateralDown(
+                _borrower,
+                address(_ARTcollateralized),
+                vars.borrowedValue
+            );
+        }
     }
 
     /**

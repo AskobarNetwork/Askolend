@@ -284,6 +284,28 @@ contract("MoneyMarketControl", (accounts) => {
       "Augur Collateral ALR USDC after 20 loan repay: " +
         web3.utils.fromWei(augurCollateral, "ether")
     );
+    console.log("Repaying another 20 Link");
+    await linkMMI.repay(web3.utils.toWei("20"), {
+      from: account_one,
+    });
+    linkBorrowedAHRafter = await linkAHR.borrowBalancePrior(account_one);
+    console.log(
+      "Link AHR borrow bal after 20 repay: " +
+        web3.utils.fromWei(linkBorrowedAHRafter, "ether")
+    );
+    linkBorrowedALRafter = await linkALR.borrowBalancePrior(account_one);
+    console.log(
+      "Link ALR borrow bal after 20 repay: " +
+        web3.utils.fromWei(linkBorrowedALRafter, "ether")
+    );
+
+    augurCollateral = await MMC.viewCollateral(account_one, augurALR.address);
+
+    console.log(
+      "Augur Collateral ALR USDC after 20 loan repay: " +
+        web3.utils.fromWei(augurCollateral, "ether")
+    );
+
     let linkBalAfter20 = await link.balanceOf(account_one);
     console.log("Repaying rest of Link loan");
     await linkMMI.repay(web3.utils.toWei("0"), {
@@ -346,13 +368,13 @@ contract("MoneyMarketControl", (accounts) => {
     });
     let linkBal = await link.balanceOf(account_two);
     console.log(
-      "User two's link balance after liquidation: " +
+      "User two's link balance before liquidation: " +
         web3.utils.fromWei(linkBal)
     );
 
     let augurBal = await augur.balanceOf(account_two);
     console.log(
-      "User two'ss link balance after liquidation: " +
+      "User two's augur balance before liquidation: " +
         web3.utils.fromWei(augurBal)
     );
     await link.approve(linkMMI.address, web3.utils.toWei("100000"), {
@@ -378,7 +400,7 @@ contract("MoneyMarketControl", (accounts) => {
 
     augurBal = await augur.balanceOf(account_two);
     console.log(
-      "account two's link balance after liquidation: " +
+      "account two's augur balance after liquidation: " +
         web3.utils.fromWei(augurBal)
     );
   });
@@ -386,7 +408,7 @@ contract("MoneyMarketControl", (accounts) => {
   it("should make sure a user cannot transfer their ART token", async () => {
     linkALRBal = await linkALR.balanceOf(account_one);
     console.log(
-      "User two's link balance after liquidation: " +
+      "User two's link balance before transfer attempt: " +
         web3.utils.fromWei(linkALRBal)
     );
     await truffleAssert.reverts(
@@ -396,7 +418,7 @@ contract("MoneyMarketControl", (accounts) => {
     );
     linkALRBal = await linkALR.balanceOf(account_one);
     console.log(
-      "User two's link balance after liquidation: " +
+      "User two's link balance after transfer attempt: " +
         web3.utils.fromWei(linkALRBal)
     );
   });

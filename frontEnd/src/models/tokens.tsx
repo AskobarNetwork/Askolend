@@ -48,8 +48,8 @@ export async function createToken(moneyMarket: MoneyMarketInstanceService): Prom
     const lowRiskSupplyAPY = fromWei(await lowRisk.supplyRate());
     const lowRiskBorrowAPY = fromWei(await lowRisk.borrowRate());
 
-    let lowRiskBalance = fromWei(await lowRisk.getBalance(userAddress));
-    let highRiskBalance = fromWei(await highRisk.getBalance(userAddress));
+    let lowRiskBalance = fromWei(await lowRisk.viewConvertFromART((await lowRisk.getBalance(userAddress))));
+    let highRiskBalance = fromWei(await highRisk.viewConvertFromART((await highRisk.getBalance(userAddress))))
 
     let lowRiskExchangeRate = "0";
     try {

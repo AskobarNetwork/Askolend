@@ -52,4 +52,12 @@ export class AskoRiskTokenService extends ERC20Service {
 
         (await this.provider.getProvider()).waitForTransaction(transactionObject.hash)
     }
+
+    viewConvertFromART = async (amount: BigNumber): Promise<BigNumber> => {
+        return await this.contract.viewConvertFromART(amount)
+    }
+
+    viewConvertToART = async (amount: BigNumber): Promise<BigNumber> => {
+        return await this.contract.viewConvertToART(amount)
+    }
 }

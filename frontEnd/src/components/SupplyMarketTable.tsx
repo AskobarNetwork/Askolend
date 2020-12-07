@@ -42,6 +42,7 @@ interface ISupplyMarketTableState {
 	confirmationTitle: string;
 	selectedToken: SupplyToken | undefined;
 	supplyOpen: boolean;
+	balanceView: number;
 }
 
 class SupplyMarketTableClass extends React.Component<
@@ -56,8 +57,23 @@ class SupplyMarketTableClass extends React.Component<
 			confirmationTitle: "",
 			selectedToken: undefined,
 			supplyOpen: false,
+			balanceView: 0,
 		};
 		this.collateralSwitchClick.bind(this);
+		this.calcART.bind(this)
+	}
+
+	componentDidMount = async () => {
+		
+	}
+
+	calcART = async (tokenToSupply: SupplyToken) => {
+		const provider = await ProtocolProvider.getInstance();
+		const askoToken = new AskoRiskTokenService(
+			provider,
+			tokenToSupply.lowRisk ? tokenToSupply.token.lowRiskAddress : tokenToSupply.token.highRiskAddress
+		);
+
 	}
 
 	collateralClose = () => {
@@ -322,7 +338,7 @@ class SupplyMarketTableClass extends React.Component<
 								<TableCell align="right">APY</TableCell>
 								<TableCell align="center">Wallet</TableCell>
 								<TableCell align="center">Balance</TableCell>
-								<TableCell align="center">Collateral</TableCell>
+								{/* <TableCell align="center">Collateral</TableCell> */}
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -353,7 +369,7 @@ class SupplyMarketTableClass extends React.Component<
 									<TableCell align="right">{token.apy + "%"}</TableCell>
 									<TableCell align="center">{token.wallet}</TableCell>
 									<TableCell align="center">{token.balance}</TableCell>
-									<TableCell align="center">
+									{/* <TableCell align="center">
 										{token.lowRisk ? (
 											<Switch
 												checked={
@@ -366,7 +382,7 @@ class SupplyMarketTableClass extends React.Component<
 												}}
 											></Switch>
 										) : null}
-									</TableCell>
+									</TableCell> */}
 								</TableRow>
 							))}
 						</TableBody>

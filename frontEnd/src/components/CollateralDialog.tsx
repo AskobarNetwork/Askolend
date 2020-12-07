@@ -40,7 +40,6 @@ interface ICollateralDialogProps {
 	token: any;
 	classes?: any;
 }
-
 interface ICollateralDialogState {
 	amount: number;
 }

@@ -83,8 +83,8 @@ module.exports = async (deployer) => {
   console.log("Listed USDC-AGR");
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Listing USDC-LINK");
-  await UNI.createPair(usdc.address, link.address);
-  const USDC_Link = await UNI.getPair(usdc.address, link.address);
+  await UNI.createPair(FakeUSDC.address, FakeLink.address);
+  const USDC_Link = await UNI.getPair(FakeUSDC.address, FakeLink.address);
   console.log("USDC-FakeLink pair created");
   console.log(USDC_Link);
   await usdc.approve(UNI_R.address, "10000000000000000000000000000");
@@ -128,8 +128,8 @@ module.exports = async (deployer) => {
   console.log("Listed USDC-wBTC");
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Listing USDC-wETH");
-  await UNI.createPair(usdc.address, weth.address);
-  const USDC_wETH = await UNI.getPair(usdc.address, weth.address);
+  await UNI.createPair(FakeUSDC.address, FakewETH.address);
+  const USDC_wETH = await UNI.getPair(FakeUSDC.address, FakewETH.address);
   console.log("USDC-wETH pair created");
   console.log(USDC_wETH);
   await usdc.approve(UNI_R.address, "10000000000000000000000000000");
@@ -150,8 +150,8 @@ module.exports = async (deployer) => {
   console.log("Listed USDC_wETH");
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Listing USDC-BAT");
-  await UNI.createPair(usdc.address, bat.address);
-  const USDC_BAT = await UNI.getPair(usdc.address, bat.address);
+  await UNI.createPair(FakeUSDC.address, FakeBAT.address);
+  const USDC_BAT = await UNI.getPair(FakeUSDC.address, FakeBAT.address);
   console.log("USDC-BAT pair created");
   console.log(USDC_BAT);
   await usdc.approve(UNI_R.address, "10000000000000000000000000000");
@@ -197,7 +197,6 @@ module.exports = async (deployer) => {
     "Uniswap oracle contract factory ownership transfered to Money Market Control contract"
   );
   MMC = await MoneyMarketControl.deployed();
-  ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Setting up FakeAugur Money Market Instance");
   await MMC.whitelistAsset(FakeAugur.address, "Augur", "AGR");
   console.log("FakeAugur White Listed");
@@ -246,30 +245,7 @@ module.exports = async (deployer) => {
   );
   console.log("FakeLink Asko Low Risk Token Created");
   ////////////////////////////////////////////////////////////////////////////////////////////
-  console.log("Setting up FakeBAT Money Market Instance");
-  await MMC.whitelistAsset(FakeBAT.address, "Basic Attention Token", "BAT");
-  console.log("FakeBAT White Listed");
-  await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeBAT.address
-  );
-  console.log("FakeBAT Asko High Risk Token Created");
-  await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeBAT.address
-  );
-  console.log("FakeBAT Asko Low Risk Token Created");
-  ////////////////////////////////////////////////////////////////////////////////////////////
+
   console.log("Setting up FakewBTC Money Market Instance");
   await MMC.whitelistAsset(FakewBTC.address, "Wrapped Bitcoin", "wBTC");
   console.log("FakewBTC White Listed");
@@ -318,6 +294,30 @@ module.exports = async (deployer) => {
   );
   console.log("FakewETH Asko Low Risk Token Created");
   ////////////////////////////////////////////////////////////////////////////////////////////
+  console.log("Setting up FakeBAT Money Market Instance");
+  await MMC.whitelistAsset(FakeBAT.address, "Basic Attention Token", "BAT");
+  console.log("FakeBAT White Listed");
+  await MMC.setUpAHR(
+    "20000000000000000", //base rate per year(approx target base APR)
+    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+    50, //fee this is the fee % value
+    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+    FakeBAT.address
+  );
+  console.log("FakeBAT Asko High Risk Token Created");
+  await MMC.setUpALR(
+    "20000000000000000", //base rate per year(approx target base APR)
+    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+    50, //fee this is the fee % value
+    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+    FakeBAT.address
+  );
+  console.log("FakeBAT Asko Low Risk Token Created");
+  ////////////////////////////////////////////////////////////////////////////////////////////
   console.log(
     "Uniswap oracle factory address: " + UniswapOracleFactory.address
   );
@@ -329,4 +329,5 @@ module.exports = async (deployer) => {
   console.log("FakewETH address: " + FakewETH.address);
   console.log("Fake Faucet address: " + FakeFaucet.address);
   console.log("Money Market Control: " + MoneyMarketControl.address);
+  ////////////////////////////////////////////////////////////////////////////////////////////
 };

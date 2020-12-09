@@ -37,11 +37,21 @@ contract FakeFaucet {
     }
 
     function gimme() public {
-        require(dontDoIT[msg.sender] >= 86400, "Error: User Greedy");
+        uint256 one = fakeLINK.balanceOf(msg.sender);
+        uint256 two = fakeAugur.balanceOf(msg.sender);
+        uint256 three = fakeBAT.balanceOf(msg.sender);
+        uint256 four = fakewBTC.balanceOf(msg.sender);
+        uint256 five = fakewETH.balanceOf(msg.sender);
+        uint256 total = one + two + three + four + five;
+        require(
+            now >= dontDoIT[msg.sender] + 86400 || total == 0,
+            "Error: User Greedy"
+        );
         fakeLINK._Mint(msg.sender, 1000000000000000000000);
         fakeAugur._Mint(msg.sender, 1000000000000000000000);
         fakeBAT._Mint(msg.sender, 1000000000000000000000);
         fakewBTC._Mint(msg.sender, 1000000000000000000000);
         fakewETH._Mint(msg.sender, 1000000000000000000000);
+        dontDoIT[msg.sender] = now;
     }
 }

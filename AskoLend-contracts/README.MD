@@ -115,12 +115,9 @@ The liquidator function can be called by a python based bot using web3.py to mon
 @param _ARTcollateralized is the address of the ALR token that was used as collateral for the loan
     **/`
 
-    ```solidity
-    function liquidateAccount(
-        address _borrower,
-        AskoRiskTokenI _ARTcollateralized
-    )
-    ```
-
-
-    
+```solidity
+function liquidateAccount(
+    address _borrower,
+    AskoRiskTokenI _ARTcollateralized
+)
+```

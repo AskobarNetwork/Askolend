@@ -171,6 +171,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         isALR[address(_MMI)] = true;
         _MMI._setUpALR(interestRateModel, _fee, _initialExchangeRate);
         _ALRtracker[_MMI.ALR()] = address(_MMI);
+
         emit ALRcreated(_assetContractAdd, interestRateModel);
     }
 
@@ -274,5 +275,48 @@ tells you the USDC value of their locked ALR
     ) public onlyMMI {
         collateralTracker[_borrower][address(_ALR)] = 0;
         _ALR._liquidate(_liquidateValue, _borrower, _liquidator);
+    }
+
+    function updateIRM(
+        uint256 _baseRatePerYear,
+        uint256 _multiplierPerYear,
+        uint256 _jumpMultiplierPerYear,
+        uint256 _optimal,
+        address _assetContractAdd,
+        bool _isALR
+    ) public {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_assetContractAdd]
+        );
+
+        address interestRateModel = address(
+            new JumpRateModelV2(
+                _baseRatePerYear,
+                _multiplierPerYear,
+                _jumpMultiplierPerYear,
+                _optimal,
+                address(_MMI)
+            )
+        );
+        if (_isALR) {
+            _MMI.updateALR(interestRateModel);
+        } else {
+            _MMI.updateAHR(interestRateModel);
+        }
+    }
+
+    function updateRR(
+        uint256 _newRR,
+        bool _isALR,
+        address _asset
+    ) public onlyMMI {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_asset]
+        );
+        if (_isALR) {
+            _MMI.setRRALR(_newRR);
+        } else {
+            _MMI.setRRAHR(_newRR);
+        }
     }
 }

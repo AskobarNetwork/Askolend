@@ -176,56 +176,6 @@ contract MoneyMarketInstance is Ownable, Exponential {
     }
 
     /**
-  @notice setFee allows the owner of this contract to set the fee
-  @param  _fee is the input number representing the fee
-  @dev the divisor is set to 10,000 in the constructor for this contract. this allows for
-        a fee percentage accounting for two decimal places. feePercent must account for this when being set.
-        The following examples show feePercent amounts and how they equate to percentages:
-                EX:
-                    a 1% fee would be set as feePercent = 100
-                    a .5% fee would be set as feePercent = 50
-                    a 50% fee would be set as feePercent = 5000
-  **/
-    function setFeeAHR(uint256 _fee) public onlyOwner {
-        fee_AHR = _fee;
-    }
-
-    /**
-  @notice setFee allows the owner of this contract to set the fee
-  @param  _fee is the input number representing the fee
-  @dev the divisor is set to 10,000 in the constructor for this contract. this allows for
-        a fee percentage accounting for two decimal places. feePercent must account for this when being set.
-        The following examples show feePercent amounts and how they equate to percentages:
-                EX:
-                    a 1% fee would be set as feePercent = 100
-                    a .5% fee would be set as feePercent = 50
-                    a 50% fee would be set as feePercent = 5000
-  **/
-    function setFeeALR(uint256 _fee) public onlyOwner {
-        fee_ALR = _fee;
-    }
-
-    /**
-  @notice calculateFee is used to calculate the fee earned
-  @param _payedAmount is a uint representing the full amount of an ERC20 asset payed
-  @dev the divisor is set to 10,000 in the constructor for this contract. this allows for
-        a fee percentage accounting for two decimal places. feePercent must account for this when being set.
-        The following examples show feePercent amounts and how they equate to percentages:
-                EX:
-                    a 1% fee would be set as feePercent = 100
-                    a .5% fee would be set as feePercent = 50
-                    a 50% fee would be set as feePercent = 5000
-  **/
-    function calculateFee(uint256 _payedAmount, uint256 _feePercent)
-        public
-        view
-        returns (uint256)
-    {
-        uint256 fee = _payedAmount.mul(_feePercent).div(divisor);
-        return fee;
-    }
-
-    /**
 @notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool
 @param _amount is the amount of the asset being lent
 @dev the user will need to first approve the transfer of the underlying asset
@@ -489,10 +439,26 @@ contract MoneyMarketInstance is Ownable, Exponential {
     }
 
     /**
-@notice allowa an ALR to check if the address calling it is anothe ALR
+@notice these are admin functions for updating individual ART values
 **/
 
     function checkIfALR(address _inQuestion) public view returns (bool) {
         return MMF._checkIfALR(_inQuestion);
+    }
+
+    function updateALR(address _newModel) public onlyMMFactory {
+        ALR._updateInterestModel(_newModel);
+    }
+
+    function updateAHR(address _newModel) public onlyMMFactory {
+        AHR._updateInterestModel(_newModel);
+    }
+
+    function setRRAHR(uint256 _RR) public onlyMMFactory {
+        AHR.setReserveRatio(_RR);
+    }
+
+    function setRRALR(uint256 _RR) public onlyMMFactory {
+        ALR.setReserveRatio(_RR);
     }
 }

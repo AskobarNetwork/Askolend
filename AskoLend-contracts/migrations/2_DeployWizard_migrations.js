@@ -42,6 +42,13 @@ module.exports = async (deployer) => {
   await bat.transferOwnership(FakeFaucet.address);
   await wbtc.transferOwnership(FakeFaucet.address);
   await weth.transferOwnership(FakeFaucet.address);
+
+  console.log(FakeUSDC.address);
+  console.log(FakeLink.address);
+  console.log(FakeAugur.address);
+  console.log(FakeBAT.address);
+  console.log(FakewBTC.address);
+  console.log(FakewETH.address);
   console.log("Faucet set to drip!");
 
   await deployer.deploy(
@@ -196,138 +203,4 @@ module.exports = async (deployer) => {
   console.log(
     "Uniswap oracle contract factory ownership transfered to Money Market Control contract"
   );
-  MMC = await MoneyMarketControl.deployed();
-  console.log("Setting up FakeAugur Money Market Instance");
-  await MMC.whitelistAsset(FakeAugur.address, "Augur", "AGR");
-  console.log("FakeAugur White Listed");
-  await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeAugur.address //asset address
-  );
-  console.log("FakeAugur Asko High Risk Token Created");
-  await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeAugur.address
-  );
-  console.log("FakeAugur Asko Low Risk Token Created");
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  console.log("Setting up FakeLink Money Market Instance");
-  await MMC.whitelistAsset(FakeLink.address, "Link", "LINK");
-  console.log("FakeLink White Listed");
-  await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeLink.address
-  );
-  console.log("FakeLink Asko High Risk Token Created");
-  await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeLink.address
-  );
-  console.log("FakeLink Asko Low Risk Token Created");
-  ////////////////////////////////////////////////////////////////////////////////////////////
-
-  console.log("Setting up FakewBTC Money Market Instance");
-  await MMC.whitelistAsset(FakewBTC.address, "Wrapped Bitcoin", "wBTC");
-  console.log("FakewBTC White Listed");
-  await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakewBTC.address
-  );
-  console.log("FakewBTC Asko High Risk Token Created");
-  await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakewBTC.address
-  );
-  console.log("FakewBTC Asko Low Risk Token Created");
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  console.log("Setting up FakewETH Money Market Instance");
-  await MMC.whitelistAsset(FakewETH.address, "Wrapped Ethereum", "wETH");
-  console.log("FakewETH White Listed");
-  await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakewETH.address
-  );
-  console.log("FakewETH Asko High Risk Token Created");
-  await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakewETH.address
-  );
-  console.log("FakewETH Asko Low Risk Token Created");
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  console.log("Setting up FakeBAT Money Market Instance");
-  await MMC.whitelistAsset(FakeBAT.address, "Basic Attention Token", "BAT");
-  console.log("FakeBAT White Listed");
-  await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeBAT.address
-  );
-  console.log("FakeBAT Asko High Risk Token Created");
-  await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
-    "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
-    "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
-    50, //fee this is the fee % value
-    "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    FakeBAT.address
-  );
-  console.log("FakeBAT Asko Low Risk Token Created");
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  console.log(
-    "Uniswap oracle factory address: " + UniswapOracleFactory.address
-  );
-  console.log("FakeUSDC address: " + FakeUSDC.address);
-  console.log("FakeLink address: " + FakeLink.address);
-  console.log("FakeAugur address: " + FakeAugur.address);
-  console.log("FakeBAT address: " + FakeBAT.address);
-  console.log("FakewBTC address: " + FakewBTC.address);
-  console.log("FakewETH address: " + FakewETH.address);
-  console.log("Fake Faucet address: " + FakeFaucet.address);
-  console.log("Money Market Control: " + MoneyMarketControl.address);
-  ////////////////////////////////////////////////////////////////////////////////////////////
 };

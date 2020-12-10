@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
 import "./JumpRateModelV2.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
   * @title Compound's DAIInterestRateModel Contract (version 3)

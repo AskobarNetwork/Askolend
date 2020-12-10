@@ -359,7 +359,7 @@ contract ComptrollerG2 is ComptrollerV2Storage, ComptrollerInterface, Comptrolle
             assert(markets[cToken].accountMembership[borrower]);
         }
 
-        if (oracle.getUnderlyingPrice(cToken) == 0) {
+        if (oracle.getUnderlyingPriceofAsset(cToken) == 0) {
             return uint(Error.PRICE_ERROR);
         }
 
@@ -720,7 +720,7 @@ contract ComptrollerG2 is ComptrollerV2Storage, ComptrollerInterface, Comptrolle
             vars.exchangeRate = Exp({mantissa: vars.exchangeRateMantissa});
 
             // Get the normalized price of the asset
-            vars.oraclePriceMantissa = oracle.getUnderlyingPrice(address(asset));
+            vars.oraclePriceMantissa = oracle.getUnderlyingPriceofAsset(address(asset));
             if (vars.oraclePriceMantissa == 0) {
                 return (Error.PRICE_ERROR, 0, 0);
             }
@@ -780,8 +780,8 @@ contract ComptrollerG2 is ComptrollerV2Storage, ComptrollerInterface, Comptrolle
      */
     function liquidateCalculateSeizeTokens(address cTokenBorrowed, address cTokenCollateral, uint actualRepayAmount) external view returns (uint, uint) {
         /* Read oracle prices for borrowed and collateral markets */
-        uint priceBorrowedMantissa = oracle.getUnderlyingPrice(cTokenBorrowed);
-        uint priceCollateralMantissa = oracle.getUnderlyingPrice(cTokenCollateral);
+        uint priceBorrowedMantissa = oracle.getUnderlyingPriceofAsset(cTokenBorrowed);
+        uint priceCollateralMantissa = oracle.getUnderlyingPriceofAsset(cTokenCollateral);
         if (priceBorrowedMantissa == 0 || priceCollateralMantissa == 0) {
             return (uint(Error.PRICE_ERROR), 0);
         }
@@ -905,7 +905,7 @@ contract ComptrollerG2 is ComptrollerV2Storage, ComptrollerInterface, Comptrolle
         }
 
         // If collateral factor != 0, fail if price == 0
-        if (newCollateralFactorMantissa != 0 && oracle.getUnderlyingPrice(address(cToken)) == 0) {
+        if (newCollateralFactorMantissa != 0 && oracle.getUnderlyingPriceofAsset(address(cToken)) == 0) {
             return fail(Error.PRICE_ERROR, FailureInfo.SET_COLLATERAL_FACTOR_WITHOUT_PRICE);
         }
 

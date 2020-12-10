@@ -3,23 +3,20 @@ import * as React from "react";
 import { Box, Grid, Paper, Typography } from "@material-ui/core";
 
 import { BorrowMarketTable } from "./BorrowMarketTable";
-import { Summary } from "."
+// import { Summary } from "."
 import { SupplyMarketTable } from "./SupplyMarketTable";
-import { connect } from 'react-redux'
-import { getMoneyMarketInstances, obtainTokenInfo } from '../actions'
+import { connect } from "react-redux";
+import { getMoneyMarketInstances } from "../actions";
 import { ProtocolProvider } from "../web3";
 
 interface IHomeBoxProps {
-	obtainMoneyMarket: Function
+	obtainMoneyMarket: Function;
 }
 
-interface IHomeBoxState {
+interface IHomeBoxState {}
 
-}
-
-class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
+class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState> {
 	componentDidMount = async () => {
-
 		this.props.obtainMoneyMarket();
 
 		// let tokenAddresses = getTokenAddresses();
@@ -30,12 +27,12 @@ class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
 		// 	}
 		// 	this.props.obtainTokenInfo(address, intialObtain);
 		// });
-	}
+	};
 
 	render() {
 		return (
 			<Paper>
-				<Summary />
+				{/* <Summary /> */}
 				<Grid
 					container
 					direction="row"
@@ -44,17 +41,13 @@ class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
 				>
 					<Grid item md={6}>
 						<Box padding={4}>
-							<Typography variant="h6" >
-								Supply Markets
-						</Typography>
+							<Typography variant="h6">Supply Markets</Typography>
 							<SupplyMarketTable />
 						</Box>
 					</Grid>
 					<Grid item md={6}>
 						<Box padding={4}>
-							<Typography variant="h6" >
-								Borrow Markets
-						</Typography>
+							<Typography variant="h6">Borrow Markets</Typography>
 							<BorrowMarketTable />
 						</Box>
 					</Grid>
@@ -64,15 +57,14 @@ class HomeBoxClass extends React.Component<IHomeBoxProps, IHomeBoxState>  {
 	}
 }
 
-
 const mapDispatchToProps = (dispatch: any) => {
 	return {
 		obtainMoneyMarket: (intialObtain: boolean) => {
-			dispatch(getMoneyMarketInstances())
-		}
-	}
-}
+			dispatch(getMoneyMarketInstances());
+		},
+	};
+};
 
-const HomeBox = connect(null, mapDispatchToProps)(HomeBoxClass)
+const HomeBox = connect(null, mapDispatchToProps)(HomeBoxClass);
 
 export { HomeBox };

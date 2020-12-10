@@ -382,9 +382,9 @@ contract MoneyMarketInstance is Ownable, Exponential {
     }
 
     /**
-    @notice The liquidateAccount function is called on the MMI where the borrower owes the loan.
-    @param _borrower is the address of the account being liquidated
-    @param _ARTcollateralized is the address of the ALR token that was used as collateral for the loan
+    @notice _liquidateFor is called by the liquidateAccount function on a MMI where a user is being liquidated. This function
+            is called on a MMI contract where collateral is staked.
+
     **/
     function liquidateAccount(
         address _borrower,

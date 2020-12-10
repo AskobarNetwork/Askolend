@@ -1,9 +1,7 @@
 pragma solidity ^0.6.0;
 
 import "./MoneyMarketInstance.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-
-
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketFactory
@@ -16,9 +14,7 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
 **/
 
 contract MoneyMarketFactory is Ownable {
-
-
-/**
+    /**
 @notice the createMMI function is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts
 @param _assetContractAdd is the address of the ERC20 asset being whitelisted
 @param _owner is the address that will own this contract(The AskoDAO)
@@ -27,26 +23,25 @@ contract MoneyMarketFactory is Ownable {
 @dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
       before creating each token.
 **/
-  function createMMI(
-    address _assetContractAdd,
-    address _owner,
-    address _oracleFactory,
-    string memory _assetName,
-    string memory _assetSymbol
-  )
-  public
-  returns(address)
-  {
+    function createMMI(
+        address _assetContractAdd,
+        address _oracleFactory,
+        address _owner,
+        address _ARTF,
+        string memory _assetName,
+        string memory _assetSymbol
+    ) public returns (address) {
+        address _MMinstance = address(
+            new MoneyMarketInstance(
+                _assetContractAdd,
+                _oracleFactory,
+                _owner,
+                _ARTF,
+                _assetName,
+                _assetSymbol
+            )
+        );
 
-    address _MMinstance = address(new MoneyMarketInstance (
-       _assetContractAdd,
-      _owner,
-       _oracleFactory,
-  		 _assetName,
-  		 _assetSymbol
-    ));
-
-    return _MMinstance;
-  }
-
+        return _MMinstance;
+    }
 }

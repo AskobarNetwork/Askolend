@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./MoneyMarketInstance.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";
@@ -9,6 +9,7 @@ import "./interfaces/MoneyMarketInstanceI.sol";
 import "./interfaces/AskoRiskTokenI.sol";
 import "./compound/JumpRateModelV2.sol";
 import "./compound/Exponential.sol";
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketFactory
 /// @author Christopher Dixon
@@ -20,51 +21,50 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
 **/
 
 contract MoneyMarketControl is Ownable, Exponential {
+    using SafeMath for uint256;
 
-  using SafeMath for uint;
+    uint256 public instanceCount; //tracks the number of instances
+    address public ARTF;
+    UniswapOracleFactoryI public Oracle; //oracle factory contract interface
+    MoneyMarketFactoryI public MMF;
 
+    address[] public assets;
 
+    mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
+    mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
+    mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
+    mapping(address => mapping(address => uint256)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
+    mapping(address => bool) isMMI;
+    mapping(address => bool) isALR;
 
-  uint public instanceCount;//tracks the number of instances
-  uint public liquidationIncentiveMantissa = 1.5e18; // 1.5
-
-  UniswapOracleFactoryI public Oracle;//oracle factory contract interface
-  MoneyMarketFactoryI public MMF;
-
-  address[] public assets;
-
-  mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
-  mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
-  mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
-  mapping(address => mapping(address => uint)) nonCompliant;// tracks user to a market to a time
-  mapping(address => mapping(address => uint)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
-  mapping(address => bool) isMMI;
-
-  /**
+    /**
   @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Instance contract
   **/
-    modifier onlyMMI()  {
-      require(isMMI[msg.sender] == true);
-      _;
+    modifier onlyMMI() {
+        require(isMMI[msg.sender] == true);
+        _;
     }
 
     event WhiteListed(address asset, address moneyMarket, address oracle);
     event AHRcreated(address asset, address interestRateModel);
     event ALRcreated(address asset, address interestRateModel);
-    event NonCompliantTimerStart(address borrower, address ART);
-    event Accountliquidated(address borrower, address liquidator, uint amountRepayed, address ARTowed, address ARTcollateral);
-    event NonCompliantTimerReset(address borrower, address ART);
-/**
+
+    /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
         is used to set up Oracle variables for the MoneyMarketFactory contract.
 @param _oracle is the address for the UniswapOracleFactorycontract
 **/
-constructor ( address _oracle, address _MMF) public {
-  Oracle = UniswapOracleFactoryI(_oracle);
-  MMF = MoneyMarketFactoryI(_MMF);
-}
+    constructor(
+        address _oracle,
+        address _MMF,
+        address _ARTF
+    ) public {
+        Oracle = UniswapOracleFactoryI(_oracle);
+        MMF = MoneyMarketFactoryI(_MMF);
+        ARTF = _ARTF;
+    }
 
-/**
+    /**
 @notice whitelistAsset is an onlyOwner function designed to be called by the AskoDAO.
         This function creates a new MoneyMarketInstancecontract for an input asset as well
         as a UniswapOracleInstance for the asset.
@@ -72,35 +72,33 @@ constructor ( address _oracle, address _MMF) public {
 @param _assetName is the name of the asset(e.x: ChainLink)
 @param _assetSymbol is the symbol of the asset(e.x: LINK)
 **/
-  function whitelistAsset(
-    address _assetContractAdd,
-		string memory _assetName,
-		string memory _assetSymbol
-  )
-  public
-  onlyOwner
-  {
-    instanceCount++;
+    function whitelistAsset(
+        address _assetContractAdd,
+        string memory _assetName,
+        string memory _assetSymbol
+    ) public onlyOwner {
+        instanceCount++;
 
-  address oracle = address(Oracle.createNewOracle( _assetContractAdd));
+        address oracle = address(Oracle.createNewOracle(_assetContractAdd));
 
-  address _MMinstance = MMF.createMMI(
-        _assetContractAdd,
-        address(Oracle),
-        address(this),
-   		 _assetName,
-   		 _assetSymbol
-     );
+        address _MMinstance = MMF.createMMI(
+            _assetContractAdd,
+            address(Oracle),
+            address(this),
+            ARTF,
+            _assetName,
+            _assetSymbol
+        );
 
-    isMMI[_MMinstance] = true;
-    Oracle.linkMMI(_MMinstance, _assetContractAdd);
-    instanceTracker[_assetContractAdd] = _MMinstance;
-    oracleTracker[_MMinstance] = oracle;
-    assets.push(_assetContractAdd);
-    emit WhiteListed(_assetContractAdd, _MMinstance, oracle);
-  }
+        isMMI[_MMinstance] = true;
+        Oracle.linkMMI(_MMinstance, _assetContractAdd);
+        instanceTracker[_assetContractAdd] = _MMinstance;
+        oracleTracker[_MMinstance] = oracle;
+        assets.push(_assetContractAdd);
+        emit WhiteListed(_assetContractAdd, _MMinstance, oracle);
+    }
 
-/**
+    /**
 @notice setUpAHR is used to set up a MoneyMarketInstances Asko High Risk Token as well as its InterestRateModel
 @param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
 @param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
@@ -110,37 +108,35 @@ constructor ( address _oracle, address _MMF) public {
 @param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
 @dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
 **/
-  function setUpAHR(
-    uint _baseRatePerYear,
-    uint _multiplierPerYear,
-    uint _jumpMultiplierPerYear,
-    uint _optimal,
-    uint _fee,
-    uint _initialExchangeRate,
-    address _assetContractAdd
-  )
-  public
-  {
-    MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(instanceTracker[_assetContractAdd]);
+    function setUpAHR(
+        uint256 _baseRatePerYear,
+        uint256 _multiplierPerYear,
+        uint256 _jumpMultiplierPerYear,
+        uint256 _optimal,
+        uint256 _fee,
+        uint256 _initialExchangeRate,
+        address _assetContractAdd
+    ) public {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_assetContractAdd]
+        );
 
-    address interestRateModel = address( new JumpRateModelV2(
-      _baseRatePerYear,
-      _multiplierPerYear,
-      _jumpMultiplierPerYear,
-      _optimal,
-      address(_MMI)
-    ));
+        address interestRateModel = address(
+            new JumpRateModelV2(
+                _baseRatePerYear,
+                _multiplierPerYear,
+                _jumpMultiplierPerYear,
+                _optimal,
+                address(_MMI)
+            )
+        );
 
-_MMI._setUpAHR(
-  interestRateModel,
-  _fee,
-  _initialExchangeRate
-);
+        _MMI._setUpAHR(interestRateModel, _fee, _initialExchangeRate);
 
-emit AHRcreated(_assetContractAdd, interestRateModel);
-  }
+        emit AHRcreated(_assetContractAdd, interestRateModel);
+    }
 
-/**
+    /**
 @notice setUpAHR is used to set up a MoneyMarketInstances Asko High Risk Token as well as its InterestRateModel
 @param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
 @param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
@@ -150,161 +146,199 @@ emit AHRcreated(_assetContractAdd, interestRateModel);
 @param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
 @dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
 **/
-  function setUpALR(
-    uint _baseRatePerYear,
-    uint _multiplierPerYear,
-    uint _jumpMultiplierPerYear,
-    uint _optimal,
-    uint _fee,
-    uint _initialExchangeRate,
-    address _assetContractAdd
-  )
-  public
-  {
-    MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(instanceTracker[_assetContractAdd]);
+    function setUpALR(
+        uint256 _baseRatePerYear,
+        uint256 _multiplierPerYear,
+        uint256 _jumpMultiplierPerYear,
+        uint256 _optimal,
+        uint256 _fee,
+        uint256 _initialExchangeRate,
+        address _assetContractAdd
+    ) public {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_assetContractAdd]
+        );
 
-    address interestRateModel = address( new JumpRateModelV2(
-      _baseRatePerYear,
-      _multiplierPerYear,
-      _jumpMultiplierPerYear,
-      _optimal,
-      address(_MMI)
-    ));
+        address interestRateModel = address(
+            new JumpRateModelV2(
+                _baseRatePerYear,
+                _multiplierPerYear,
+                _jumpMultiplierPerYear,
+                _optimal,
+                address(_MMI)
+            )
+        );
+        isALR[address(_MMI)] = true;
+        _MMI._setUpALR(interestRateModel, _fee, _initialExchangeRate);
+        _ALRtracker[_MMI.ALR()] = address(_MMI);
 
-    _MMI._setUpALR(
-      interestRateModel,
-      _fee,
-      _initialExchangeRate
-    );
-    emit ALRcreated(_assetContractAdd, interestRateModel);
+        emit ALRcreated(_assetContractAdd, interestRateModel);
+    }
 
-  }
-
-/**
+    /**
 @notice getAsset returns an array of all assets whitelisted on the platform.
 @dev this can be used to loop through and retreive each assets MoneyMarket by the front end
 **/
-  function getAssets() public view returns(address[] memory) {
-    return assets;
-  }
+    function getAssets() public view returns (address[] memory) {
+        return assets;
+    }
 
-/**
-@notice trackCollateral is an external function used bya MMI to track collateral amounts globally
+    /**
+@notice trackCollateralUp is an external function used bya MMI to track collateral amounts globally
 @param _borrower is the address of the corrower
 @param _ALR is the address of the seller
-@param _amount is the amount of ALR being collateralized
+@param _amount is the amount of USDC being collateralized
 @dev this function can only be called by a MoneyMarketInstance.
 **/
- function trackCollateral(address _borrower, address _ALR, uint _amount) external onlyMMI {
-   collateralTracker[_borrower][_ALR] = _amount;
- }
+    function trackCollateralUp(
+        address _borrower,
+        address _ALR,
+        uint256 _amount
+    ) external onlyMMI {
+        require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
+        collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
+            .add(_amount);
+    }
 
- /**
+    /**
+ @notice trackCollateralDown is an external function used bya MMI to track collateral amounts globally
+ @param _borrower is the address of the corrower
+ @param _ALR is the address of the seller
+ @param _amount is the amount of USDC being collateralized
+ @dev this function can only be called by a MoneyMarketInstance.
+ **/
+    function trackCollateralDown(
+        address _borrower,
+        address _ALR,
+        uint256 _amount
+    ) external onlyMMI {
+        require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
+        if (collateralTracker[_borrower][_ALR] > _amount) {
+            collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
+                .sub(_amount);
+        } else {
+            collateralTracker[_borrower][_ALR] = 0;
+        }
+    }
+
+    function checkCollateralizedALR(address _borrower, address _ALR)
+        public
+        view
+        returns (uint256)
+    {
+        return collateralTracker[_borrower][_ALR];
+    }
+
+    /**
 @notice checkCollateralValue is a view function that accepts an account address and an ALR contract
-        address and returns the USD value of the collateral they have locked.
+        address and returns the USD value of the availible collateral they have. Availible collateral is
+        determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
 @param _borrower is the address whos collateral value we are looking up
 @param _ALR is the address of the ALR token where collateral value is being looked up
-@dev this function can only be called by a MoneyMarketInstance.
  **/
- function checkCollateralValue(address _borrower, address _ALR) external view onlyMMI returns(uint) {
-//instantiate the MoneyMakerInstance calling this function
-   MoneyMarketInstanceI MMI = MoneyMarketInstanceI(msg.sender);
-//retreive the address of its asset
-   address asset = MMI.getAssetAdd();
-//retrieve USD price of this asset
-   uint priceOfAsset = Oracle.getUnderlyingPrice(asset);
-//retrieve the amount of the asset locked as collateral
-   uint amountOfAssetCollat = collateralTracker[_borrower][_ALR];
-//multiply the amount of collateral by the asset price and return it
-   return amountOfAssetCollat.mul(priceOfAsset);
- }
-
-/**
-@notice markAccountNonCompliant is used by a potential liquidator to mark an account as non compliant which starts its 30 minute timer
-@param _borrower is the address of the non compliant borrower
-@param _ART is the address of the money market instances ALR token the user is non-compliant in
-**/
-  function markAccountNonCompliant(address _borrower, address _ART) public {
-    //needs to check for account compliance
-    require(nonCompliant[_borrower][_ART] == 0);
-    nonCompliant[_borrower][_ART] = now;
-    emit NonCompliantTimerStart(_borrower, _ART);
-  }
-//struct used to avoid stack too deep errors
-  struct liquidateLocalVar {
-      address assetOwed;
-      address assetColat;
-      uint borrowedAmount;
-      uint collatAmount;
-      uint borrowedValue;
-      uint collatValue;
-      uint halfVal;
-      uint exchangeRateMantissa; // Note: reverts on error
-      uint seizeTokens;
-  }
-
-/**
-@notice The sender liquidates the borrowers collateral. This function is called on the MoneyMarket the borrower owes to.
-@param borrower The borrower of this cToken to be liquidated
-@param repayAmount The amount of the underlying borrowed asset to repay
-@param _ARTowed is the address of the AskoRiskToken where the borrower owes asset
-@param _ARTcollateralized is the address of the AskoRiskToken where the borrower has collateral
-
-*/
-  function liquidateAccount(address borrower, uint repayAmount, AskoRiskTokenI _ARTowed, AskoRiskTokenI _ARTcollateralized) public {
-//checks if its been nonCompliant for more than a half hour
-    require(now >= nonCompliant[borrower][address(_ARTowed)].add(1800));
-    //create local vars storage
-        liquidateLocalVar memory vars;
-//get asset addresses of both ARTs
-     vars.assetOwed = _ARTowed.getAssetAdd();
-     vars.assetColat = _ARTcollateralized.getAssetAdd();
-//Read oracle prices for borrowed and collateral markets
-    uint priceBorrowedMantissa = Oracle.getUnderlyingPrice(vars.assetOwed);
-    uint priceCollateralMantissa = Oracle.getUnderlyingPrice(vars.assetColat);
-    require(priceBorrowedMantissa != 0 && priceCollateralMantissa != 0);
-//retrieve asset amounts for each
-    vars.borrowedAmount = _ARTowed.borrowBalanceCurrent(borrower);
-    vars.collatAmount = collateralTracker[borrower][address(_ARTcollateralized)];
-//calculate USDC value amounts of each
-    vars.borrowedValue = vars.borrowedAmount.mul(priceBorrowedMantissa);
-    vars.collatValue = vars.collatAmount.mul(priceCollateralMantissa);
-//divide collateral value in half
-    vars.halfVal = vars.collatValue.div(2);
-//add 1/2 the collateral value to the total collateral value for 150% colleral value
-    vars.collatValue = vars.collatValue.add(vars.halfVal);
-//require the value of whats been borrowed to be lower than 150% of the collaterals value
-    if (vars.collatValue >= vars.borrowedValue){
-//Get the exchange rate and calculate the number of collateral tokens to seize:
-     vars.exchangeRateMantissa = _ARTowed.exchangeRateCurrent(); // Note: reverts on error
-    Exp memory numerator;
-    Exp memory denominator;
-    Exp memory ratio;
-    MathError mathErr;
-//numerator = liquidationIncentive * priceBorrowed
-    (mathErr, numerator) = mulExp(liquidationIncentiveMantissa, priceBorrowedMantissa);
-    require(mathErr == MathError.NO_ERROR);
-//denominator = priceCollateral * exchangeRate
-    (mathErr, denominator) = mulExp(priceCollateralMantissa, vars.exchangeRateMantissa);
-    require(mathErr == MathError.NO_ERROR);
-//ratio = (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
-    (mathErr, ratio) = divExp(numerator, denominator);
-    require(mathErr == MathError.NO_ERROR);
-//seizeTokens = actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
-    (mathErr, vars.seizeTokens) = mulScalarTruncate(ratio, repayAmount);
-    require(mathErr == MathError.NO_ERROR);
-/**
-this function calls the MoneyMarketInstance where the borrower has collateral staked and has it swap
-its underlying asset on uniswap for the underlying asset borrowed
-**/
-    _ARTcollateralized._liquidateFor(vars.assetOwed, address(_ARTowed), vars.seizeTokens, repayAmount);
-    emit Accountliquidated(borrower, msg.sender, repayAmount, address(_ARTowed), address(_ARTcollateralized));
+    function checkAvailibleCollateralValue(address _borrower, address _ALR)
+        external
+        returns (uint256)
+    {
+        //instantiate art token
+        AskoRiskTokenI _ART = AskoRiskTokenI(_ALR);
+        //get borrowers art balance
+        uint256 artBal = _ART.balanceOf(_borrower);
+        //get USDC value of art balance
+        uint256 usdcValOfBalance = _ART.getUSDCWorthOfART(artBal);
+        //retrieve the amount of the USDC value they have borrowed
+        uint256 usdcValLocked = collateralTracker[_borrower][_ALR];
+        //retrieve USDC availible collateral
+        return usdcValOfBalance.sub(usdcValLocked);
     }
-  //reset accounts compliant timer
-  nonCompliant[borrower][address(_ARTowed)] = 0;//resets borrowers compliance timer
-emit NonCompliantTimerReset(borrower, address(_ARTowed));
-  }
 
+    function _checkIfALR(address __inQ) external view returns (bool) {
+        return isALR[__inQ];
+    }
 
+    /**
+tells you the USDC value of their locked ALR
+**/
+    function viewCollateral(address _account, address _alr)
+        public
+        view
+        returns (uint256)
+    {
+        return collateralTracker[_account][_alr];
+    }
 
+/**
+@notice liquidateTrigger is a protected function that can only be called by a money market instance.
+@param _liquidateValue is the value being liquidated
+@param _borrower is the address of the account being liquidated
+@param _liquidator is the address of the account doing the liquidating
+@param _ALR is the address of the Asko Low Risk token that was used as collateral
+**/
+    function liquidateTrigger(
+        uint256 _liquidateValue,
+        address _borrower,
+        address _liquidator,
+        AskoRiskTokenI _ALR
+    ) public onlyMMI {
+        collateralTracker[_borrower][address(_ALR)] = 0;
+        _ALR._liquidate(_liquidateValue, _borrower, _liquidator);
+    }
+
+/**
+@notice updateIRM allows the admin of this contract to update a AskoRiskToken's Interest Rate Model
+@param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
+@param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
+@param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
+@param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
+@param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
+@param _isALR is a bool representing whether or not the Asko risk token being updated is a ALR or not
+**/
+    function updateIRM(
+        uint256 _baseRatePerYear,
+        uint256 _multiplierPerYear,
+        uint256 _jumpMultiplierPerYear,
+        uint256 _optimal,
+        address _assetContractAdd,
+        bool _isALR
+    ) public {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_assetContractAdd]
+        );
+
+        address interestRateModel = address(
+            new JumpRateModelV2(
+                _baseRatePerYear,
+                _multiplierPerYear,
+                _jumpMultiplierPerYear,
+                _optimal,
+                address(_MMI)
+            )
+        );
+        if (_isALR) {
+            _MMI.updateALR(interestRateModel);
+        } else {
+            _MMI.updateAHR(interestRateModel);
+        }
+    }
+
+/**
+@notice updateRR allows the admin to update the reserve ratio for an Asko Risk Token 
+@param _newRR is the new reserve ratio value(scaled by 1e18)
+@param _isALR is a bool representing whether of not the Reserve ratio being updated iis an ALR or not
+@param _asset is the address of the asset(token) whos ART tokens are being updated
+**/
+    function updateRR(
+        uint256 _newRR,
+        bool _isALR,
+        address _asset
+    ) public onlyMMI {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_asset]
+        );
+        if (_isALR) {
+            _MMI.setRRALR(_newRR);
+        } else {
+            _MMI.setRRAHR(_newRR);
+        }
+    }
 }

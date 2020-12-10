@@ -14,12 +14,37 @@ To test the contracts locally run ganache-cli using
 
 in a seperate terminal inside the AskoLend-Contracts directory run:
 
-'truffle test'
+`truffle test`
 
 ### The AskoLend contracts contain several administrative functions:
 ```solidity
 function whitelistAsset(address _assetContractAdd, string memory _assetName,
   string memory _assetSymbol
-) ```
+)
+```
 
-This function allows the MoneyMarketControl's administrator to whitelist a new ERC20 compliant token for use in the AskoLend platform
+### This function allows the MoneyMarketControl's administrator to whitelist a new ERC20 compliant token for use in the AskoLend platform.
+
+```solidity
+function setUpAHR(
+  uint _baseRatePerYear,
+  uint _multiplierPerYear,
+  uint _jumpMultiplierPerYear,
+  uint _optimal,
+  uint _fee,
+  uint _initialExchangeRate,
+  address _assetContractAdd
+)
+
+function setUpAHR(
+  uint _baseRatePerYear,
+  uint _multiplierPerYear,
+  uint _jumpMultiplierPerYear,
+  uint _optimal,
+  uint _fee,
+  uint _initialExchangeRate,
+  address _assetContractAdd
+)
+  ```
+
+### These two functions are called after a new token is whitelisted. These functions create the Asko Risk Tokens for the newly whitelisted token.

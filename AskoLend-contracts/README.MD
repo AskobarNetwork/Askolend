@@ -16,7 +16,20 @@ In a seperate terminal inside the AskoLend-Contracts directory run:
 
 `truffle test`
 
-### The AskoLend contracts contain several administrative functions:
+## AskoLend administrative functions:
+The Askolend contracts contain several administrative functions:
+
+- whitelistAsset
+- setUpAHR
+- setUpALR
+- updateIRM
+- updateRR
+
+Below is a brief description for each of them.
+
+### `whitelistAsset`
+This function allows the MoneyMarketControl's administrator to whitelist a new ERC20 compliant token for use in the AskoLend platform.
+
 ```
 /**
 @notice whitelistAsset is an onlyOwner function designed to be called by the AskoDAO.
@@ -33,7 +46,9 @@ function whitelistAsset(address _assetContractAdd, string memory _assetName,
 )
 ```
 
-### This function allows the MoneyMarketControl's administrator to whitelist a new ERC20 compliant token for use in the AskoLend platform.
+
+### `setUpAHR` and `setUpALR`
+These two functions are called after a new token is whitelisted. These functions create the Asko Risk Tokens for the newly whitelisted token.
 
 ```
 /**
@@ -70,7 +85,8 @@ function setUpALR(
 )
   ```
 
-### These two functions are called after a new token is whitelisted. These functions create the Asko Risk Tokens for the newly whitelisted token.
+### `updateIRM`
+This function is used by the admin to update an Asko Risk Token's interest rate model
 
 ```
 /**
@@ -94,7 +110,8 @@ function updateIRM(
     bool _isALR
 )
 ```
-### This function is used by the admin to update an Asko Risk Token's interest rate model
+
+### `updateRR`
 
 ```
 /**

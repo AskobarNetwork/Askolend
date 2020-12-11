@@ -61,4 +61,8 @@ abstract contract AskoRiskTokenI {
         returns (uint256);
 
     function balanceOf(address _account) public virtual returns (uint256);
+
+    function _updateInterestModel(address _newModel) public virtual;
+
+    function setReserveRatio(uint256 _RR) public virtual;
 }

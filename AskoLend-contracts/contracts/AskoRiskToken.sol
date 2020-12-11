@@ -117,6 +117,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         initialExchangeRateMantissa = _initialExchangeRate; //sets the initialExchangeRateMantissa
         accrualBlockNumber = getBlockNumber();
         borrowIndex = mantissaOne;
+        reserveFactorMantissa = 1000000000000000000;
     }
 
     /**
@@ -736,5 +737,13 @@ redeemAmount = _amount x exchangeRateCurrent
         _burn(_borrower, artValue);
         //transfer unlocked asset to liquidator
         asset.transfer(_liquidator, assetVal);
+    }
+
+    function _updateInterestModel(address _newModel) public onlyOwner {
+        interestRateModel = InterestRateModel(_newModel);
+    }
+
+    function setReserveRatio(uint256 _RR) public onlyOwner {
+        reserveFactorMantissa = _RR;
     }
 }

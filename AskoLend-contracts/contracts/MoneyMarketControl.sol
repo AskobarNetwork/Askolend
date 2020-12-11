@@ -171,6 +171,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         isALR[address(_MMI)] = true;
         _MMI._setUpALR(interestRateModel, _fee, _initialExchangeRate);
         _ALRtracker[_MMI.ALR()] = address(_MMI);
+
         emit ALRcreated(_assetContractAdd, interestRateModel);
     }
 
@@ -266,6 +267,13 @@ tells you the USDC value of their locked ALR
         return collateralTracker[_account][_alr];
     }
 
+/**
+@notice liquidateTrigger is a protected function that can only be called by a money market instance.
+@param _liquidateValue is the value being liquidated
+@param _borrower is the address of the account being liquidated
+@param _liquidator is the address of the account doing the liquidating
+@param _ALR is the address of the Asko Low Risk token that was used as collateral
+**/
     function liquidateTrigger(
         uint256 _liquidateValue,
         address _borrower,
@@ -274,5 +282,63 @@ tells you the USDC value of their locked ALR
     ) public onlyMMI {
         collateralTracker[_borrower][address(_ALR)] = 0;
         _ALR._liquidate(_liquidateValue, _borrower, _liquidator);
+    }
+
+/**
+@notice updateIRM allows the admin of this contract to update a AskoRiskToken's Interest Rate Model
+@param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
+@param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
+@param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
+@param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
+@param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
+@param _isALR is a bool representing whether or not the Asko risk token being updated is a ALR or not
+**/
+    function updateIRM(
+        uint256 _baseRatePerYear,
+        uint256 _multiplierPerYear,
+        uint256 _jumpMultiplierPerYear,
+        uint256 _optimal,
+        address _assetContractAdd,
+        bool _isALR
+    ) public {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_assetContractAdd]
+        );
+
+        address interestRateModel = address(
+            new JumpRateModelV2(
+                _baseRatePerYear,
+                _multiplierPerYear,
+                _jumpMultiplierPerYear,
+                _optimal,
+                address(_MMI)
+            )
+        );
+        if (_isALR) {
+            _MMI.updateALR(interestRateModel);
+        } else {
+            _MMI.updateAHR(interestRateModel);
+        }
+    }
+
+/**
+@notice updateRR allows the admin to update the reserve ratio for an Asko Risk Token 
+@param _newRR is the new reserve ratio value(scaled by 1e18)
+@param _isALR is a bool representing whether of not the Reserve ratio being updated iis an ALR or not
+@param _asset is the address of the asset(token) whos ART tokens are being updated
+**/
+    function updateRR(
+        uint256 _newRR,
+        bool _isALR,
+        address _asset
+    ) public onlyMMI {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_asset]
+        );
+        if (_isALR) {
+            _MMI.setRRALR(_newRR);
+        } else {
+            _MMI.setRRAHR(_newRR);
+        }
     }
 }

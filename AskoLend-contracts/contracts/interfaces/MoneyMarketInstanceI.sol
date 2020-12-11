@@ -34,4 +34,12 @@ abstract contract MoneyMarketInstanceI {
         virtual;
 
     function collateralizeALR(address _account, uint256 _amount) public virtual;
+
+    function updateALR(address _newModel) public virtual;
+
+    function updateAHR(address _newModel) public virtual;
+
+    function setRRALR(uint256 _RR) public virtual;
+
+    function setRRAHR(uint256 _RR) public virtual;
 }

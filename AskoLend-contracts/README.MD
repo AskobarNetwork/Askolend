@@ -1,20 +1,19 @@
 # AskoLend
 
-### The AskoLend Smart-Contract set is built using the OpenZeppelin Smart-Contract library.
+_The AskoLend Smart-Contract set is built using the OpenZeppelin Smart-Contract library._
 
-To run the contracts locally install Ganache-cli, clone this repo, change directories to AskoLend-Contracts and run:
+**To run the contracts locally**
+1. Install Ganache-cli
+2. Clone this repo
+3. Change directories to `AskoLend-Contracts`
+4. Run`npm install` to install the projects dependencies.
 
-`npm install`
 
-To install the projects dependencies.
 
-To test the contracts locally run ganache-cli using
-
-`ganache-cli`
-
-In a seperate terminal inside the AskoLend-Contracts directory run:
-
-`truffle test`
+**To test the contracts locally** 
+1. Run ganache-cli using `ganache-cli`
+2. Opena new terminal and change directories to `AskoLend-Contracts`
+3. In this seperate terminal run `truffle test`
 
 ## AskoLend administrative functions:
 The Askolend contracts contain several administrative functions:
@@ -132,7 +131,7 @@ function updateRR(
 
 ## In addition to the administrative functions there is also a liquidation function that must be called from outside the UI.
 
-The liquidator function can be called by a python based bot using web3.py to monitor the blockchain as well as call the liquidate function. The caller must first approve the Money Market Instance contract to withdraw the asset from the liquidators account. The liquidator must have the funds to repay the borrowers loan upfront and they will receive the borrowers locked collateral for liquidating.
+The liquidator function can be called by a python based bot using web3.py to monitor the blockchain as well as calling the `liquidateAccount` function. The caller must first approve the **Money Market Instance** contract to withdraw the asset from the liquidators account. The liquidator must have the funds to repay the borrowers loan upfront and they will receive the borrowers locked collateral for liquidating.
 
 ```/**
 @notice The liquidateAccount function is called on the MMI where the borrower owes the loan.

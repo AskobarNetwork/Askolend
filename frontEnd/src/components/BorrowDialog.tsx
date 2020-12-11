@@ -31,6 +31,7 @@ import { connect } from "react-redux";
 import { getTokenLogoPngSrc } from "../models";
 import { withStyles } from "@material-ui/styles";
 import { ProtocolProvider } from "../web3";
+import { isNull } from "util";
 
 const styles = (theme: any) => ({
   borrowDialog: {
@@ -58,6 +59,8 @@ interface IBorrowDialogState {
   select: string;
   dropList: any[];
   collateral: string;
+  borrowLimit: string;
+  borrowedAmount: string;
 }
 
 class BorrowDialogClass extends React.Component<
@@ -73,13 +76,27 @@ class BorrowDialogClass extends React.Component<
       select: "",
       dropList: [],
       collateral: "",
+      borrowLimit: "",
+      borrowedAmount: "",
     };
     this.handleChange.bind(this);
     this.handleSelect.bind(this);
   }
 
-  handleSelect = (event: any) => {
-    this.setState({ select: event.target.value });
+  handleSelect = async (event: any) => {
+    await this.setState({ select: event.target.value });
+    for (const index in this.props.askoTokens) {
+      if (
+        index !== "__jsonObjectId" &&
+        this.props.askoTokens[index].name !== this.props.token.name
+      ) {
+        if (this.props.askoTokens[index].lowRiskAddress === this.state.select) {
+          this.setState({
+            borrowLimit: this.props.askoTokens[index].borrowLimit,
+          });
+        }
+      }
+    }
   };
 
   makeList = () => {
@@ -133,8 +150,7 @@ class BorrowDialogClass extends React.Component<
     }
     const selectList = this.makeList();
     const Message =
-      this.props.token?.supplyEnabled === false &&
-      this.state.borrow === true ? (
+      this.props.token?.supplyEnabled === false ? (
         <Typography variant="subtitle1">
           To borrow or repay {this.props.token?.asset} you must enable it first.
         </Typography>
@@ -204,21 +220,21 @@ class BorrowDialogClass extends React.Component<
               </TabList>
               <TabPanel value="1">
                 <Table>
-                  <TableBody>
+                  {/* <TableBody>
                     <TableRow>
                       <TableCell>Borrow APY</TableCell>
                       <TableCell>"APY"</TableCell>
                     </TableRow>
-                  </TableBody>
+                  </TableBody> */}
                 </Table>
               </TabPanel>
               <TabPanel value="2">
                 <Table>
                   <TableBody>
-                    <TableRow>
+                    {/* <TableRow>
                       <TableCell>Borrow APY</TableCell>
                       <TableCell>"APY"</TableCell>
-                    </TableRow>
+                    </TableRow> */}
                     {/* { this.props.token?.lowRisk ? 
                                         <TableRow>
                                             <TableCell>
@@ -265,6 +281,10 @@ class BorrowDialogClass extends React.Component<
                           this.state.amount,
                           this.props.token?.marketAddress
                         )
+                    : this.props.token?.supplyEnabled === false
+                    ? this.borrowEnable(
+                        `Enable ${this.props.token?.asset} as Supply`
+                      )
                     : this.props.repay(
                         this.state.amount,
                         this.props.token?.marketAddress
@@ -273,8 +293,10 @@ class BorrowDialogClass extends React.Component<
               >
                 {this.state.borrow === true
                   ? this.props.token?.supplyEnabled === false
-                    ? "Enable"
+                    ? null
                     : "Borrow"
+                  : this.props.token?.supplyEnabled === false
+                  ? null
                   : "Repay"}
               </Button>
             </Grid>
@@ -289,10 +311,14 @@ class BorrowDialogClass extends React.Component<
                   >
                     <TableCell>
                       {this.state.borrow === true
-                        ? "Currently Borrowing"
-                        : "Wallet Balance"}
+                        ? "Borrow Limit"
+                        : "Currently Borrowing"}
                     </TableCell>
-                    <TableCell>PLACEHOLDER</TableCell>
+                    <TableCell>
+                      {this.state.borrow === true
+                        ? this.state.borrowLimit
+                        : this.props.token?.borrowedAmount}
+                    </TableCell>
                   </Grid>
                 </TableRow>
               </TableBody>

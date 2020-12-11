@@ -60,6 +60,11 @@ export class ProtocolProvider {
 		return address;
 	};
 
+	public useSigner = async () => {
+		const signer = await this.provider!.getSigner();
+		return signer
+	}
+
 	public getProvider = async () => {
 		return (await this.provider) as Web3Provider;
 	};

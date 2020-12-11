@@ -129,9 +129,10 @@ function updateRR(
 )
 ```
 
-## In addition to the administrative functions there is also a liquidation function that must be called from outside the UI.
+## Liquidation
+In addition to the administrative functions there is also a liquidation function that must be called from outside the UI. The liquidator function can be called by a python based bot using `web3.py` to monitor the blockchain, and  calling the `liquidateAccount` function. 
 
-The liquidator function can be called by a python based bot using web3.py to monitor the blockchain as well as calling the `liquidateAccount` function. The caller must first approve the **Money Market Instance** contract to withdraw the asset from the liquidators account. The liquidator must have the funds to repay the borrowers loan upfront and they will receive the borrowers locked collateral for liquidating.
+The caller must first approve the **Money Market Instance** contract to withdraw the asset from the liquidators account. The liquidator must have the funds to repay the borrowers loan upfront and they will receive the borrowers locked collateral for liquidating.
 
 ```/**
 @notice The liquidateAccount function is called on the MMI where the borrower owes the loan.

@@ -91,7 +91,7 @@ class BarClass extends React.Component<IBarProps, IBarState> {
     const instance = await ProtocolProvider.getInstance();
     const signer = await instance.useSigner();
     let test = new ethers.Contract(
-      "0x191fd3B5CD63C686A183cA65C79f288A8f25B796",
+      "0x4Ef50af5ae3cD4569c6F34f82F299e146AE12aEa",
       abi,
       signer
     );
@@ -106,14 +106,14 @@ class BarClass extends React.Component<IBarProps, IBarState> {
     const button =
       this.props.connected === true && this.state.account !== undefined ? (
         <React.Fragment>
-          {/* <Button
+          <Button
             color="secondary"
             variant="contained"
             onClick={this.handleTest}
           >
             Get Test Tokens
           </Button>
-          <br /> */}
+          <br />
           <Button color="secondary" variant="contained">
             {this.state.balance} &nbsp;{" "}
             <Avatar

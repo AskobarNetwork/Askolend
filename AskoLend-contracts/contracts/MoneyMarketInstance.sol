@@ -2,7 +2,7 @@ pragma solidity ^0.6.0;
 
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "./compound/Exponential.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
 import "./interfaces/MoneyMarketFactoryI.sol";
@@ -167,6 +167,10 @@ contract MoneyMarketInstance is Ownable, Exponential {
         return address(asset);
     }
 
+/**
+@notice viewLockedCollateralizedALR is used to view an accounts collateralized ALR
+@param _account is the account whos information is being retreived
+**/
     function viewLockedCollateralizedALR(address _account)
         public
         view
@@ -182,20 +186,20 @@ contract MoneyMarketInstance is Ownable, Exponential {
 **/
     function lendToAHRpool(uint256 _amount) public {
         //transfer appropriate amount off the asset from msg.sender to the AHR contract
-        asset.transferFrom(msg.sender, address(AHR), _amount);
+        asset.safeTransferFrom(msg.sender, address(AHR), _amount);
         //call mint function on AHR contract
         AHR.mint(msg.sender, _amount);
         emit LentToAHR(msg.sender, _amount);
     }
 
     /**
-@notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's Low Risk pool
+@notice lendToALRpool is used to lend assets to a MoneyMarketInstance's Low Risk pool
 @param _amount is the amount of the asset being lent
 @dev the user will need to first approve the transfer of the underlying asset
 **/
     function lendToALRpool(uint256 _amount) public {
         //transfer appropriate amount off the asset from msg.sender to the AHR contract
-        asset.transferFrom(msg.sender, address(ALR), _amount);
+        asset.safeTransferFrom(msg.sender, address(ALR), _amount);
         //call mint function on ALR contract
         ALR.mint(msg.sender, _amount);
         emit LentToALR(msg.sender, _amount);
@@ -293,10 +297,10 @@ contract MoneyMarketInstance is Ownable, Exponential {
         ///////////////repay all///////////////
         if (_repayAmount == 0) {
             if (accountBorrowsALR != 0) {
-                asset.transferFrom(msg.sender, address(ALR), accountBorrowsALR);
+                asset.safeTransferFrom(msg.sender, address(ALR), accountBorrowsALR);
                 payAmountALR = ALR.repayBorrow(accountBorrowsALR, msg.sender); // repay amount to ALR
             }
-            asset.transferFrom(msg.sender, address(AHR), accountBorrowsAHR);
+            asset.safeTransferFrom(msg.sender, address(AHR), accountBorrowsAHR);
             payAmountAHR = AHR.repayBorrow(accountBorrowsAHR, msg.sender); //pay off towards AHR
             emit Repayed(msg.sender, accountBorrowsAHR, accountBorrowsALR);
         } else {
@@ -306,7 +310,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
                 if (accountBorrowsALR >= _repayAmount) {
                     //if repay amount is less than whats owed in ALR
                     //transfer asset from the user to this contract
-                    asset.transferFrom(msg.sender, address(ALR), _repayAmount);
+                    asset.safeTransferFrom(msg.sender, address(ALR), _repayAmount);
                     payAmountALR = ALR.repayBorrow(_repayAmount, msg.sender); // repay amount to ALR
 
                     emit Repayed(msg.sender, 0, _repayAmount);
@@ -314,13 +318,13 @@ contract MoneyMarketInstance is Ownable, Exponential {
                     ///////////////repay all of ALR && some AHR///////////////////
                     //if repay amount is MORE than ALR owed
                     uint256 amountToAHR = _repayAmount.sub(accountBorrowsALR); //calculate amount going to AHR
-                    asset.transferFrom(
+                    asset.safeTransferFrom(
                         msg.sender,
                         address(ALR),
                         accountBorrowsALR
                     ); //transfer remaining ALR bal to ALR
                     payAmountALR = ALR.repayBorrow(0, msg.sender); //pay off ALR
-                    asset.transferFrom(msg.sender, address(AHR), amountToAHR); // transfer remaining payment amount to AHR
+                    asset.safeTransferFrom(msg.sender, address(AHR), amountToAHR); // transfer remaining payment amount to AHR
                     payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
                     //if payAmountAHR is greater than 0 transfer asset from the user to the AHR contract
                     emit Repayed(msg.sender, payAmountAHR, payAmountALR);
@@ -328,7 +332,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
             } else {
                 //if amount owed to ALR is zero
                 //transfer asset from the user to this contract
-                asset.transferFrom(msg.sender, address(AHR), payAmountAHR);
+                asset.safeTransferFrom(msg.sender, address(AHR), payAmountAHR);
                 payAmountAHR = AHR.repayBorrow(_repayAmount, msg.sender); //pay towards AHR
                 emit Repayed(msg.sender, payAmountAHR, 0);
             }
@@ -418,8 +422,8 @@ contract MoneyMarketInstance is Ownable, Exponential {
       **/
         if (vars.collatValue < vars.borrowedValue150) {
             //transfer asset from msg.sender to repay loan
-            asset.transferFrom(msg.sender, address(ALR), accountBorrowsALR);
-            asset.transferFrom(msg.sender, address(AHR), accountBorrowsAHR);
+            asset.safeTransferFrom(msg.sender, address(ALR), accountBorrowsALR);
+            asset.safeTransferFrom(msg.sender, address(AHR), accountBorrowsAHR);
             MMF.liquidateTrigger(
                 vars.borrowedValue,
                 _borrower,
@@ -440,7 +444,7 @@ contract MoneyMarketInstance is Ownable, Exponential {
 
     /**
 @notice these are admin functions for updating individual ART values. All of these functions are protected
-        and can only be called by the MoneyMarketControl contract
+        and can only be called by the MoneyMarketControl contract. These functions can be considered as Internal functions to the platform.
 **/
 
     function checkIfALR(address _inQuestion) public view returns (bool) {

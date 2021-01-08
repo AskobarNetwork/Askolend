@@ -186,7 +186,7 @@ contract MoneyMarketControl is Ownable, Exponential {
     /**
 @notice trackCollateralUp is an external function used bya MMI to track collateral amounts globally
 @param _borrower is the address of the corrower
-@param _ALR is the address of the seller
+@param _ALR is the address of the ALR being collateralized
 @param _amount is the amount of USDC being collateralized
 @dev this function can only be called by a MoneyMarketInstance.
 **/
@@ -202,7 +202,7 @@ contract MoneyMarketControl is Ownable, Exponential {
 
     /**
  @notice trackCollateralDown is an external function used bya MMI to track collateral amounts globally
- @param _borrower is the address of the corrower
+ @param _ALR is the address of the ALR being collateralized
  @param _ALR is the address of the seller
  @param _amount is the amount of USDC being collateralized
  @dev this function can only be called by a MoneyMarketInstance.
@@ -221,6 +221,13 @@ contract MoneyMarketControl is Ownable, Exponential {
         }
     }
 
+
+
+/**
+@notice checkCollateralizedALR is used by the front end to check a borrowers collateralized ALR amount
+@param _borrower is the address of the borrower
+@param _ALR is the address of the ALR being used as collateral
+**/
     function checkCollateralizedALR(address _borrower, address _ALR)
         public
         view
@@ -252,20 +259,15 @@ contract MoneyMarketControl is Ownable, Exponential {
         return usdcValOfBalance.sub(usdcValLocked);
     }
 
+/**
+@notice _checkIfALR is used to check if an input address is an ALR contract
+@param __inQ is the address in question
+**/
+
     function _checkIfALR(address __inQ) external view returns (bool) {
         return isALR[__inQ];
     }
 
-    /**
-tells you the USDC value of their locked ALR
-**/
-    function viewCollateral(address _account, address _alr)
-        public
-        view
-        returns (uint256)
-    {
-        return collateralTracker[_account][_alr];
-    }
 
 /**
 @notice liquidateTrigger is a protected function that can only be called by a money market instance.
@@ -322,7 +324,7 @@ tells you the USDC value of their locked ALR
     }
 
 /**
-@notice updateRR allows the admin to update the reserve ratio for an Asko Risk Token 
+@notice updateRR allows the admin to update the reserve ratio for an Asko Risk Token
 @param _newRR is the new reserve ratio value(scaled by 1e18)
 @param _isALR is a bool representing whether of not the Reserve ratio being updated iis an ALR or not
 @param _asset is the address of the asset(token) whos ART tokens are being updated

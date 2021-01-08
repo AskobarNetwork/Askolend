@@ -274,14 +274,14 @@
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/JumpRateModelV2.sol",
     "exportedSymbols": {
       "JumpRateModelV2": [
-        6296
+        6414
       ]
     },
-    "id": 6297,
+    "id": 6415,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6251,
+        "id": 6369,
         "literals": [
           "solidity",
           "^",
@@ -294,10 +294,10 @@
       {
         "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/BaseJumpRateModelV2.sol",
         "file": "./BaseJumpRateModelV2.sol",
-        "id": 6252,
+        "id": 6370,
         "nodeType": "ImportDirective",
-        "scope": 6297,
-        "sourceUnit": 4841,
+        "scope": 6415,
+        "sourceUnit": 4959,
         "src": "25:35:19",
         "symbolAliases": [],
         "unitAlias": ""
@@ -309,43 +309,43 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6254,
+              "id": 6372,
               "name": "BaseJumpRateModelV2",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4840,
+              "referencedDeclaration": 4958,
               "src": "224:19:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BaseJumpRateModelV2_$4840",
+                "typeIdentifier": "t_contract$_BaseJumpRateModelV2_$4958",
                 "typeString": "contract BaseJumpRateModelV2"
               }
             },
-            "id": 6255,
+            "id": 6373,
             "nodeType": "InheritanceSpecifier",
             "src": "224:19:19"
           }
         ],
         "contractDependencies": [
-          4840
+          4958
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 6253,
+          "id": 6371,
           "nodeType": "StructuredDocumentation",
           "src": "64:130:19",
           "text": "@title Compound's JumpRateModel Contract V2 for V2 cTokens\n@author Arr00\n@notice Supports only for V2 cTokens"
         },
         "fullyImplemented": true,
-        "id": 6296,
+        "id": 6414,
         "linearizedBaseContracts": [
-          6296,
-          4840
+          6414,
+          4958
         ],
         "name": "JumpRateModelV2",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 6273,
+              "id": 6391,
               "nodeType": "Block",
               "src": "671:70:19",
               "statements": [
@@ -355,11 +355,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6268,
+                        "id": 6386,
                         "name": "cash",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6258,
+                        "referencedDeclaration": 6376,
                         "src": "710:4:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -368,11 +368,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6269,
+                        "id": 6387,
                         "name": "borrows",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6260,
+                        "referencedDeclaration": 6378,
                         "src": "716:7:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -381,11 +381,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6270,
+                        "id": 6388,
                         "name": "reserves",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6262,
+                        "referencedDeclaration": 6380,
                         "src": "725:8:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -408,18 +408,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 6267,
+                      "id": 6385,
                       "name": "getBorrowRateInternal",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4732,
+                      "referencedDeclaration": 4850,
                       "src": "688:21:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_uint256_$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
                         "typeString": "function (uint256,uint256,uint256) view returns (uint256)"
                       }
                     },
-                    "id": 6271,
+                    "id": 6389,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -434,21 +434,21 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 6266,
-                  "id": 6272,
+                  "functionReturnParameters": 6384,
+                  "id": 6390,
                   "nodeType": "Return",
                   "src": "681:53:19"
                 }
               ]
             },
             "documentation": {
-              "id": 6256,
+              "id": 6374,
               "nodeType": "StructuredDocumentation",
               "src": "249:324:19",
               "text": "@notice Calculates the current borrow rate per block\n@param cash The amount of cash in the market\n@param borrows The amount of borrows in the market\n@param reserves The amount of reserves in the market\n@return The borrow rate percentage per block as a mantissa (scaled by 1e18)"
             },
             "functionSelector": "15f24053",
-            "id": 6274,
+            "id": 6392,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -456,17 +456,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6263,
+              "id": 6381,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6258,
+                  "id": 6376,
                   "mutability": "mutable",
                   "name": "cash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "601:9:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -475,7 +475,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6257,
+                    "id": 6375,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "601:4:19",
@@ -489,12 +489,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6260,
+                  "id": 6378,
                   "mutability": "mutable",
                   "name": "borrows",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "612:12:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -503,7 +503,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6259,
+                    "id": 6377,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "612:4:19",
@@ -517,12 +517,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6262,
+                  "id": 6380,
                   "mutability": "mutable",
                   "name": "reserves",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "626:13:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -531,7 +531,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6261,
+                    "id": 6379,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "626:4:19",
@@ -547,17 +547,17 @@
               "src": "600:40:19"
             },
             "returnParameters": {
-              "id": 6266,
+              "id": 6384,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6265,
+                  "id": 6383,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "665:4:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -566,7 +566,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6264,
+                    "id": 6382,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "665:4:19",
@@ -581,7 +581,7 @@
               ],
               "src": "664:6:19"
             },
-            "scope": 6296,
+            "scope": 6414,
             "src": "578:163:19",
             "stateMutability": "view",
             "virtual": false,
@@ -589,13 +589,13 @@
           },
           {
             "body": {
-              "id": 6294,
+              "id": 6412,
               "nodeType": "Block",
               "src": "963:2:19",
               "statements": []
             },
             "documentation": null,
-            "id": 6295,
+            "id": 6413,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -603,11 +603,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 6287,
+                    "id": 6405,
                     "name": "baseRatePerYear",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6276,
+                    "referencedDeclaration": 6394,
                     "src": "886:15:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -616,11 +616,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6288,
+                    "id": 6406,
                     "name": "multiplierPerYear",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6278,
+                    "referencedDeclaration": 6396,
                     "src": "902:17:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -629,11 +629,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6289,
+                    "id": 6407,
                     "name": "jumpMultiplierPerYear",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6280,
+                    "referencedDeclaration": 6398,
                     "src": "920:21:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -642,11 +642,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6290,
+                    "id": 6408,
                     "name": "kink_",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6282,
+                    "referencedDeclaration": 6400,
                     "src": "942:5:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -655,11 +655,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6291,
+                    "id": 6409,
                     "name": "owner_",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6284,
+                    "referencedDeclaration": 6402,
                     "src": "948:6:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -667,17 +667,17 @@
                     }
                   }
                 ],
-                "id": 6292,
+                "id": 6410,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 6286,
+                  "id": 6404,
                   "name": "BaseJumpRateModelV2",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4840,
+                  "referencedDeclaration": 4958,
                   "src": "866:19:19",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_BaseJumpRateModelV2_$4840_$",
+                    "typeIdentifier": "t_type$_t_contract$_BaseJumpRateModelV2_$4958_$",
                     "typeString": "type(contract BaseJumpRateModelV2)"
                   }
                 },
@@ -689,17 +689,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6285,
+              "id": 6403,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6276,
+                  "id": 6394,
                   "mutability": "mutable",
                   "name": "baseRatePerYear",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "759:20:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -708,7 +708,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6275,
+                    "id": 6393,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "759:4:19",
@@ -722,12 +722,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6278,
+                  "id": 6396,
                   "mutability": "mutable",
                   "name": "multiplierPerYear",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "781:22:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -736,7 +736,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6277,
+                    "id": 6395,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "781:4:19",
@@ -750,12 +750,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6280,
+                  "id": 6398,
                   "mutability": "mutable",
                   "name": "jumpMultiplierPerYear",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "805:26:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -764,7 +764,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6279,
+                    "id": 6397,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "805:4:19",
@@ -778,12 +778,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6282,
+                  "id": 6400,
                   "mutability": "mutable",
                   "name": "kink_",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "833:10:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -792,7 +792,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6281,
+                    "id": 6399,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "833:4:19",
@@ -806,12 +806,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6284,
+                  "id": 6402,
                   "mutability": "mutable",
                   "name": "owner_",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "845:14:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -820,7 +820,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6283,
+                    "id": 6401,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "845:7:19",
@@ -837,19 +837,19 @@
               "src": "758:102:19"
             },
             "returnParameters": {
-              "id": 6293,
+              "id": 6411,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "963:0:19"
             },
-            "scope": 6296,
+            "scope": 6414,
             "src": "747:218:19",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 6297,
+        "scope": 6415,
         "src": "195:772:19"
       }
     ],
@@ -859,14 +859,14 @@
     "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/JumpRateModelV2.sol",
     "exportedSymbols": {
       "JumpRateModelV2": [
-        6296
+        6414
       ]
     },
-    "id": 6297,
+    "id": 6415,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6251,
+        "id": 6369,
         "literals": [
           "solidity",
           "^",
@@ -879,10 +879,10 @@
       {
         "absolutePath": "/home/stan36/repos/Askolend/AskoLend-contracts/contracts/compound/BaseJumpRateModelV2.sol",
         "file": "./BaseJumpRateModelV2.sol",
-        "id": 6252,
+        "id": 6370,
         "nodeType": "ImportDirective",
-        "scope": 6297,
-        "sourceUnit": 4841,
+        "scope": 6415,
+        "sourceUnit": 4959,
         "src": "25:35:19",
         "symbolAliases": [],
         "unitAlias": ""
@@ -894,43 +894,43 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6254,
+              "id": 6372,
               "name": "BaseJumpRateModelV2",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4840,
+              "referencedDeclaration": 4958,
               "src": "224:19:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BaseJumpRateModelV2_$4840",
+                "typeIdentifier": "t_contract$_BaseJumpRateModelV2_$4958",
                 "typeString": "contract BaseJumpRateModelV2"
               }
             },
-            "id": 6255,
+            "id": 6373,
             "nodeType": "InheritanceSpecifier",
             "src": "224:19:19"
           }
         ],
         "contractDependencies": [
-          4840
+          4958
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 6253,
+          "id": 6371,
           "nodeType": "StructuredDocumentation",
           "src": "64:130:19",
           "text": "@title Compound's JumpRateModel Contract V2 for V2 cTokens\n@author Arr00\n@notice Supports only for V2 cTokens"
         },
         "fullyImplemented": true,
-        "id": 6296,
+        "id": 6414,
         "linearizedBaseContracts": [
-          6296,
-          4840
+          6414,
+          4958
         ],
         "name": "JumpRateModelV2",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 6273,
+              "id": 6391,
               "nodeType": "Block",
               "src": "671:70:19",
               "statements": [
@@ -940,11 +940,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6268,
+                        "id": 6386,
                         "name": "cash",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6258,
+                        "referencedDeclaration": 6376,
                         "src": "710:4:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -953,11 +953,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6269,
+                        "id": 6387,
                         "name": "borrows",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6260,
+                        "referencedDeclaration": 6378,
                         "src": "716:7:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -966,11 +966,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6270,
+                        "id": 6388,
                         "name": "reserves",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6262,
+                        "referencedDeclaration": 6380,
                         "src": "725:8:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -993,18 +993,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 6267,
+                      "id": 6385,
                       "name": "getBorrowRateInternal",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4732,
+                      "referencedDeclaration": 4850,
                       "src": "688:21:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_uint256_$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
                         "typeString": "function (uint256,uint256,uint256) view returns (uint256)"
                       }
                     },
-                    "id": 6271,
+                    "id": 6389,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1019,21 +1019,21 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 6266,
-                  "id": 6272,
+                  "functionReturnParameters": 6384,
+                  "id": 6390,
                   "nodeType": "Return",
                   "src": "681:53:19"
                 }
               ]
             },
             "documentation": {
-              "id": 6256,
+              "id": 6374,
               "nodeType": "StructuredDocumentation",
               "src": "249:324:19",
               "text": "@notice Calculates the current borrow rate per block\n@param cash The amount of cash in the market\n@param borrows The amount of borrows in the market\n@param reserves The amount of reserves in the market\n@return The borrow rate percentage per block as a mantissa (scaled by 1e18)"
             },
             "functionSelector": "15f24053",
-            "id": 6274,
+            "id": 6392,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1041,17 +1041,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6263,
+              "id": 6381,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6258,
+                  "id": 6376,
                   "mutability": "mutable",
                   "name": "cash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "601:9:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1060,7 +1060,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6257,
+                    "id": 6375,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "601:4:19",
@@ -1074,12 +1074,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6260,
+                  "id": 6378,
                   "mutability": "mutable",
                   "name": "borrows",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "612:12:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1088,7 +1088,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6259,
+                    "id": 6377,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "612:4:19",
@@ -1102,12 +1102,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6262,
+                  "id": 6380,
                   "mutability": "mutable",
                   "name": "reserves",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "626:13:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1116,7 +1116,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6261,
+                    "id": 6379,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "626:4:19",
@@ -1132,17 +1132,17 @@
               "src": "600:40:19"
             },
             "returnParameters": {
-              "id": 6266,
+              "id": 6384,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6265,
+                  "id": 6383,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6274,
+                  "scope": 6392,
                   "src": "665:4:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1151,7 +1151,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6264,
+                    "id": 6382,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "665:4:19",
@@ -1166,7 +1166,7 @@
               ],
               "src": "664:6:19"
             },
-            "scope": 6296,
+            "scope": 6414,
             "src": "578:163:19",
             "stateMutability": "view",
             "virtual": false,
@@ -1174,13 +1174,13 @@
           },
           {
             "body": {
-              "id": 6294,
+              "id": 6412,
               "nodeType": "Block",
               "src": "963:2:19",
               "statements": []
             },
             "documentation": null,
-            "id": 6295,
+            "id": 6413,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -1188,11 +1188,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 6287,
+                    "id": 6405,
                     "name": "baseRatePerYear",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6276,
+                    "referencedDeclaration": 6394,
                     "src": "886:15:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1201,11 +1201,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6288,
+                    "id": 6406,
                     "name": "multiplierPerYear",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6278,
+                    "referencedDeclaration": 6396,
                     "src": "902:17:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1214,11 +1214,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6289,
+                    "id": 6407,
                     "name": "jumpMultiplierPerYear",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6280,
+                    "referencedDeclaration": 6398,
                     "src": "920:21:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1227,11 +1227,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6290,
+                    "id": 6408,
                     "name": "kink_",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6282,
+                    "referencedDeclaration": 6400,
                     "src": "942:5:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1240,11 +1240,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 6291,
+                    "id": 6409,
                     "name": "owner_",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 6284,
+                    "referencedDeclaration": 6402,
                     "src": "948:6:19",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1252,17 +1252,17 @@
                     }
                   }
                 ],
-                "id": 6292,
+                "id": 6410,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 6286,
+                  "id": 6404,
                   "name": "BaseJumpRateModelV2",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4840,
+                  "referencedDeclaration": 4958,
                   "src": "866:19:19",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_BaseJumpRateModelV2_$4840_$",
+                    "typeIdentifier": "t_type$_t_contract$_BaseJumpRateModelV2_$4958_$",
                     "typeString": "type(contract BaseJumpRateModelV2)"
                   }
                 },
@@ -1274,17 +1274,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6285,
+              "id": 6403,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6276,
+                  "id": 6394,
                   "mutability": "mutable",
                   "name": "baseRatePerYear",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "759:20:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1293,7 +1293,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6275,
+                    "id": 6393,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "759:4:19",
@@ -1307,12 +1307,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6278,
+                  "id": 6396,
                   "mutability": "mutable",
                   "name": "multiplierPerYear",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "781:22:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1321,7 +1321,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6277,
+                    "id": 6395,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "781:4:19",
@@ -1335,12 +1335,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6280,
+                  "id": 6398,
                   "mutability": "mutable",
                   "name": "jumpMultiplierPerYear",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "805:26:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1349,7 +1349,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6279,
+                    "id": 6397,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "805:4:19",
@@ -1363,12 +1363,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6282,
+                  "id": 6400,
                   "mutability": "mutable",
                   "name": "kink_",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "833:10:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1377,7 +1377,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6281,
+                    "id": 6399,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "833:4:19",
@@ -1391,12 +1391,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6284,
+                  "id": 6402,
                   "mutability": "mutable",
                   "name": "owner_",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6295,
+                  "scope": 6413,
                   "src": "845:14:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1405,7 +1405,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6283,
+                    "id": 6401,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "845:7:19",
@@ -1422,19 +1422,19 @@
               "src": "758:102:19"
             },
             "returnParameters": {
-              "id": 6293,
+              "id": 6411,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "963:0:19"
             },
-            "scope": 6296,
+            "scope": 6414,
             "src": "747:218:19",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 6297,
+        "scope": 6415,
         "src": "195:772:19"
       }
     ],
@@ -1446,7 +1446,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2020-12-09T19:27:18.042Z",
+  "updatedAt": "2021-01-08T04:13:17.713Z",
   "devdoc": {
     "author": "Arr00",
     "methods": {

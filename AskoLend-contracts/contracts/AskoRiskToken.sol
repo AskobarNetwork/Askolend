@@ -121,8 +121,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     }
 
     /**
-@notice transfer is an override function that effectivly makes transfering a ART impossible. this is necissary to avoid a
-        user taking out a loan using his ALR as collateral and then transfering his ALR so his loan cant be liquidated.
+@notice transfer is an override function that effectively makes transferring a ART impossible. This is necessary to avoid a
+        user taking out a loan using his ALR as collateral and then transferring his ALR so his loan cant be liquidated.
 **/
     function transfer(address recipient, uint256 amount)
         public
@@ -179,7 +179,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @notice Applies accrued interest to total borrows and reserves
 @dev This calculates interest accrued from the last checkpointed block
     up to the current block and writes new checkpoint to storage.
-*/
+**/
     function accrueInterest() public {
         //Remember the initial block number
         uint256 currentBlockNumber = getBlockNumber();
@@ -373,7 +373,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     }
 
     /**
-@notice getSupplyAPY roughly calculates the current APY for borrowing using an average of 6500 blocks per day
+@notice getBorrowAPY roughly calculates the current APY for borrowing using an average of 6500 blocks per day
 **/
     function getBorrowAPY() public view returns (uint256) {
         //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
@@ -641,6 +641,10 @@ redeemAmount = _amount x exchangeRateCurrent
         return address(asset);
     }
 
+/**
+@pnotice getUSDCWorthOfART is used to calculate the current USDC price of the input amount of Asko Risk Token
+@param _amount is the amount ART being looked up
+**/
     function getUSDCWorthOfART(uint256 _amount) public returns (uint256) {
         uint256 assetValOfArt = convertFromART(_amount);
         //get asset price of USDC
@@ -652,6 +656,10 @@ redeemAmount = _amount x exchangeRateCurrent
         return USDCAmountOfAsset;
     }
 
+/**
+@pnotice viewUSDCWorthOfART is used to calculate the prior USDC price of the input amount of Asko Risk Token
+@param _amount is the amount ART being looked up
+**/
     function viewUSDCWorthOfART(uint256 _amount) public view returns (uint256) {
         uint256 assetValOfArt = viewConvertFromART(_amount);
         //get asset price of USDC
@@ -663,6 +671,10 @@ redeemAmount = _amount x exchangeRateCurrent
         return USDCAmountOfAsset;
     }
 
+/**
+@notice convertToART is used to convert an input amount of asset into the current ART value
+@param _amountOfAsset is the amount of asset being input
+**/
     function convertToART(uint256 _amountOfAsset) public returns (uint256) {
         //We get the current exchange rate and calculate the number of AHR to be minted:
         //mintTokens = _amount / exchangeRate
@@ -675,6 +687,10 @@ redeemAmount = _amount x exchangeRateCurrent
         return artTokens;
     }
 
+/**
+@notice convertToART is used to convert an input amount of asset into the prior ART value
+@param _amountOfAsset is the amount of asset being input
+**/
     function viewConvertToART(uint256 _amountOfAsset)
         public
         view
@@ -691,6 +707,10 @@ redeemAmount = _amount x exchangeRateCurrent
         return artTokens;
     }
 
+/**
+@notice convertFromART converts an input amount of ART to the current value in the underlying asset
+@param _amountOfART is the amount of ART being converted
+**/
     function convertFromART(uint256 _amountOfART) public returns (uint256) {
         //We get the current exchange rate and calculate the number of AHR to be minted:
         //mintTokens = _amount / exchangeRate
@@ -703,6 +723,10 @@ redeemAmount = _amount x exchangeRateCurrent
         return artTokens;
     }
 
+/**
+@notice convertFromART converts an input amount of ART to the prior value in the underlying asset
+@param _amountOfART is the amount of ART being converted
+**/
     function viewConvertFromART(uint256 _amountOfART)
         public
         view
@@ -719,6 +743,12 @@ redeemAmount = _amount x exchangeRateCurrent
         return artTokens;
     }
 
+/**
+@notice _liquidate is called by the Money Market Control contract during liquidation
+@param _liquidateValue is the USDC value being liquidated
+@param _borrower is the address of the borrower
+@param _liquidator is the address of the liquidator account
+**/
     function _liquidate(
         uint256 _liquidateValue,
         address _borrower,
@@ -739,11 +769,20 @@ redeemAmount = _amount x exchangeRateCurrent
         asset.transfer(_liquidator, assetVal);
     }
 
+/**
+@notice _updateInterestModel is used to update the interest rate model of this ART
+@param _newModel is the address of the new interest rate model
+**/
     function _updateInterestModel(address _newModel) public onlyOwner {
         interestRateModel = InterestRateModel(_newModel);
     }
 
+/**
+@notice setReserveRatio allows the reserve ratio to be updated
+@param _RR is the new reserve ratio 
+**/
     function setReserveRatio(uint256 _RR) public onlyOwner {
         reserveFactorMantissa = _RR;
     }
+
 }

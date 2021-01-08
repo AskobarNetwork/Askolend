@@ -246,7 +246,7 @@ class BorrowMarketTableClass extends React.Component<
                     </TableCell>
                     <TableCell align="center">{token.borrowedAmount}</TableCell>
                     <TableCell align="right">
-                      {"$" +
+                      {"" +
                         (Number(token.lowRiskBalance) *
                           Number(token.lowRiskExchangeRate) +
                           Number(token.highRiskBalance) *

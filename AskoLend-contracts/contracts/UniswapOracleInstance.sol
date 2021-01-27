@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity 0.6.6;
 
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
@@ -125,7 +125,7 @@ contract UniswapOracleInstance is Ownable {
         price = price0Average.mul(_amount).decode144();
     }
 
-/**
+    /**
 @notice consult returns the price of a token in USDC
 @return price is the price of one asset in USDC(example 1WETH in USDC)
 **/
@@ -133,7 +133,7 @@ contract UniswapOracleInstance is Ownable {
         price = price0Average.mul(_amount).decode144();
     }
 
-/**
+    /**
 @notice consult returns the price of a token in USDC
 @return price is the price of one asset in USDC(example 1WETH in USDC)
 **/
@@ -142,12 +142,11 @@ contract UniswapOracleInstance is Ownable {
         price = price1Average.mul(_amount).decode144();
     }
 
-/**
+    /**
 @notice consult returns the price of a token in USDC
 @return price is the price of one asset in USDC(example 1WETH in USDC)
 **/
     function viewUSDC(uint256 _amount) external view returns (uint256 price) {
         price = price1Average.mul(_amount).decode144();
     }
-    
 }

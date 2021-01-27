@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.6;
 
 import "./MoneyMarketInstance.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";

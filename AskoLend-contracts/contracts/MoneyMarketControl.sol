@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.6;
 
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
@@ -33,21 +33,41 @@ contract MoneyMarketControl is Ownable, Exponential {
     mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
     mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
     mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
-    mapping(address => mapping(address => uint256)) collateralTracker; //tracks user to a market to an amount collaterlized in that market
-    mapping(address => bool) isMMI;
-    mapping(address => bool) isALR;
+    mapping(address => mapping(address => uint256)) public collateralTracker; //tracks user to a market to an amount collaterlized in that market
+    mapping(address => bool) public isMMI;
+    mapping(address => bool) public isALR;
 
     /**
   @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Instance contract
   **/
     modifier onlyMMI() {
-        require(isMMI[msg.sender] == true);
+        require(isMMI[msg.sender], "msg.sender is not a Money Market Instance");
         _;
     }
 
     event WhiteListed(address asset, address moneyMarket, address oracle);
     event AHRcreated(address asset, address interestRateModel);
     event ALRcreated(address asset, address interestRateModel);
+    event CollateralUp(address ALR, address borrower, uint256 _amount);
+    event CollateralDown(address ALR, address borrower, uint256 _amount);
+    event InterestRateModelUpdate(
+        uint256 baseRatePerYear,
+        uint256 multiplierPerYear,
+        uint256 jumpMultiplierPerYear,
+        uint256 optimal,
+        address assetContractAdd,
+        address moneyMarketInstance
+    );
+    event ReserveRateUpdate(
+        bool isALR,
+        address asset,
+        address moneyMarketInstance,
+        uint256 newRR
+    );
+    event OracleUpgrade(address newOracle);
+    event NewMoneyMarketFactory(address newMMFactory);
+    event NewArtFactory(address newARTFactory);
+    event MMIOracleUpgrade(address MonetMarketInstance);
 
     /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
@@ -64,6 +84,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         ARTF = _ARTF;
     }
 
+    ///////////External Functions/////////////////
     /**
 @notice whitelistAsset is an onlyOwner function designed to be called by the AskoDAO.
         This function creates a new MoneyMarketInstancecontract for an input asset as well
@@ -74,9 +95,9 @@ contract MoneyMarketControl is Ownable, Exponential {
 **/
     function whitelistAsset(
         address _assetContractAdd,
-        string memory _assetName,
-        string memory _assetSymbol
-    ) public onlyOwner {
+        string calldata _assetName,
+        string calldata _assetSymbol
+    ) external onlyOwner {
         instanceCount++;
 
         address oracle = address(Oracle.createNewOracle(_assetContractAdd));
@@ -116,7 +137,8 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _fee,
         uint256 _initialExchangeRate,
         address _assetContractAdd
-    ) public {
+    ) external onlyOwner {
+        require(isMMI[instanceTracker[_assetContractAdd]], "Input asset address doesnt have an MMI");
         MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
             instanceTracker[_assetContractAdd]
         );
@@ -154,7 +176,8 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _fee,
         uint256 _initialExchangeRate,
         address _assetContractAdd
-    ) public {
+    ) external onlyOwner {
+        require(isMMI[instanceTracker[_assetContractAdd]], "Input asset address doesnt have an MMI");
         MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
             instanceTracker[_assetContractAdd]
         );
@@ -168,19 +191,11 @@ contract MoneyMarketControl is Ownable, Exponential {
                 address(_MMI)
             )
         );
-        isALR[address(_MMI)] = true;
         _MMI._setUpALR(interestRateModel, _fee, _initialExchangeRate);
         _ALRtracker[_MMI.ALR()] = address(_MMI);
+        isALR[_MMI.ALR()] = true;
 
         emit ALRcreated(_assetContractAdd, interestRateModel);
-    }
-
-    /**
-@notice getAsset returns an array of all assets whitelisted on the platform.
-@dev this can be used to loop through and retreive each assets MoneyMarket by the front end
-**/
-    function getAssets() public view returns (address[] memory) {
-        return assets;
     }
 
     /**
@@ -196,8 +211,10 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _amount
     ) external onlyMMI {
         require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
+        require(isALR[_ALR], "Input ALR address is not an ALR contract");
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .add(_amount);
+        emit CollateralUp(_ALR, _borrower, _amount);
     }
 
     /**
@@ -213,27 +230,14 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _amount
     ) external onlyMMI {
         require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
+        require(isALR[_ALR], "Input ALR address is not an ALR contract");
         if (collateralTracker[_borrower][_ALR] > _amount) {
             collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
                 .sub(_amount);
         } else {
             collateralTracker[_borrower][_ALR] = 0;
         }
-    }
-
-
-
-/**
-@notice checkCollateralizedALR is used by the front end to check a borrowers collateralized ALR amount
-@param _borrower is the address of the borrower
-@param _ALR is the address of the ALR being used as collateral
-**/
-    function checkCollateralizedALR(address _borrower, address _ALR)
-        public
-        view
-        returns (uint256)
-    {
-        return collateralTracker[_borrower][_ALR];
+        emit CollateralDown(_ALR, _borrower, _amount);
     }
 
     /**
@@ -259,17 +263,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         return usdcValOfBalance.sub(usdcValLocked);
     }
 
-/**
-@notice _checkIfALR is used to check if an input address is an ALR contract
-@param __inQ is the address in question
-**/
-
-    function _checkIfALR(address __inQ) external view returns (bool) {
-        return isALR[__inQ];
-    }
-
-
-/**
+    /**
 @notice liquidateTrigger is a protected function that can only be called by a money market instance.
 @param _liquidateValue is the value being liquidated
 @param _borrower is the address of the account being liquidated
@@ -281,12 +275,13 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _borrower,
         address _liquidator,
         AskoRiskTokenI _ALR
-    ) public onlyMMI {
+    ) external onlyMMI {
+        require(isALR[address(_ALR)], "Input ALR address is not an ALR contract");
         collateralTracker[_borrower][address(_ALR)] = 0;
         _ALR._liquidate(_liquidateValue, _borrower, _liquidator);
     }
 
-/**
+    /**
 @notice updateIRM allows the admin of this contract to update a AskoRiskToken's Interest Rate Model
 @param _baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
 @param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
@@ -302,7 +297,8 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _optimal,
         address _assetContractAdd,
         bool _isALR
-    ) public {
+    ) external onlyOwner {
+        require(isMMI[instanceTracker[_assetContractAdd]], "Input asset address doesnt have an MMI");
         MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
             instanceTracker[_assetContractAdd]
         );
@@ -321,9 +317,18 @@ contract MoneyMarketControl is Ownable, Exponential {
         } else {
             _MMI.updateAHR(interestRateModel);
         }
+
+        emit InterestRateModelUpdate(
+            _baseRatePerYear,
+            _multiplierPerYear,
+            _jumpMultiplierPerYear,
+            _optimal,
+            _assetContractAdd,
+            address(_MMI)
+        );
     }
 
-/**
+    /**
 @notice updateRR allows the admin to update the reserve ratio for an Asko Risk Token
 @param _newRR is the new reserve ratio value(scaled by 1e18)
 @param _isALR is a bool representing whether of not the Reserve ratio being updated iis an ALR or not
@@ -333,7 +338,8 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _newRR,
         bool _isALR,
         address _asset
-    ) public onlyMMI {
+    ) external onlyOwner {
+        require(isMMI[instanceTracker[_asset]], "Input asset address doesnt have an MMI");
         MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
             instanceTracker[_asset]
         );
@@ -342,5 +348,88 @@ contract MoneyMarketControl is Ownable, Exponential {
         } else {
             _MMI.setRRAHR(_newRR);
         }
+        emit ReserveRateUpdate(_isALR, _asset, address(_MMI), _newRR);
     }
+
+    /**
+@notice upgradeOracle allows the contract owner to update the oracle factory address
+@param _newOracle is the address of the new oracle factory contract.
+**/
+    function upgradeOracle(address _newOracle) external onlyOwner {
+        Oracle = UniswapOracleFactoryI(_newOracle);
+        emit OracleUpgrade(_newOracle);
+    }
+
+    /**
+v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money Market factory address
+@param _newMMF is the address of the new Money Market factory contract.
+**/
+    function upgradeMoneyMarketFactory(address _newMMF) external onlyOwner {
+        MMF = MoneyMarketFactoryI(_newMMF);
+        emit NewMoneyMarketFactory(_newMMF);
+    }
+
+    /**
+@notice upgradeARTFactory allows the contract owner to update the ART Factory address
+@param _ARTF is the address of the new ART factory contract.
+**/
+    function upgradeARTFactory(address _ARTF) external onlyOwner {
+        ARTF = _ARTF;
+        emit NewArtFactory(_ARTF);
+    }
+
+    /**
+@notice upgradeMMIOracle allows the owner of the Money Market Control contract to update the oracle
+        factory contract that a Money Market instance points to
+@param _asset is the address of the asset the MoneyMarketInstance controls
+**/
+    function upgradeMMIOracle(address _asset) external onlyOwner {
+        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
+            instanceTracker[_asset]
+        );
+        _MMI._upgradeMMIOracle(address(Oracle));
+        emit MMIOracleUpgrade(address(_MMI));
+    }
+
+    ///////////View Functions/////////////////////////
+    /**
+    @notice getAsset returns an array of all assets whitelisted on the platform.
+    @dev this can be used to loop through and retreive each assets MoneyMarket by the front end
+    **/
+    function getAssets() public view returns (address[] memory) {
+        return assets;
+    }
+
+    /**
+    @notice checkCollateralizedALR is used by the front end to check a borrowers collateralized ALR amount
+    @param _borrower is the address of the borrower
+    @param _ALR is the address of the ALR being used as collateral
+    **/
+    function checkCollateralizedALR(address _borrower, address _ALR)
+        public
+        view
+        returns (uint256)
+    {
+        return collateralTracker[_borrower][_ALR];
+    }
+
+    /**
+    @notice _checkIfALR is used to check if an input address is an ALR contract
+    @param __inQ is the address in question
+    **/
+
+    function _checkIfALR(address __inQ) external view returns (bool) {
+        return isALR[__inQ];
+    }
+
+    /**
+tells you the USDC value of their locked ALR
+**/
+function viewCollateral(address _account, address _alr)
+    public
+    view
+    returns (uint256)
+{
+    return collateralTracker[_account][_alr];
+}
 }

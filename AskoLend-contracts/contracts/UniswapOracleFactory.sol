@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity 0.6.6;
 
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "@uniswap/v2-periphery/contracts/UniswapV2Router02.sol";
@@ -123,5 +123,4 @@ contract UniswapOracleFactory is Ownable {
         );
         return oracle.viewUSDC(_amount);
     }
-
 }

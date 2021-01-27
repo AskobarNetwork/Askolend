@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /// @title MoneyMarketInstanceI
@@ -42,4 +42,6 @@ abstract contract MoneyMarketInstanceI {
     function setRRALR(uint256 _RR) public virtual;
 
     function setRRAHR(uint256 _RR) public virtual;
+
+    function _upgradeMMIOracle(address _newOracle) external virtual;
 }

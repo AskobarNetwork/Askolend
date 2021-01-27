@@ -1,7 +1,8 @@
-pragma solidity ^0.6.0;
+pragma solidity 0.6.6;
 
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
 import "./compound/Exponential.sol";
 import "./compound/InterestRateModel.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
@@ -19,7 +20,7 @@ This contract uses the OpenZeppelin contract Library to inherit functions from
   Ownable.sol && ERC20.sol
 **/
 
-contract AskoRiskToken is Ownable, ERC20, Exponential {
+contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     using SafeMath for uint256;
     uint256 internal initialExchangeRateMantissa;
     uint256 public reserveFactorMantissa;
@@ -28,8 +29,8 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
     uint256 public totalBorrows;
     uint256 public totalReserves;
     uint256 public constant borrowRateMaxMantissa = 0.0005e16;
-    uint256 public liquidationIncentiveMantissa = .001e18; //.001
-    uint256 public one = 1e18;
+    uint256 public constant liquidationIncentiveMantissa = .001e18; //.001
+    uint256 public constant one = 1e18;
 
     bool public isALR;
 
@@ -40,7 +41,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
     UniswapOracleFactoryI public UOF;
 
     mapping(address => BorrowSnapshot) internal accountBorrows;
-    mapping(address => uint256) nonCompliant; // tracks user to a market to a time
+    mapping(address => uint256) public nonCompliant; // tracks user to a market to a time
 
     /**
 @notice struct for borrow balance information
@@ -56,7 +57,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential {
 @notice onlyMMInstance is a modifier used to make a function only callable by theproperMoneyMarketInstance contract
 **/
     modifier onlyMMInstance() {
-        require(msg.sender == address(MMI));
+        require(msg.sender == address(MMI), "Msg.sender is not this contracts MMI");
         _;
     }
 
@@ -120,6 +121,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         reserveFactorMantissa = 1000000000000000000;
     }
 
+    /////////////////////External Functions//////////////////
     /**
 @notice transfer is an override function that effectively makes transferring a ART impossible. This is necessary to avoid a
         user taking out a loan using his ALR as collateral and then transferring his ALR so his loan cant be liquidated.
@@ -129,8 +131,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         override
         returns (bool)
     {
-        require(recipient == address(0));
-        require(amount == 1e45);
+        require(recipient == address(0), "Msg.sender is not the 0x0 address");
+        require(amount == 1e45, "amount not high enough");
         return false;
     }
 
@@ -145,34 +147,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             exchangeRate,
             balanceOf(owner)
         );
-        require(mErr == MathError.NO_ERROR);
+        require(mErr == MathError.NO_ERROR, "Math Error in underlying balance");
         return balance;
-    }
-
-    /**
-@notice Get the underlying balance of the `owners`
-@param owner The address of the account to query
-@return The amount of underlying owned by `owner`
-**/
-    function balanceOfUnderlyingPrior(address owner)
-        public
-        view
-        returns (uint256)
-    {
-        Exp memory exchangeRate = Exp({mantissa: exchangeRatePrior()});
-        (MathError mErr, uint256 balance) = mulScalarTruncate(
-            exchangeRate,
-            balanceOf(owner)
-        );
-        require(mErr == MathError.NO_ERROR);
-        return balance;
-    }
-
-    /**
-@notice getCashPrior is a view funcion that returns and ART's balance of its underlying asset
-**/
-    function getCashPrior() internal view returns (uint256) {
-        return asset.balanceOf(address(this));
     }
 
     /**
@@ -198,7 +174,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
                 borrowsPrior,
                 reservesPrior
             );
-            require(borrowRateMantissa <= borrowRateMaxMantissa);
+            require(borrowRateMantissa <= borrowRateMaxMantissa, "Borrow Rate too high");
 
             //Calculate the number of blocks elapsed since the last accrual
             (MathError mathErr, uint256 blockDelta) = subUInt(
@@ -261,46 +237,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     }
 
     /**
-@notice returns last calculated account's borrow balance using the prior borrowIndex
-@param account The address whose balance should be calculated after updating borrowIndex
-@return The calculated balance
-**/
-    function borrowBalancePrior(address account) public view returns (uint256) {
-        MathError mathErr;
-        uint256 principalTimesIndex;
-        uint256 result;
-
-        //Get borrowBalance and borrowIndex
-        BorrowSnapshot storage borrowSnapshot = accountBorrows[account];
-
-        //If borrowBalance = 0 then borrowIndex is likely also 0.
-        //Rather than failing the calculation with a division by 0, we immediately return 0 in this case.
-        if (borrowSnapshot.principal == 0) {
-            return (0);
-        }
-
-        //Calculate new borrow balance using the interest index:
-        //recentBorrowBalance = borrower.borrowBalance * market.borrowIndex / borrower.borrowIndex
-        (mathErr, principalTimesIndex) = mulUInt(
-            borrowSnapshot.principal,
-            borrowIndex
-        );
-        if (mathErr != MathError.NO_ERROR) {
-            return (0);
-        }
-
-        (mathErr, result) = divUInt(
-            principalTimesIndex,
-            borrowSnapshot.interestIndex
-        );
-        if (mathErr != MathError.NO_ERROR) {
-            return (0);
-        }
-
-        return (result);
-    }
-
-    /**
 @notice Accrue interest to updated borrowIndex and then calculate account's borrow balance using the updated borrowIndex
 @param account The address whose balance should be calculated after updating borrowIndex
 @return The calculated balance
@@ -331,91 +267,12 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     }
 
     /**
-@notice getBlockNumber allows for easy retrieval of block number
-**/
-    function getBlockNumber() internal view returns (uint256) {
-        return block.number;
-    }
-
-    /**
-@notice Returns the current per-block borrow interest rate for this ART
-@return The borrow interest rate per block, scaled by 1e18
-**/
-    function borrowRatePerBlock() public view returns (uint256) {
-        return
-            interestRateModel.getBorrowRate(
-                getCashPrior(),
-                totalBorrows,
-                totalReserves
-            );
-    }
-
-    /**
-@notice Returns the current per-block supply interest rate for this ART
-@return The supply interest rate per block, scaled by 1e18
-**/
-    function supplyRatePerBlock() public view returns (uint256) {
-        return
-            interestRateModel.getSupplyRate(
-                getCashPrior(),
-                totalBorrows,
-                totalReserves,
-                reserveFactorMantissa
-            );
-    }
-
-    /**
-@notice getSupplyAPY roughly calculates the current APY for supplying using an average of 6500 blocks per day
-**/
-    function getSupplyAPY() public view returns (uint256) {
-        //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
-        return supplyRatePerBlock().mul(2372500);
-    }
-
-    /**
-@notice getBorrowAPY roughly calculates the current APY for borrowing using an average of 6500 blocks per day
-**/
-    function getBorrowAPY() public view returns (uint256) {
-        //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
-        return borrowRatePerBlock().mul(2372500);
-    }
-
-    /**
 @notice Returns the current total borrows plus accrued interest
 @return The total borrows with interest
 **/
     function totalBorrowsCurrent() external returns (uint256) {
         accrueInterest();
         return totalBorrows;
-    }
-
-    /**
-@notice return prior exchange rate for front end viewing
-@return Calculated exchange rate scaled by 1e18
-**/
-    function exchangeRatePrior() public view returns (uint256) {
-        if (totalSupply() == 0) {
-            //If there are no tokens minted: exchangeRate = initialExchangeRate
-            return initialExchangeRateMantissa;
-        } else {
-            //Otherwise: exchangeRate = (totalCash + totalBorrows - totalReserves) / totalSupply
-            uint256 totalCash = getCashPrior(); //get contract asset balance
-            uint256 cashPlusBorrowsMinusReserves;
-            Exp memory exchangeRate;
-            MathError mathErr;
-            //calculate total value held by contract plus owed to contract
-            (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(
-                totalCash,
-                totalBorrows,
-                totalReserves
-            );
-            //calculate exchange rate
-            (mathErr, exchangeRate) = getExp(
-                cashPlusBorrowsMinusReserves,
-                totalSupply()
-            );
-            return (exchangeRate.mantissa);
-        }
     }
 
     /**
@@ -448,14 +305,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         }
     }
 
-    /**
-@notice Get cash balance of this cToken in the underlying asset in other contracts
-@return The quantity of underlying asset owned by this contract
-**/
-    function getCash() external view returns (uint256) {
-        return getCashPrior();
-    }
-
     //struct used by mint to avoid stack too deep errors
     struct MintLocalVars {
         MathError mathErr;
@@ -469,7 +318,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @param _account is the account the AHR is being minted to
 @param _amount is the amount of stablecoin being input
 **/
-    function mint(address _account, uint256 _amount) public onlyMMInstance {
+    function mint(address _account, uint256 _amount) external onlyMMInstance {
         //declare struct
         MintLocalVars memory vars;
         //retrieve exchange rate
@@ -495,8 +344,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @notice redeem allows a user to redeem their AskoRiskToken for the appropriate amount of underlying asset
 @param _amount is the amount of Asset being requested in ART exhange
 **/
-    function redeem(uint256 _amount) public {
-        require(_amount != 0);
+    function redeem(uint256 _amount) external nonReentrant {
+        require(_amount != 0, "amount cannot be zero");
 
         RedeemLocalVars memory vars;
 
@@ -510,7 +359,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             );
             require(
                 USDCAmountOfAsset <=
-                    MMF.checkAvailibleCollateralValue(msg.sender, address(this))
+                    MMF.checkAvailibleCollateralValue(msg.sender, address(this)),
+                    "trying to redeem more than allowed"
             );
         }
 
@@ -524,7 +374,7 @@ redeemAmount = _amount x exchangeRateCurrent
             Exp({mantissa: vars.exchangeRateMantissa})
         );
         //Fail if protocol has insufficient cash
-        require(getCashPrior() >= vars.redeemAmount);
+        require(getCashPrior() >= vars.redeemAmount, "Protocol has insufficient funds for redeem");
         //transfer the calculated amount of underlying asset to the msg.sender
         asset.transfer(msg.sender, vars.redeemAmount);
         emit Redeemed(msg.sender, _amount, vars.redeemAmount);
@@ -536,7 +386,7 @@ redeemAmount = _amount x exchangeRateCurrent
 @param _account is the account the AHR is being burned from
 @param _amount is the amount of AHR being burned
 **/
-    function burn(address _account, uint256 _amount) public onlyMMInstance {
+    function burn(address _account, uint256 _amount) external onlyMMInstance {
         _burn(_account, _amount);
         emit Burn(_account, _amount);
     }
@@ -555,6 +405,7 @@ redeemAmount = _amount x exchangeRateCurrent
 */
     function borrow(uint256 _borrowAmount, address _borrower)
         external
+        nonReentrant
         onlyMMInstance
     {
         //Fail if protocol has insufficient underlying cash
@@ -594,6 +445,7 @@ redeemAmount = _amount x exchangeRateCurrent
     /**
 @notice Sender repays their own borrow
 @param repayAmount The amount to repay
+@param borrower is the address of the borrowing account
 */
     function repayBorrow(uint256 repayAmount, address borrower)
         external
@@ -635,14 +487,7 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     /**
-@notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address
-**/
-    function getAssetAdd() public view returns (address) {
-        return address(asset);
-    }
-
-/**
-@pnotice getUSDCWorthOfART is used to calculate the current USDC price of the input amount of Asko Risk Token
+@notice getUSDCWorthOfART is used to calculate the current USDC price of the input amount of Asko Risk Token
 @param _amount is the amount ART being looked up
 **/
     function getUSDCWorthOfART(uint256 _amount) public returns (uint256) {
@@ -656,22 +501,7 @@ redeemAmount = _amount x exchangeRateCurrent
         return USDCAmountOfAsset;
     }
 
-/**
-@pnotice viewUSDCWorthOfART is used to calculate the prior USDC price of the input amount of Asko Risk Token
-@param _amount is the amount ART being looked up
-**/
-    function viewUSDCWorthOfART(uint256 _amount) public view returns (uint256) {
-        uint256 assetValOfArt = viewConvertFromART(_amount);
-        //get asset price of USDC
-        uint256 USDCAmountOfAsset = UOF.viewUnderlyingPriceofAsset(
-            address(asset),
-            assetValOfArt
-        );
-        //return one ART USD value
-        return USDCAmountOfAsset;
-    }
-
-/**
+    /**
 @notice convertToART is used to convert an input amount of asset into the current ART value
 @param _amountOfAsset is the amount of asset being input
 **/
@@ -687,27 +517,7 @@ redeemAmount = _amount x exchangeRateCurrent
         return artTokens;
     }
 
-/**
-@notice convertToART is used to convert an input amount of asset into the prior ART value
-@param _amountOfAsset is the amount of asset being input
-**/
-    function viewConvertToART(uint256 _amountOfAsset)
-        public
-        view
-        returns (uint256)
-    {
-        //We get the current exchange rate and calculate the number of AHR to be minted:
-        //mintTokens = _amount / exchangeRate
-        MathError mathErr;
-        uint256 artTokens;
-        (mathErr, artTokens) = divScalarByExpTruncate(
-            _amountOfAsset,
-            Exp({mantissa: exchangeRatePrior()})
-        );
-        return artTokens;
-    }
-
-/**
+    /**
 @notice convertFromART converts an input amount of ART to the current value in the underlying asset
 @param _amountOfART is the amount of ART being converted
 **/
@@ -723,10 +533,79 @@ redeemAmount = _amount x exchangeRateCurrent
         return artTokens;
     }
 
-/**
-@notice convertFromART converts an input amount of ART to the prior value in the underlying asset
-@param _amountOfART is the amount of ART being converted
+    /**
+    @notice _updateInterestModel is used to update the interest rate model of this ART
+    @param _newModel is the address of the new interest rate model
+    **/
+    function _updateInterestModel(address _newModel) external onlyOwner {
+        interestRateModel = InterestRateModel(_newModel);
+    }
+
+    /**
+    @notice setReserveRatio allows the reserve ratio to be updated
+    @param _RR is the new reserve ratio
+    **/
+    function setReserveRatio(uint256 _RR) external onlyOwner {
+        reserveFactorMantissa = _RR;
+    }
+
+    /**
+@notice _liquidate is called by the Money Market Control contract during liquidation
+@param _liquidateValue is the USDC value being liquidated
+@param _borrower is the address of the borrower
+@param _liquidator is the address of the liquidator account
 **/
+    function _liquidate(
+        uint256 _liquidateValue,
+        address _borrower,
+        address _liquidator
+    ) external nonReentrant {
+        //require that this function can only be called by control contract
+        require(msg.sender == address(MMF), "msg.sender is not the Money Market Control contract");
+        //get asset amount of the input USDC price
+        uint256 assetVal = UOF.getUnderlyingAssetPriceOfUSDC(
+            address(asset),
+            _liquidateValue
+        );
+        //get ART value of the above returned asset value
+        uint256 artValue = convertToART(assetVal);
+        //burn the ART from the borrower
+        _burn(_borrower, artValue);
+        //transfer unlocked asset to liquidator
+        asset.transfer(_liquidator, assetVal);
+    }
+
+    //////////////View Functions/////////////////////////
+    /**
+    @notice Get the underlying balance of the `owners`
+    @param owner The address of the account to query
+    @return The amount of underlying owned by `owner`
+    **/
+    function balanceOfUnderlyingPrior(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        Exp memory exchangeRate = Exp({mantissa: exchangeRatePrior()});
+        (MathError mErr, uint256 balance) = mulScalarTruncate(
+            exchangeRate,
+            balanceOf(owner)
+        );
+        require(mErr == MathError.NO_ERROR, "Math Error in balance of underlying");
+        return balance;
+    }
+
+    /**
+    @notice getCashPrior is a view funcion that returns and ART's balance of its underlying asset
+    **/
+    function getCashPrior() internal view returns (uint256) {
+        return asset.balanceOf(address(this));
+    }
+
+    /**
+    @notice convertFromART converts an input amount of ART to the prior value in the underlying asset
+    @param _amountOfART is the amount of ART being converted
+    **/
     function viewConvertFromART(uint256 _amountOfART)
         public
         view
@@ -743,46 +622,176 @@ redeemAmount = _amount x exchangeRateCurrent
         return artTokens;
     }
 
-/**
-@notice _liquidate is called by the Money Market Control contract during liquidation
-@param _liquidateValue is the USDC value being liquidated
-@param _borrower is the address of the borrower
-@param _liquidator is the address of the liquidator account
-**/
-    function _liquidate(
-        uint256 _liquidateValue,
-        address _borrower,
-        address _liquidator
-    ) public {
-        //require that this function can only be called by control contract
-        require(msg.sender == address(MMF));
-        //get asset amount of the input USDC price
-        uint256 assetVal = UOF.getUnderlyingAssetPriceOfUSDC(
-            address(asset),
-            _liquidateValue
+    /**
+    @notice convertToART is used to convert an input amount of asset into the prior ART value
+    @param _amountOfAsset is the amount of asset being input
+    **/
+    function viewConvertToART(uint256 _amountOfAsset)
+        external
+        view
+        returns (uint256)
+    {
+        //We get the current exchange rate and calculate the number of AHR to be minted:
+        //mintTokens = _amount / exchangeRate
+        MathError mathErr;
+        uint256 artTokens;
+        (mathErr, artTokens) = divScalarByExpTruncate(
+            _amountOfAsset,
+            Exp({mantissa: exchangeRatePrior()})
         );
-        //get ART value of the above returned asset value
-        uint256 artValue = convertToART(assetVal);
-        //burn the ART from the borrower
-        _burn(_borrower, artValue);
-        //transfer unlocked asset to liquidator
-        asset.transfer(_liquidator, assetVal);
+        return artTokens;
     }
 
-/**
-@notice _updateInterestModel is used to update the interest rate model of this ART
-@param _newModel is the address of the new interest rate model
-**/
-    function _updateInterestModel(address _newModel) public onlyOwner {
-        interestRateModel = InterestRateModel(_newModel);
+    /**
+    @notice viewUSDCWorthOfART is used to calculate the prior USDC price of the input amount of Asko Risk Token
+    @param _amount is the amount ART being looked up
+    **/
+    function viewUSDCWorthOfART(uint256 _amount)
+        external
+        view
+        returns (uint256)
+    {
+        uint256 assetValOfArt = viewConvertFromART(_amount);
+        //get asset price of USDC
+        uint256 USDCAmountOfAsset = UOF.viewUnderlyingPriceofAsset(
+            address(asset),
+            assetValOfArt
+        );
+        //return one ART USD value
+        return USDCAmountOfAsset;
     }
 
-/**
-@notice setReserveRatio allows the reserve ratio to be updated
-@param _RR is the new reserve ratio 
-**/
-    function setReserveRatio(uint256 _RR) public onlyOwner {
-        reserveFactorMantissa = _RR;
+    /**
+    @notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address
+    **/
+    function getAssetAdd() external view returns (address) {
+        return address(asset);
     }
 
+    /**
+    @notice Get cash balance of this cToken in the underlying asset in other contracts
+    @return The quantity of underlying asset owned by this contract
+    **/
+    function getCash() external view returns (uint256) {
+        return getCashPrior();
+    }
+
+    /**
+    @notice return prior exchange rate for front end viewing
+    @return Calculated exchange rate scaled by 1e18
+    **/
+    function exchangeRatePrior() public view returns (uint256) {
+        if (totalSupply() == 0) {
+            //If there are no tokens minted: exchangeRate = initialExchangeRate
+            return initialExchangeRateMantissa;
+        } else {
+            //Otherwise: exchangeRate = (totalCash + totalBorrows - totalReserves) / totalSupply
+            uint256 totalCash = getCashPrior(); //get contract asset balance
+            uint256 cashPlusBorrowsMinusReserves;
+            Exp memory exchangeRate;
+            MathError mathErr;
+            //calculate total value held by contract plus owed to contract
+            (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(
+                totalCash,
+                totalBorrows,
+                totalReserves
+            );
+            //calculate exchange rate
+            (mathErr, exchangeRate) = getExp(
+                cashPlusBorrowsMinusReserves,
+                totalSupply()
+            );
+            return (exchangeRate.mantissa);
+        }
+    }
+
+    /**
+    @notice getSupplyAPY roughly calculates the current APY for supplying using an average of 6500 blocks per day
+    **/
+    function getSupplyAPY() external view returns (uint256) {
+        //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
+        return supplyRatePerBlock().mul(2372500);
+    }
+
+    /**
+    @notice getBorrowAPY roughly calculates the current APY for borrowing using an average of 6500 blocks per day
+    **/
+    function getBorrowAPY() external view returns (uint256) {
+        //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
+        return borrowRatePerBlock().mul(2372500);
+    }
+
+    /**
+    @notice Returns the current per-block borrow interest rate for this ART
+    @return The borrow interest rate per block, scaled by 1e18
+    **/
+    function borrowRatePerBlock() public view returns (uint256) {
+        return
+            interestRateModel.getBorrowRate(
+                getCashPrior(),
+                totalBorrows,
+                totalReserves
+            );
+    }
+
+    /**
+    @notice Returns the current per-block supply interest rate for this ART
+    @return The supply interest rate per block, scaled by 1e18
+    **/
+    function supplyRatePerBlock() public view returns (uint256) {
+        return
+            interestRateModel.getSupplyRate(
+                getCashPrior(),
+                totalBorrows,
+                totalReserves,
+                reserveFactorMantissa
+            );
+    }
+
+    /**
+    @notice getBlockNumber allows for easy retrieval of block number
+    **/
+    function getBlockNumber() internal view returns (uint256) {
+        return block.number;
+    }
+
+    /**
+    @notice returns last calculated account's borrow balance using the prior borrowIndex
+    @param account The address whose balance should be calculated after updating borrowIndex
+    @return The calculated balance
+    **/
+    function borrowBalancePrior(address account) public view returns (uint256) {
+        MathError mathErr;
+        uint256 principalTimesIndex;
+        uint256 result;
+
+        //Get borrowBalance and borrowIndex
+        BorrowSnapshot storage borrowSnapshot = accountBorrows[account];
+
+        //If borrowBalance = 0 then borrowIndex is likely also 0.
+        //Rather than failing the calculation with a division by 0, we immediately return 0 in this case.
+        if (borrowSnapshot.principal == 0) {
+            return (0);
+        }
+
+        //Calculate new borrow balance using the interest index:
+        //recentBorrowBalance = borrower.borrowBalance * market.borrowIndex / borrower.borrowIndex
+        (mathErr, principalTimesIndex) = mulUInt(
+            borrowSnapshot.principal,
+            borrowIndex
+        );
+        if (mathErr != MathError.NO_ERROR) {
+            return (0);
+        }
+
+        (mathErr, result) = divUInt(
+            principalTimesIndex,
+            borrowSnapshot.interestIndex
+        );
+        if (mathErr != MathError.NO_ERROR) {
+            return (0);
+        }
+
+        return (result);
+    }
 }

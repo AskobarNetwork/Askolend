@@ -183,8 +183,8 @@ contract("MoneyMarketControl", (accounts) => {
 
     console.log("augur AHR bal: " + web3.utils.fromWei(augurAHRbal));
     console.log("augur ALR bal: " + web3.utils.fromWei(augurALRbal));
-    let augurUSDCAHRbal = await augurAHR.viewUSDCWorthOfART(augurAHRbal);
-    let augurUSDCALRbal = await augurALR.viewUSDCWorthOfART(augurALRbal);
+    let augurUSDCAHRbal = await augurAHR.viewwETHWorthOfART(augurAHRbal);
+    let augurUSDCALRbal = await augurALR.viewwETHWorthOfART(augurALRbal);
 
     console.log("augur AHR USDC value: " + web3.utils.fromWei(augurUSDCAHRbal));
     console.log("augur ALR USDC value: " + web3.utils.fromWei(augurUSDCALRbal));

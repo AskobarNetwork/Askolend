@@ -486,6 +486,11 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         MMF = MoneyMarketFactoryI(_newMMF);
     }
 
+    function _collectFees(address _targetAdd) external onlyOwner {
+        AHR._withdrawReserves(_targetAdd);
+        ALR._withdrawReserves(_targetAdd);
+    }
+
     //////////////////View Functions/////////////////
     /**
     @notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address

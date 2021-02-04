@@ -24,6 +24,8 @@ contract MoneyMarketControl is Ownable, Exponential {
     using SafeMath for uint256;
 
     uint256 public instanceCount; //tracks the number of instances
+    uint256 internal feeTracker;
+    uint internal costOfOneWithdraw;
     address public ARTF;
     UniswapOracleFactoryI public Oracle; //oracle factory contract interface
     MoneyMarketFactoryI public MMF;
@@ -256,7 +258,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         //get borrowers art balance
         uint256 artBal = _ART.balanceOf(_borrower);
         //get USDC value of art balance
-        uint256 usdcValOfBalance = _ART.getUSDCWorthOfART(artBal);
+        uint256 usdcValOfBalance = _ART.getwETHWorthOfART(artBal);
         //retrieve the amount of the USDC value they have borrowed
         uint256 usdcValLocked = collateralTracker[_borrower][_ALR];
         //retrieve USDC availible collateral
@@ -389,6 +391,44 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
         );
         _MMI._upgradeMMIOracle(address(Oracle));
         emit MMIOracleUpgrade(address(_MMI));
+    }
+
+    /**
+    @notice collectFees allows the owner of the MMC to withdraw the earned fees from All MMI's
+    @param _targetAdd is the address the fees will be sent to
+    **/
+    function collectFees(address _targetAdd) external onlyOwner {
+      //get starting availible gas
+      uint start = gasleft();
+      //If the feeTracker is set to zero
+      if(feeTracker == 0){
+        //instantiate the MoneyMarketInstance in position zero of the assets array
+        MoneyMarketInstanceI MMI = MoneyMarketInstanceI(instanceTracker[assets[0]]);
+        //collect fees
+        MMI._collectFees(_targetAdd);
+        //record the gas cost of collecting the fees
+        costOfOneWithdraw = start.sub(gasleft());
+      }
+
+      //loop through each MoneyMarketInstance
+      for(uint x=1; x <= assets.length; x++) {
+        //while the amount of gas allows it
+         while (gasleft() > costOfOneWithdraw) {
+           //instantiate the MoneyMarketInstance
+        MoneyMarketInstanceI MMI = MoneyMarketInstanceI(instanceTracker[assets[x]]);
+          //collect fees from it
+        MMI._collectFees(_targetAdd);
+        // if the fee tracker is equal to the number of MMI's
+        if(feeTracker == assets.length){
+          //set it to zero
+          feeTracker = 0;
+          //if not
+        } else {
+              //track which MMI the loop is on
+              feeTracker = x;
+          }
+        }
+      }
     }
 
     ///////////View Functions/////////////////////////

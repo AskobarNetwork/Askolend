@@ -37,14 +37,14 @@ abstract contract AskoRiskTokenI {
         virtual
         returns (uint256);
 
-    function getUSDCWorthOfART(uint256 _USDCAmount)
+    function getwETHWorthOfART(uint256 _USDCAmount)
         public
         virtual
         returns (uint256);
 
     function burn(address _account, uint256 _amount) public virtual;
 
-    function viewUSDCWorthOfART(uint256 _USDCAmount)
+    function viewwETHWorthOfART(uint256 _USDCAmount)
         public
         view
         virtual
@@ -65,4 +65,6 @@ abstract contract AskoRiskTokenI {
     function _updateInterestModel(address _newModel) public virtual;
 
     function setReserveRatio(uint256 _RR) public virtual;
+
+    function _withdrawReserves(address _targetAdd) external virtual;
 }

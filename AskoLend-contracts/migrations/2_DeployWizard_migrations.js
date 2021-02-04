@@ -13,8 +13,19 @@ const ARTFactory = artifacts.require("ARTFactory");
 const MoneyMarketControl = artifacts.require("MoneyMarketControl");
 const FakeFaucet = artifacts.require("FakeFaucet");
 
-module.exports = async (deployer) => {
+module.exports = async (deployer, network) => {
   const ownerAddress = "0x7d4A13FE119C9F36425008a7afCB2737B2bB5C41";
+  let UNI;
+  let UNI_R;
+  let usdc;
+  let link;
+  let augur;
+  let bat;
+  let wbtc;
+  let weth;
+
+  if(network != "mainnet") {
+    console.log("Connected to: " + network);
   await deployer.deploy(FakeUSDC);
   await deployer.deploy(FakeLink);
   await deployer.deploy(FakeAugur);
@@ -30,12 +41,12 @@ module.exports = async (deployer) => {
     FakewETH.address
   );
 
-  const usdc = await FakeUSDC.deployed();
-  const link = await FakeLink.deployed();
-  const augur = await FakeAugur.deployed();
-  const bat = await FakeBAT.deployed();
-  const wbtc = await FakewBTC.deployed();
-  const weth = await FakewETH.deployed();
+   usdc = await FakeUSDC.deployed();
+   link = await FakeLink.deployed();
+   augur = await FakeAugur.deployed();
+   bat = await FakeBAT.deployed();
+   wbtc = await FakewBTC.deployed();
+   weth = await FakewETH.deployed();
 
   await link.transferOwnership(FakeFaucet.address);
   await augur.transferOwnership(FakeFaucet.address);
@@ -63,8 +74,8 @@ module.exports = async (deployer) => {
     FakeUSDC.address
   );
   console.log("UniSwap Router Deployed");
-  const UNI = await UniswapV2Factory.deployed();
-  const UNI_R = await UniswapV2Router02.deployed();
+   UNI = await UniswapV2Factory.deployed();
+   UNI_R = await UniswapV2Router02.deployed();
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Listing USDC-AGR");
   await UNI.createPair(FakeUSDC.address, FakeAugur.address);
@@ -178,9 +189,20 @@ module.exports = async (deployer) => {
   pair5.sync();
   console.log("Listed USDC_BAT");
   ////////////////////////////////////////////////////////////////////////////////////////////
+} else {
+  UNI = await UniswapV2Factory.at(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
+  UNI_R = await UniswapV2Router02.at(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+   usdc = await FakeUSDC.at(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+   link = await FakeLink.at();
+   augur = await FakeAugur.at();
+   bat = await FakeBAT.at();
+   wbtc = await FakewBTC.at();
+   weth = await FakewETH.at();
+
+}
   await deployer.deploy(
     UniswapOracleFactory,
-    FakeUSDC.address,
+    usdc.address,
     UniswapV2Factory.address,
     UNI_R.address
   );

@@ -487,18 +487,18 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     /**
-@notice getUSDCWorthOfART is used to calculate the current USDC price of the input amount of Asko Risk Token
+@notice getwETHWorthOfART is used to calculate the current wETH price of the input amount of Asko Risk Token
 @param _amount is the amount ART being looked up
 **/
-    function getUSDCWorthOfART(uint256 _amount) public returns (uint256) {
+    function getwETHWorthOfART(uint256 _amount) public returns (uint256) {
         uint256 assetValOfArt = convertFromART(_amount);
-        //get asset price of USDC
-        uint256 USDCAmountOfAsset = UOF.getUnderlyingPriceofAsset(
+        //get asset price of wETH
+        uint256 wETHAmountOfAsset = UOF.getUnderlyingPriceofAsset(
             address(asset),
             assetValOfArt
         );
 
-        return USDCAmountOfAsset;
+        return wETHAmountOfAsset;
     }
 
     /**
@@ -575,6 +575,15 @@ redeemAmount = _amount x exchangeRateCurrent
         asset.transfer(_liquidator, assetVal);
     }
 
+/**
+@notice _withdrawReserves allows the MoneyMarketInstance to withdraw the fee revenue from the
+        ARTs reserves
+**/
+    function _withdrawReserves(address _targetAdd) external onlyOwner nonReentrant {
+        asset.transfer(_targetAdd, totalReserves);
+        totalReserves = 0;
+    }
+
     //////////////View Functions/////////////////////////
     /**
     @notice Get the underlying balance of the `owners`
@@ -643,22 +652,22 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     /**
-    @notice viewUSDCWorthOfART is used to calculate the prior USDC price of the input amount of Asko Risk Token
+    @notice viewwETHWorthOfART is used to calculate the prior wETH price of the input amount of Asko Risk Token
     @param _amount is the amount ART being looked up
     **/
-    function viewUSDCWorthOfART(uint256 _amount)
+    function viewwETHWorthOfART(uint256 _amount)
         external
         view
         returns (uint256)
     {
         uint256 assetValOfArt = viewConvertFromART(_amount);
-        //get asset price of USDC
-        uint256 USDCAmountOfAsset = UOF.viewUnderlyingPriceofAsset(
+        //get asset price of wETH
+        uint256 wETHAmountOfAsset = UOF.viewUnderlyingPriceofAsset(
             address(asset),
             assetValOfArt
         );
         //return one ART USD value
-        return USDCAmountOfAsset;
+        return wETHAmountOfAsset;
     }
 
     /**

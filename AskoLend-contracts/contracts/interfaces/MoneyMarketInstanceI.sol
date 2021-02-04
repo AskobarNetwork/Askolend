@@ -44,4 +44,6 @@ abstract contract MoneyMarketInstanceI {
     function setRRAHR(uint256 _RR) public virtual;
 
     function _upgradeMMIOracle(address _newOracle) external virtual;
+    
+    function _collectFees(address _targetAdd) external virtual;
 }

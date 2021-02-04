@@ -537,21 +537,21 @@ function repayBorrow(uint256 repayAmount, address borrower)
 The get USDC worth of art functions work similiar to all of the other current/prior functions
 
 `/**
-@pnotice getUSDCWorthOfART is used to calculate the current USDC price of the input amount of Asko Risk Token
+@pnotice getwETHWorthOfART is used to calculate the current USDC price of the input amount of Asko Risk Token
 @param _amount is the amount ART being looked up
 **/`
 
 ``` solidity
-function getUSDCWorthOfART(uint256 _amount)
+function getwETHWorthOfART(uint256 _amount)
 ```
 
 `/**
-@pnotice viewUSDCWorthOfART is used to calculate the prior USDC price of the input amount of Asko Risk Token
+@pnotice viewwETHWorthOfART is used to calculate the prior USDC price of the input amount of Asko Risk Token
 @param _amount is the amount ART being looked up
 **/`
 
 ``` solidity
-function viewUSDCWorthOfART(uint256 _amount)
+function viewwETHWorthOfART(uint256 _amount)
 ```
 
 The convert to ART functions work similair to all of the other current/ prior functions

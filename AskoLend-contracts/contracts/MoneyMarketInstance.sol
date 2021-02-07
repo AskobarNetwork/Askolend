@@ -26,6 +26,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     uint256 public divisor;
     uint256 public fee_AHR;
     uint256 public fee_ALR;
+    uint256 public collatRatio;
     address public ahr;
     address public alr;
 
@@ -66,6 +67,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
         is used to initialize the MoneyMakerInstance and deploy its associated AHR && ALR token contracts
 @param _assetContractAdd is the address of the ERC20 asset being whitelisted
+@param _oracleFactory is the address of the  oracle factory
+@param _owner is the address of the MoneyMarketControl factory
+@param _ARTF is the address of the ART Token Factory
+@param _collatRatio is the number that will be used when calculating the collateralizastion ratio for a MMI
 @param _assetName is the name of the asset(e.x: ChainLink)
 @param _assetSymbol is the symbol of the asset(e.x: LINK)
 @dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
@@ -76,12 +81,14 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         address _oracleFactory,
         address _owner,
         address _ARTF,
+        uint256 _collatRatio,
         string memory _assetName,
         string memory _assetSymbol
     ) public {
         divisor = 10000;
         assetName = _assetName;
         assetSymbol = _assetSymbol;
+        collatRatio = _collatRatio;
         UOF = UniswapOracleFactoryI(_oracleFactory);
         MMF = MoneyMarketFactoryI(_owner);
         asset = IERC20(_assetContractAdd);
@@ -253,10 +260,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         );
 
         //divide amount value by 3
-        vars.halfVal = vars.assetAmountValOwed.div(2);
-        //add 1/2 value to asset value to get 150% asset value
+        vars.halfVal = vars.assetAmountValOwed.div(collatRatio);
+        //add collatRatio of value to asset value to get the right ratio asset value
         vars.collateralNeeded = vars.assetAmountValOwed.add(vars.halfVal);
-        //require collateral value to be greater than 150% of the amount value of loan
+        //require collateral value to be greater than collatRatio of the amount value of loan
         require(
             vars.availibleCollateralValue >= vars.collateralNeeded,
             "not enough collateral"
@@ -382,7 +389,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         uint256 accountBorrowsAHR;
         uint256 totalBorrows;
         uint256 borrowedValue;
-        uint256 borrowedValue150;
+        uint256 borrowedValuecollatRatio;
         uint256 collatValue;
         uint256 halfVal;
         uint256 payAmountALR; // Note: reverts on error
@@ -417,14 +424,14 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             address(_ARTcollateralized)
         );
         //divide borrowedValue value in half
-        vars.halfVal = vars.borrowedValue.div(2);
-        //add 1/2 the borrowedValue value to the total borrowedValue value for 150% borrowedValue value
-        vars.borrowedValue150 = vars.borrowedValue.add(vars.halfVal);
+        vars.halfVal = vars.borrowedValue.div(collatRatio);
+        //add collatRatio ofthe borrowedValue value to the total borrowedValue value for correct collateral amount
+        vars.borrowedValuecollatRatio = vars.borrowedValue.add(vars.halfVal);
         /**
-      need to check if the amount of collateral is less than 150% of the borrowed amount
-      if the collateral value is greater than or equal to 150% of the borrowed value than we liquidate
+      need to check if the amount of collateral is less than borrowedValuecollatRatio of the borrowed amount
+      if the collateral value is greater than or equal to borrowedValuecollatRatio of the borrowed value than we liquidate
       **/
-        if (vars.collatValue < vars.borrowedValue150) {
+        if (vars.collatValue < vars.borrowedValuecollatRatio) {
             //transfer asset from msg.sender to repay loan
             asset.safeTransferFrom(msg.sender, address(ALR), accountBorrowsALR);
             asset.safeTransferFrom(msg.sender, address(AHR), accountBorrowsAHR);

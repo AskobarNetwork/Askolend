@@ -18,7 +18,7 @@ module.exports = async (deployer, network) => {
 
   MMC = await MoneyMarketControl.deployed();
   console.log("Setting up FakeAugur Money Market Instance");
-  await MMC.whitelistAsset(FakeAugur.address, "Augur", "AGR");
+  await MMC.whitelistAsset(FakeAugur.address, 2, "Augur", "AGR");
   console.log("FakeAugur White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)
@@ -42,7 +42,7 @@ module.exports = async (deployer, network) => {
   console.log("FakeAugur Asko Low Risk Token Created");
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Setting up FakeLink Money Market Instance");
-  await MMC.whitelistAsset(FakeLink.address, "Link", "LINK");
+  await MMC.whitelistAsset(FakeLink.address, 2, "Link", "LINK");
   console.log("FakeLink White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)
@@ -67,7 +67,7 @@ module.exports = async (deployer, network) => {
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   console.log("Setting up FakewBTC Money Market Instance");
-  await MMC.whitelistAsset(FakewBTC.address, "Wrapped Bitcoin", "wBTC");
+  await MMC.whitelistAsset(FakewBTC.address, 2,"Wrapped Bitcoin", "wBTC");
   console.log("FakewBTC White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)
@@ -91,7 +91,7 @@ module.exports = async (deployer, network) => {
   console.log("FakewBTC Asko Low Risk Token Created");
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Setting up FakewETH Money Market Instance");
-  await MMC.whitelistAsset(FakewETH.address, "Wrapped Ethereum", "wETH");
+  await MMC.whitelistAsset(FakewETH.address, 2,"Wrapped Ethereum", "wETH");
   console.log("FakewETH White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)
@@ -126,7 +126,7 @@ module.exports = async (deployer, network) => {
 
   MMC = await MoneyMarketControl.deployed();
   console.log("Setting up FakeAugur Money Market Instance");
-  await MMC.whitelistAsset(FakeAugur.address, "Augur", "AGR");
+  await MMC.whitelistAsset(FakeAugur.address,2, "Augur", "AGR");
   console.log("FakeAugur White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)
@@ -150,7 +150,7 @@ module.exports = async (deployer, network) => {
   console.log("FakeAugur Asko Low Risk Token Created");
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Setting up FakeLink Money Market Instance");
-  await MMC.whitelistAsset(FakeLink.address, "Link", "LINK");
+  await MMC.whitelistAsset(FakeLink.address, 2, "Link", "LINK");
   console.log("FakeLink White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)
@@ -175,7 +175,7 @@ module.exports = async (deployer, network) => {
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   console.log("Setting up FakewBTC Money Market Instance");
-  await MMC.whitelistAsset(FakewBTC.address, "Wrapped Bitcoin", "wBTC");
+  await MMC.whitelistAsset(FakewBTC.address, 2, "Wrapped Bitcoin", "wBTC");
   console.log("FakewBTC White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)
@@ -199,7 +199,7 @@ module.exports = async (deployer, network) => {
   console.log("FakewBTC Asko Low Risk Token Created");
   ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Setting up FakewETH Money Market Instance");
-  await MMC.whitelistAsset(FakewETH.address, "Wrapped Ethereum", "wETH");
+  await MMC.whitelistAsset(FakewETH.address, 2, "Wrapped Ethereum", "wETH");
   console.log("FakewETH White Listed");
   await MMC.setUpAHR(
     "20000000000000000", //base rate per year(approx target base APR)

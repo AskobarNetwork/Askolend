@@ -26,6 +26,7 @@ abstract contract MoneyMarketFactoryI {
         address _oracleFactory,
         address _owner,
         address _ARTF,
+        uint256 _collatRatio,
         string memory _assetName,
         string memory _assetSymbol
     ) public virtual returns (address);

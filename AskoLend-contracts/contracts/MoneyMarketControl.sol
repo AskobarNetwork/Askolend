@@ -92,11 +92,13 @@ contract MoneyMarketControl is Ownable, Exponential {
         This function creates a new MoneyMarketInstancecontract for an input asset as well
         as a UniswapOracleInstance for the asset.
 @param _assetContractAdd is the address of the ERC20 asset being whitelisted
+@param _collatRatio is the number that will be used when calculating the collateralizastion ratio for a MMI
 @param _assetName is the name of the asset(e.x: ChainLink)
 @param _assetSymbol is the symbol of the asset(e.x: LINK)
 **/
     function whitelistAsset(
         address _assetContractAdd,
+        uint256 _collatRatio,
         string calldata _assetName,
         string calldata _assetSymbol
     ) external onlyOwner {
@@ -109,6 +111,7 @@ contract MoneyMarketControl is Ownable, Exponential {
             address(Oracle),
             address(this),
             ARTF,
+            _collatRatio,
             _assetName,
             _assetSymbol
         );
@@ -463,7 +466,7 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     }
 
     /**
-tells you the USDC value of their locked ALR
+tells you the wETH value of their locked ALR
 **/
 function viewCollateral(address _account, address _alr)
     public

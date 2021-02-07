@@ -1,0 +1,149 @@
+Money Market cheat sheet:
+
+/**
+@notice checkCollateralValue is a view function that accepts an account address and an ALR contract
+    address and returns the USD value of the availible collateral they have. Availible collateral is
+    determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
+@param _borrower is the address whos collateral value we are looking up
+@param _ALR is the address of the ALR token where collateral value is being looked up
+**/
+function checkAvailibleCollateralValue(address _borrower, address _ALR)
+    external
+    returns (uint256);
+
+    /**
+    @notice getAsset returns an array of all assets whitelisted on the platform.
+    @dev this can be used to loop through and retreive each assets MoneyMarket by the front end
+    **/
+    function getAssets() public view returns (address[] memory);
+
+
+    /**
+    @notice checkCollateralizedALR is used by the front end to check a borrowers collateralized ALR amount
+    @param _borrower is the address of the borrower
+    @param _ALR is the address of the ALR being used as collateral
+    **/
+    function checkCollateralizedALR(address _borrower, address _ALR)
+        public
+        view
+        returns (uint256);
+
+        /**
+    tells you the wETH value of their locked ALR
+    **/
+    function viewCollateral(address _account, address _alr)
+        public
+        view
+        returns (uint256)
+
+
+Monsy Market Instance cheat sheet:
+
+/**
+@notice lendToAHRpool is used to lend assets to a MoneyMarketInstance's High Risk pool
+@param _amount is the amount of the asset being lent
+@dev the user will need to first approve the transfer of the underlying asset
+**/
+function lendToAHRpool(uint256 _amount)
+
+/**
+@notice lendToALRpool is used to lend assets to a MoneyMarketInstance's Low Risk pool
+@param _amount is the amount of the asset being lent
+@dev the user will need to first approve the transfer of the underlying asset
+**/
+function lendToALRpool(uint256 _amount)
+
+/**
+@notice borrow is used to take out a loan from in MoneyMarketInstance's underlying asset
+@param _amount is the amount of asset being barrowed
+@param _collateral is the address of the ALR token being used as collateral
+**/
+function borrow(uint256 _amount, address _collateral);
+
+/**
+@notice repay is used to repay a loan
+@param _repayAmount is the amount of the underlying asset being repayed
+**/
+function repay(uint256 _repayAmount)
+
+
+Asko Risk Token Cheat sheet:
+
+
+    /**
+@notice redeem allows a user to redeem their AskoRiskToken for the appropriate amount of underlying asset
+@param _amount is the amount of Asset being requested in ART exhange
+**/
+    function redeem(uint256 _amount);
+
+    /**
+    @notice Get the underlying balance of the `owners`
+    @param owner The address of the account to query
+    @return The amount of underlying owned by `owner`
+    **/
+    function balanceOfUnderlyingPrior(address owner);
+
+    /**
+    @notice convertFromART converts an input amount of ART to the prior value in the underlying asset
+    @param _amountOfART is the amount of ART being converted
+    **/
+    function viewConvertFromART(uint256 _amountOfART);
+
+    /**
+    @notice convertToART is used to convert an input amount of asset into the prior ART value
+    @param _amountOfAsset is the amount of asset being input
+    **/
+    function viewConvertToART(uint256 _amountOfAsset);
+
+
+    /**
+    @notice viewwETHWorthOfART is used to calculate the prior wETH price of the input amount of Asko Risk Token
+    @param _amount is the amount ART being looked up
+    **/
+    function viewwETHWorthOfART(uint256 _amount);
+
+    /**
+    @notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address
+    **/
+    function getAssetAdd()
+
+    /**
+    @notice Get cash balance of this cToken in the underlying asset in other contracts
+    @return The quantity of underlying asset owned by this contract
+    **/
+    function getCash()
+
+    /**
+    @notice return prior exchange rate for front end viewing
+    @return Calculated exchange rate scaled by 1e18
+    **/
+    function exchangeRatePrior()
+
+    /**
+    @notice getSupplyAPY roughly calculates the current APY for supplying using an average of 6500 blocks per day
+    **/
+    function getSupplyAPY()
+
+    /**
+    @notice getBorrowAPY roughly calculates the current APY for borrowing using an average of 6500 blocks per day
+    **/
+    function getBorrowAPY()
+
+    /**
+    @notice Returns the current per-block borrow interest rate for this ART
+    @return The borrow interest rate per block, scaled by 1e18
+    **/
+    function borrowRatePerBlock()
+
+    /**
+    @notice Returns the current per-block supply interest rate for this ART
+    @return The supply interest rate per block, scaled by 1e18
+    **/
+    function supplyRatePerBlock()
+
+    /**
+    @notice returns last calculated account's borrow balance using the prior borrowIndex
+    @param account The address whose balance should be calculated after updating borrowIndex
+    @return The calculated balance
+    **/
+    function borrowBalancePrior(address account)

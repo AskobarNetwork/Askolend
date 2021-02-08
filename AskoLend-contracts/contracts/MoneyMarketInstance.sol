@@ -46,7 +46,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Factory contract
 **/
     modifier onlyMMFactory() {
-        require(msg.sender == address(MMF), "Msg.sender is not the Money Market Control contract");
+        require(
+            msg.sender == address(MMF),
+            "Msg.sender is not the Money Market Control contract"
+        );
         _;
     }
 
@@ -359,10 +362,8 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             repayedAmount = _repayAmount;
         }
         ///get USDC value of what was repayed
-        uint256 _USDCvalRepayed = UOF.getUnderlyingPriceofAsset(
-            address(asset),
-            repayedAmount
-        );
+        uint256 _USDCvalRepayed =
+            UOF.getUnderlyingPriceofAsset(address(asset), repayedAmount);
         ////track repayment in MMC
         MMF.trackCollateralDown(
             msg.sender,
@@ -496,6 +497,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     function _collectFees(address _targetAdd) external onlyOwner {
         AHR._withdrawReserves(_targetAdd);
         ALR._withdrawReserves(_targetAdd);
+    }
+
+    function _changeColatRatio(uint256 _newCR) external onlyOwner {
+        collatRatio = _newCR;
     }
 
     //////////////////View Functions/////////////////

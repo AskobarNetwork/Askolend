@@ -42,9 +42,10 @@ contract UniswapOracleInstance is Ownable {
         address _tokenA,
         address _tokenB
     ) public {
-        IUniswapV2Pair _pair = IUniswapV2Pair(
-            UniswapV2Library.pairFor(_factory, _tokenA, _tokenB)
-        );
+        IUniswapV2Pair _pair =
+            IUniswapV2Pair(
+                UniswapV2Library.pairFor(_factory, _tokenA, _tokenB)
+            );
         tokenA = _tokenA;
         pair = _pair;
         token0 = _pair.token0();

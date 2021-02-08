@@ -128,10 +128,8 @@ contract Exponential is CarefulMath {
         pure
         returns (MathError, Exp memory)
     {
-        (MathError err0, uint256 descaledMantissa) = divUInt(
-            a.mantissa,
-            scalar
-        );
+        (MathError err0, uint256 descaledMantissa) =
+            divUInt(a.mantissa, scalar);
         if (err0 != MathError.NO_ERROR) {
             return (err0, Exp({mantissa: 0}));
         }
@@ -187,10 +185,8 @@ contract Exponential is CarefulMath {
         pure
         returns (MathError, Exp memory)
     {
-        (MathError err0, uint256 doubleScaledProduct) = mulUInt(
-            a.mantissa,
-            b.mantissa
-        );
+        (MathError err0, uint256 doubleScaledProduct) =
+            mulUInt(a.mantissa, b.mantissa);
         if (err0 != MathError.NO_ERROR) {
             return (err0, Exp({mantissa: 0}));
         }
@@ -198,18 +194,14 @@ contract Exponential is CarefulMath {
         // We add half the scale before dividing so that we get rounding instead of truncation.
         //  See "Listing 6" and text above it at https://accu.org/index.php/journals/1717
         // Without this change, a result like 6.6...e-19 will be truncated to 0 instead of being rounded to 1e-18.
-        (MathError err1, uint256 doubleScaledProductWithHalfScale) = addUInt(
-            halfExpScale,
-            doubleScaledProduct
-        );
+        (MathError err1, uint256 doubleScaledProductWithHalfScale) =
+            addUInt(halfExpScale, doubleScaledProduct);
         if (err1 != MathError.NO_ERROR) {
             return (err1, Exp({mantissa: 0}));
         }
 
-        (MathError err2, uint256 product) = divUInt(
-            doubleScaledProductWithHalfScale,
-            expScale
-        );
+        (MathError err2, uint256 product) =
+            divUInt(doubleScaledProductWithHalfScale, expScale);
         // The only error `div` can return is MathError.DIVISION_BY_ZERO but we control `expScale` and it is not zero.
         assert(err2 == MathError.NO_ERROR);
 

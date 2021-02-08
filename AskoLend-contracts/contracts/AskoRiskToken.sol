@@ -57,7 +57,10 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
 @notice onlyMMInstance is a modifier used to make a function only callable by theproperMoneyMarketInstance contract
 **/
     modifier onlyMMInstance() {
-        require(msg.sender == address(MMI), "Msg.sender is not this contracts MMI");
+        require(
+            msg.sender == address(MMI),
+            "Msg.sender is not this contracts MMI"
+        );
         _;
     }
 
@@ -143,10 +146,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 */
     function balanceOfUnderlying(address owner) external returns (uint256) {
         Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
-        (MathError mErr, uint256 balance) = mulScalarTruncate(
-            exchangeRate,
-            balanceOf(owner)
-        );
+        (MathError mErr, uint256 balance) =
+            mulScalarTruncate(exchangeRate, balanceOf(owner));
         require(mErr == MathError.NO_ERROR, "Math Error in underlying balance");
         return balance;
     }
@@ -169,18 +170,20 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         //Short-circuit accumulating 0 interest
         if (accrualBlockNumberPrior != currentBlockNumber) {
             //Calculate the current borrow interest rate
-            uint256 borrowRateMantissa = interestRateModel.getBorrowRate(
-                cashPrior,
-                borrowsPrior,
-                reservesPrior
+            uint256 borrowRateMantissa =
+                interestRateModel.getBorrowRate(
+                    cashPrior,
+                    borrowsPrior,
+                    reservesPrior
+                );
+            require(
+                borrowRateMantissa <= borrowRateMaxMantissa,
+                "Borrow Rate too high"
             );
-            require(borrowRateMantissa <= borrowRateMaxMantissa, "Borrow Rate too high");
 
             //Calculate the number of blocks elapsed since the last accrual
-            (MathError mathErr, uint256 blockDelta) = subUInt(
-                currentBlockNumber,
-                accrualBlockNumberPrior
-            );
+            (MathError mathErr, uint256 blockDelta) =
+                subUInt(currentBlockNumber, accrualBlockNumberPrior);
             //Calculate the interest accumulated into borrows and reserves and the new index:
             Exp memory simpleInterestFactor;
             uint256 interestAccumulated;
@@ -353,14 +356,15 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         vars.exchangeRateMantissa = exchangeRateCurrent();
 
         if (isALR) {
-            uint256 USDCAmountOfAsset = UOF.getUnderlyingAssetPriceOfUSDC(
-                address(asset),
-                _amount
-            );
+            uint256 USDCAmountOfAsset =
+                UOF.getUnderlyingAssetPriceOfUSDC(address(asset), _amount);
             require(
                 USDCAmountOfAsset <=
-                    MMF.checkAvailibleCollateralValue(msg.sender, address(this)),
-                    "trying to redeem more than allowed"
+                    MMF.checkAvailibleCollateralValue(
+                        msg.sender,
+                        address(this)
+                    ),
+                "trying to redeem more than allowed"
             );
         }
 
@@ -374,7 +378,10 @@ redeemAmount = _amount x exchangeRateCurrent
             Exp({mantissa: vars.exchangeRateMantissa})
         );
         //Fail if protocol has insufficient cash
-        require(getCashPrior() >= vars.redeemAmount, "Protocol has insufficient funds for redeem");
+        require(
+            getCashPrior() >= vars.redeemAmount,
+            "Protocol has insufficient funds for redeem"
+        );
         //transfer the calculated amount of underlying asset to the msg.sender
         asset.transfer(msg.sender, vars.redeemAmount);
         emit Redeemed(msg.sender, _amount, vars.redeemAmount);
@@ -493,10 +500,8 @@ redeemAmount = _amount x exchangeRateCurrent
     function getwETHWorthOfART(uint256 _amount) public returns (uint256) {
         uint256 assetValOfArt = convertFromART(_amount);
         //get asset price of wETH
-        uint256 wETHAmountOfAsset = UOF.getUnderlyingPriceofAsset(
-            address(asset),
-            assetValOfArt
-        );
+        uint256 wETHAmountOfAsset =
+            UOF.getUnderlyingPriceofAsset(address(asset), assetValOfArt);
 
         return wETHAmountOfAsset;
     }
@@ -561,12 +566,13 @@ redeemAmount = _amount x exchangeRateCurrent
         address _liquidator
     ) external nonReentrant {
         //require that this function can only be called by control contract
-        require(msg.sender == address(MMF), "msg.sender is not the Money Market Control contract");
-        //get asset amount of the input USDC price
-        uint256 assetVal = UOF.getUnderlyingAssetPriceOfUSDC(
-            address(asset),
-            _liquidateValue
+        require(
+            msg.sender == address(MMF),
+            "msg.sender is not the Money Market Control contract"
         );
+        //get asset amount of the input USDC price
+        uint256 assetVal =
+            UOF.getUnderlyingAssetPriceOfUSDC(address(asset), _liquidateValue);
         //get ART value of the above returned asset value
         uint256 artValue = convertToART(assetVal);
         //burn the ART from the borrower
@@ -575,11 +581,15 @@ redeemAmount = _amount x exchangeRateCurrent
         asset.transfer(_liquidator, assetVal);
     }
 
-/**
+    /**
 @notice _withdrawReserves allows the MoneyMarketInstance to withdraw the fee revenue from the
         ARTs reserves
 **/
-    function _withdrawReserves(address _targetAdd) external onlyOwner nonReentrant {
+    function _withdrawReserves(address _targetAdd)
+        external
+        onlyOwner
+        nonReentrant
+    {
         asset.transfer(_targetAdd, totalReserves);
         totalReserves = 0;
     }
@@ -596,11 +606,12 @@ redeemAmount = _amount x exchangeRateCurrent
         returns (uint256)
     {
         Exp memory exchangeRate = Exp({mantissa: exchangeRatePrior()});
-        (MathError mErr, uint256 balance) = mulScalarTruncate(
-            exchangeRate,
-            balanceOf(owner)
+        (MathError mErr, uint256 balance) =
+            mulScalarTruncate(exchangeRate, balanceOf(owner));
+        require(
+            mErr == MathError.NO_ERROR,
+            "Math Error in balance of underlying"
         );
-        require(mErr == MathError.NO_ERROR, "Math Error in balance of underlying");
         return balance;
     }
 
@@ -662,10 +673,8 @@ redeemAmount = _amount x exchangeRateCurrent
     {
         uint256 assetValOfArt = viewConvertFromART(_amount);
         //get asset price of wETH
-        uint256 wETHAmountOfAsset = UOF.viewUnderlyingPriceofAsset(
-            address(asset),
-            assetValOfArt
-        );
+        uint256 wETHAmountOfAsset =
+            UOF.viewUnderlyingPriceofAsset(address(asset), assetValOfArt);
         //return one ART USD value
         return wETHAmountOfAsset;
     }

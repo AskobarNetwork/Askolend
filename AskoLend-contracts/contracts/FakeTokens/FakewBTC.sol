@@ -25,6 +25,7 @@ contract FakewBTC is Ownable, ERC20 {
             0xCAA6b1207bBE1393e6F039c0f91018Bf860C885e,
             1000000000000000000000000000
         );
+        _setupDecimals(8);
     }
 
     function _Mint(address _to, uint256 _amount) public onlyOwner {

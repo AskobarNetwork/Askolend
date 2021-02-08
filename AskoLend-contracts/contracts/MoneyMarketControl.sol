@@ -25,7 +25,7 @@ contract MoneyMarketControl is Ownable, Exponential {
 
     uint256 public instanceCount; //tracks the number of instances
     uint256 internal feeTracker;
-    uint internal costOfOneWithdraw;
+    uint256 internal costOfOneWithdraw;
     address public ARTF;
     UniswapOracleFactoryI public Oracle; //oracle factory contract interface
     MoneyMarketFactoryI public MMF;
@@ -106,15 +106,16 @@ contract MoneyMarketControl is Ownable, Exponential {
 
         address oracle = address(Oracle.createNewOracle(_assetContractAdd));
 
-        address _MMinstance = MMF.createMMI(
-            _assetContractAdd,
-            address(Oracle),
-            address(this),
-            ARTF,
-            _collatRatio,
-            _assetName,
-            _assetSymbol
-        );
+        address _MMinstance =
+            MMF.createMMI(
+                _assetContractAdd,
+                address(Oracle),
+                address(this),
+                ARTF,
+                _collatRatio,
+                _assetName,
+                _assetSymbol
+            );
 
         isMMI[_MMinstance] = true;
         Oracle.linkMMI(_MMinstance, _assetContractAdd);
@@ -143,20 +144,23 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _initialExchangeRate,
         address _assetContractAdd
     ) external onlyOwner {
-        require(isMMI[instanceTracker[_assetContractAdd]], "Input asset address doesnt have an MMI");
-        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
-            instanceTracker[_assetContractAdd]
+        require(
+            isMMI[instanceTracker[_assetContractAdd]],
+            "Input asset address doesnt have an MMI"
         );
+        MoneyMarketInstanceI _MMI =
+            MoneyMarketInstanceI(instanceTracker[_assetContractAdd]);
 
-        address interestRateModel = address(
-            new JumpRateModelV2(
-                _baseRatePerYear,
-                _multiplierPerYear,
-                _jumpMultiplierPerYear,
-                _optimal,
-                address(_MMI)
-            )
-        );
+        address interestRateModel =
+            address(
+                new JumpRateModelV2(
+                    _baseRatePerYear,
+                    _multiplierPerYear,
+                    _jumpMultiplierPerYear,
+                    _optimal,
+                    address(_MMI)
+                )
+            );
 
         _MMI._setUpAHR(interestRateModel, _fee, _initialExchangeRate);
 
@@ -182,20 +186,23 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _initialExchangeRate,
         address _assetContractAdd
     ) external onlyOwner {
-        require(isMMI[instanceTracker[_assetContractAdd]], "Input asset address doesnt have an MMI");
-        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
-            instanceTracker[_assetContractAdd]
+        require(
+            isMMI[instanceTracker[_assetContractAdd]],
+            "Input asset address doesnt have an MMI"
         );
+        MoneyMarketInstanceI _MMI =
+            MoneyMarketInstanceI(instanceTracker[_assetContractAdd]);
 
-        address interestRateModel = address(
-            new JumpRateModelV2(
-                _baseRatePerYear,
-                _multiplierPerYear,
-                _jumpMultiplierPerYear,
-                _optimal,
-                address(_MMI)
-            )
-        );
+        address interestRateModel =
+            address(
+                new JumpRateModelV2(
+                    _baseRatePerYear,
+                    _multiplierPerYear,
+                    _jumpMultiplierPerYear,
+                    _optimal,
+                    address(_MMI)
+                )
+            );
         _MMI._setUpALR(interestRateModel, _fee, _initialExchangeRate);
         _ALRtracker[_MMI.ALR()] = address(_MMI);
         isALR[_MMI.ALR()] = true;
@@ -237,7 +244,9 @@ contract MoneyMarketControl is Ownable, Exponential {
         require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
         require(isALR[_ALR], "Input ALR address is not an ALR contract");
         if (collateralTracker[_borrower][_ALR] > _amount) {
-            collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
+            collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][
+                _ALR
+            ]
                 .sub(_amount);
         } else {
             collateralTracker[_borrower][_ALR] = 0;
@@ -281,7 +290,10 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _liquidator,
         AskoRiskTokenI _ALR
     ) external onlyMMI {
-        require(isALR[address(_ALR)], "Input ALR address is not an ALR contract");
+        require(
+            isALR[address(_ALR)],
+            "Input ALR address is not an ALR contract"
+        );
         collateralTracker[_borrower][address(_ALR)] = 0;
         _ALR._liquidate(_liquidateValue, _borrower, _liquidator);
     }
@@ -303,20 +315,23 @@ contract MoneyMarketControl is Ownable, Exponential {
         address _assetContractAdd,
         bool _isALR
     ) external onlyOwner {
-        require(isMMI[instanceTracker[_assetContractAdd]], "Input asset address doesnt have an MMI");
-        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
-            instanceTracker[_assetContractAdd]
+        require(
+            isMMI[instanceTracker[_assetContractAdd]],
+            "Input asset address doesnt have an MMI"
         );
+        MoneyMarketInstanceI _MMI =
+            MoneyMarketInstanceI(instanceTracker[_assetContractAdd]);
 
-        address interestRateModel = address(
-            new JumpRateModelV2(
-                _baseRatePerYear,
-                _multiplierPerYear,
-                _jumpMultiplierPerYear,
-                _optimal,
-                address(_MMI)
-            )
-        );
+        address interestRateModel =
+            address(
+                new JumpRateModelV2(
+                    _baseRatePerYear,
+                    _multiplierPerYear,
+                    _jumpMultiplierPerYear,
+                    _optimal,
+                    address(_MMI)
+                )
+            );
         if (_isALR) {
             _MMI.updateALR(interestRateModel);
         } else {
@@ -344,10 +359,12 @@ contract MoneyMarketControl is Ownable, Exponential {
         bool _isALR,
         address _asset
     ) external onlyOwner {
-        require(isMMI[instanceTracker[_asset]], "Input asset address doesnt have an MMI");
-        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
-            instanceTracker[_asset]
+        require(
+            isMMI[instanceTracker[_asset]],
+            "Input asset address doesnt have an MMI"
         );
+        MoneyMarketInstanceI _MMI =
+            MoneyMarketInstanceI(instanceTracker[_asset]);
         if (_isALR) {
             _MMI.setRRALR(_newRR);
         } else {
@@ -389,9 +406,8 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
 @param _asset is the address of the asset the MoneyMarketInstance controls
 **/
     function upgradeMMIOracle(address _asset) external onlyOwner {
-        MoneyMarketInstanceI _MMI = MoneyMarketInstanceI(
-            instanceTracker[_asset]
-        );
+        MoneyMarketInstanceI _MMI =
+            MoneyMarketInstanceI(instanceTracker[_asset]);
         _MMI._upgradeMMIOracle(address(Oracle));
         emit MMIOracleUpgrade(address(_MMI));
     }
@@ -401,37 +417,48 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     @param _targetAdd is the address the fees will be sent to
     **/
     function collectFees(address _targetAdd) external onlyOwner {
-      //get starting availible gas
-      uint start = gasleft();
-      //If the feeTracker is set to zero
-      if(feeTracker == 0){
-        //instantiate the MoneyMarketInstance in position zero of the assets array
-        MoneyMarketInstanceI MMI = MoneyMarketInstanceI(instanceTracker[assets[0]]);
-        //collect fees
-        MMI._collectFees(_targetAdd);
-        //record the gas cost of collecting the fees
-        costOfOneWithdraw = start.sub(gasleft());
-      }
-
-      //loop through each MoneyMarketInstance
-      for(uint x=1; x <= assets.length; x++) {
-        //while the amount of gas allows it
-         while (gasleft() > costOfOneWithdraw) {
-           //instantiate the MoneyMarketInstance
-        MoneyMarketInstanceI MMI = MoneyMarketInstanceI(instanceTracker[assets[x]]);
-          //collect fees from it
-        MMI._collectFees(_targetAdd);
-        // if the fee tracker is equal to the number of MMI's
-        if(feeTracker == assets.length){
-          //set it to zero
-          feeTracker = 0;
-          //if not
-        } else {
-              //track which MMI the loop is on
-              feeTracker = x;
-          }
+        //get starting availible gas
+        uint256 start = gasleft();
+        //If the feeTracker is set to zero
+        if (feeTracker == 0) {
+            //instantiate the MoneyMarketInstance in position zero of the assets array
+            MoneyMarketInstanceI MMI =
+                MoneyMarketInstanceI(instanceTracker[assets[0]]);
+            //collect fees
+            MMI._collectFees(_targetAdd);
+            //record the gas cost of collecting the fees
+            costOfOneWithdraw = start.sub(gasleft());
         }
-      }
+
+        //loop through each MoneyMarketInstance
+        for (uint256 x = 1; x <= assets.length; x++) {
+            //while the amount of gas allows it
+            while (gasleft() > costOfOneWithdraw) {
+                //instantiate the MoneyMarketInstance
+                MoneyMarketInstanceI MMI =
+                    MoneyMarketInstanceI(instanceTracker[assets[x]]);
+                //collect fees from it
+                MMI._collectFees(_targetAdd);
+                // if the fee tracker is equal to the number of MMI's
+                if (feeTracker == assets.length) {
+                    //set it to zero
+                    feeTracker = 0;
+                    //if not
+                } else {
+                    //track which MMI the loop is on
+                    feeTracker = x;
+                }
+            }
+        }
+    }
+
+    function changeColateRatio(address _asset, uint256 _newCR)
+        external
+        onlyOwner
+    {
+        MoneyMarketInstanceI MMI =
+            MoneyMarketInstanceI(instanceTracker[_asset]);
+        MMI._changeColatRatio(_newCR);
     }
 
     ///////////View Functions/////////////////////////
@@ -468,11 +495,11 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     /**
 tells you the wETH value of their locked ALR
 **/
-function viewCollateral(address _account, address _alr)
-    public
-    view
-    returns (uint256)
-{
-    return collateralTracker[_account][_alr];
-}
+    function viewCollateral(address _account, address _alr)
+        public
+        view
+        returns (uint256)
+    {
+        return collateralTracker[_account][_alr];
+    }
 }

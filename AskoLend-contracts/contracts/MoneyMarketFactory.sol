@@ -35,17 +35,18 @@ contract MoneyMarketFactory is Ownable {
         string memory _assetName,
         string memory _assetSymbol
     ) public returns (address) {
-        address _MMinstance = address(
-            new MoneyMarketInstance(
-                _assetContractAdd,
-                _oracleFactory,
-                _owner,
-                _ARTF,
-                _collatRatio,
-                _assetName,
-                _assetSymbol
-            )
-        );
+        address _MMinstance =
+            address(
+                new MoneyMarketInstance(
+                    _assetContractAdd,
+                    _oracleFactory,
+                    _owner,
+                    _ARTF,
+                    _collatRatio,
+                    _assetName,
+                    _assetSymbol
+                )
+            );
 
         return _MMinstance;
     }

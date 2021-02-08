@@ -132,9 +132,8 @@ contract BaseJumpRateModelV2 {
         if (util <= kink) {
             return util.mul(multiplierPerBlock).div(1e18).add(baseRatePerBlock);
         } else {
-            uint256 normalRate = kink.mul(multiplierPerBlock).div(1e18).add(
-                baseRatePerBlock
-            );
+            uint256 normalRate =
+                kink.mul(multiplierPerBlock).div(1e18).add(baseRatePerBlock);
             uint256 excessUtil = util.sub(kink);
             return
                 excessUtil.mul(jumpMultiplierPerBlock).div(1e18).add(
@@ -157,9 +156,8 @@ contract BaseJumpRateModelV2 {
         uint256 reserves,
         uint256 reserveFactorMantissa
     ) public view returns (uint256) {
-        uint256 oneMinusReserveFactor = uint256(1e18).sub(
-            reserveFactorMantissa
-        );
+        uint256 oneMinusReserveFactor =
+            uint256(1e18).sub(reserveFactorMantissa);
         uint256 borrowRate = getBorrowRateInternal(cash, borrows, reserves);
         uint256 rateToPool = borrowRate.mul(oneMinusReserveFactor).div(1e18);
         return

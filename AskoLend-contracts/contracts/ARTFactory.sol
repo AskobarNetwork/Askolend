@@ -18,19 +18,20 @@ contract ARTFactory {
         bool _isALR,
         uint256 _initialExchangeRate
     ) public returns (address) {
-        address ART = address(
-            new AskoRiskToken( //creates new Asko High Risk Token Contract
-                _InterestRateModel,
-                _asset,
-                _UOF,
-                _MMF,
-                msg.sender,
-                _assetNameAHR,
-                _assetSymbolAHR,
-                _isALR,
-                _initialExchangeRate
-            )
-        );
+        address ART =
+            address(
+                new AskoRiskToken( //creates new Asko High Risk Token Contract
+                    _InterestRateModel,
+                    _asset,
+                    _UOF,
+                    _MMF,
+                    msg.sender,
+                    _assetNameAHR,
+                    _assetSymbolAHR,
+                    _isALR,
+                    _initialExchangeRate
+                )
+            );
 
         return ART;
     }

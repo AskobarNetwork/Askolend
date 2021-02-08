@@ -45,9 +45,8 @@ contract UniswapOracleFactory is Ownable {
   @param token is the address of the token that this oracle will provide a USDC price feed for
   **/
     function createNewOracle(address token) public onlyOwner returns (address) {
-        address _oracle = address(
-            new UniswapOracleInstance(factory, token, usdc_add)
-        );
+        address _oracle =
+            address(new UniswapOracleInstance(factory, token, usdc_add));
         instanceTracker[token] = _oracle;
         return _oracle;
     }
@@ -71,9 +70,8 @@ contract UniswapOracleFactory is Ownable {
         public
         returns (uint256)
     {
-        UniswapOracleInstance oracle = UniswapOracleInstance(
-            instanceTracker[_MMI]
-        );
+        UniswapOracleInstance oracle =
+            UniswapOracleInstance(instanceTracker[_MMI]);
         return oracle.consult(_amount);
     }
 
@@ -87,9 +85,8 @@ contract UniswapOracleFactory is Ownable {
         view
         returns (uint256)
     {
-        UniswapOracleInstance oracle = UniswapOracleInstance(
-            instanceTracker[_MMI]
-        );
+        UniswapOracleInstance oracle =
+            UniswapOracleInstance(instanceTracker[_MMI]);
         return oracle.viewPrice(_amount);
     }
 
@@ -102,9 +99,8 @@ contract UniswapOracleFactory is Ownable {
         public
         returns (uint256)
     {
-        UniswapOracleInstance oracle = UniswapOracleInstance(
-            instanceTracker[_MMI]
-        );
+        UniswapOracleInstance oracle =
+            UniswapOracleInstance(instanceTracker[_MMI]);
         return oracle.consultUSDC(_amount);
     }
 
@@ -118,9 +114,8 @@ contract UniswapOracleFactory is Ownable {
         view
         returns (uint256)
     {
-        UniswapOracleInstance oracle = UniswapOracleInstance(
-            instanceTracker[_MMI]
-        );
+        UniswapOracleInstance oracle =
+            UniswapOracleInstance(instanceTracker[_MMI]);
         return oracle.viewUSDC(_amount);
     }
 }

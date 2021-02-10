@@ -3,6 +3,7 @@ pragma solidity 0.6.6;
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "./compound/Exponential.sol";
 import "./compound/InterestRateModel.sol";
 import "./interfaces/UniswapOracleFactoryI.sol";
@@ -32,6 +33,8 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     uint256 public constant liquidationIncentiveMantissa = .001e18; //.001
     uint256 public constant one = 1e18;
 
+    address public pair;
+
     bool public isALR;
 
     IERC20 public asset;
@@ -39,6 +42,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     MoneyMarketInstanceI public MMI;
     MoneyMarketFactoryI public MMF;
     UniswapOracleFactoryI public UOF;
+    IUniswapV2Router02 public uniswapRouter;
 
     mapping(address => BorrowSnapshot) internal accountBorrows;
     mapping(address => uint256) public nonCompliant; // tracks user to a market to a time
@@ -122,6 +126,10 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         accrualBlockNumber = getBlockNumber();
         borrowIndex = mantissaOne;
         reserveFactorMantissa = 1000000000000000000;
+        pair = UOF.getPairAdd(address(asset));
+        asset.approve(pair, 100000000000000000000000000);
+        uniswapRouter = IUniswapV2Router02(UOF.uniswap_router_add());
+        asset.approve(address(uniswapRouter), 100000000000000000000000000);
     }
 
     /////////////////////External Functions//////////////////
@@ -357,7 +365,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 
         if (isALR) {
             uint256 USDCAmountOfAsset =
-                UOF.getUnderlyingAssetPriceOfUSDC(address(asset), _amount);
+                UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
             require(
                 USDCAmountOfAsset <=
                     MMF.checkAvailibleCollateralValue(
@@ -388,14 +396,31 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     /**
-@notice burn is a modified function that only the owner of this contract(its MoneyMarketInstance) can call.
+@notice burn is a modified function that only the MoneyMarket Control can call.
         This function allows an amount of AskoRiskToken token to be burned from an address when called.
 @param _account is the account the AHR is being burned from
-@param _amount is the amount of AHR being burned
+@param _amount is the wETH amount of AHR being burned
 **/
-    function burn(address _account, uint256 _amount) external onlyMMInstance {
-        _burn(_account, _amount);
-        emit Burn(_account, _amount);
+    function burn(address _account, uint256 _amount) external {
+      require(
+          msg.sender == address(MMF),
+          "msg.sender is not the Money Market Control contract"
+      );
+        uint assetAmount = UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
+        uint artAmount = convertToART(assetAmount);
+        _burn(_account, artAmount);
+        emit Burn(_account, artAmount);
+    }
+
+    function mintCollat(address _account, uint256 _amount) external {
+      require(
+          msg.sender == address(MMF),
+          "msg.sender is not the Money Market Control contract"
+      );
+        uint assetAmount = UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
+        uint artAmount = convertToART(assetAmount);
+        _mint(_account, artAmount);
+        emit Burn(_account, artAmount);
     }
 
     //struct used by borrow function to avoid stack too deep errors
@@ -557,28 +582,32 @@ redeemAmount = _amount x exchangeRateCurrent
     /**
 @notice _liquidate is called by the Money Market Control contract during liquidation
 @param _liquidateValue is the USDC value being liquidated
-@param _borrower is the address of the borrower
 @param _liquidator is the address of the liquidator account
 **/
     function _liquidate(
         uint256 _liquidateValue,
-        address _borrower,
-        address _liquidator
+        address _liquidator,
+        address _asset
     ) external nonReentrant {
         //require that this function can only be called by control contract
         require(
             msg.sender == address(MMF),
             "msg.sender is not the Money Market Control contract"
         );
-        //get asset amount of the input USDC price
+        //get asset amount of the input wETH price
         uint256 assetVal =
-            UOF.getUnderlyingAssetPriceOfUSDC(address(asset), _liquidateValue);
-        //get ART value of the above returned asset value
-        uint256 artValue = convertToART(assetVal);
-        //burn the ART from the borrower
-        _burn(_borrower, artValue);
-        //transfer unlocked asset to liquidator
-        asset.transfer(_liquidator, assetVal);
+            UOF.getUnderlyingAssetPriceOfwETH(address(asset), _liquidateValue);
+
+        uint256 deadline = block.timestamp + 240;
+
+          uniswapRouter.swapExactTokensForTokens(
+            assetVal,
+            0,
+             UOF.getPathForERC20Swap(address(asset), _asset),
+            _liquidator,
+            deadline
+        );
+
     }
 
     /**

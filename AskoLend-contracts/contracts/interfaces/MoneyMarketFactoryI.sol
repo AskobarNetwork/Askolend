@@ -68,6 +68,7 @@ abstract contract MoneyMarketFactoryI {
         uint256 _liquidateValue,
         address _borrower,
         address _liquidator,
+        address _asset,
         address _ALR
     ) public virtual;
 }

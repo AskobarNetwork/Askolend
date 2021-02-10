@@ -131,7 +131,6 @@ contract MoneyMarketControl is Ownable, Exponential {
 @param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
 @param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
 @param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
-@param _fee is a number representing the fee for exchanging an AHR token, as a mantissa (scaled by 1e18)
 @param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
 @dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
 **/
@@ -140,7 +139,6 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _multiplierPerYear,
         uint256 _jumpMultiplierPerYear,
         uint256 _optimal,
-        uint256 _fee,
         uint256 _initialExchangeRate,
         address _assetContractAdd
     ) external onlyOwner {
@@ -162,7 +160,7 @@ contract MoneyMarketControl is Ownable, Exponential {
                 )
             );
 
-        _MMI._setUpAHR(interestRateModel, _fee, _initialExchangeRate);
+        _MMI._setUpAHR(interestRateModel, _initialExchangeRate);
 
         emit AHRcreated(_assetContractAdd, interestRateModel);
     }
@@ -173,7 +171,6 @@ contract MoneyMarketControl is Ownable, Exponential {
 @param _multiplierPerYear  The rate of increase in interest rate wrt utilization (scaled by 1e18)
 @param _jumpMultiplierPerYear The multiplierPerBlock after hitting a specified utilization point
 @param _optimal The utilization point at which the jump multiplier is applied(Refered to as the Kink in the InterestRateModel)
-@param _fee is a number representing the fee for exchanging an ALR token, as a mantissa (scaled by 1e18)
 @param _assetContractAdd is the contract address of the asset whos MoneyMarketInstance is being set up
 @dev this function can only be called after an asset has been whitelisted as it needs an existing MoneyMarketInstance contract
 **/
@@ -182,7 +179,6 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _multiplierPerYear,
         uint256 _jumpMultiplierPerYear,
         uint256 _optimal,
-        uint256 _fee,
         uint256 _initialExchangeRate,
         address _assetContractAdd
     ) external onlyOwner {
@@ -203,7 +199,7 @@ contract MoneyMarketControl is Ownable, Exponential {
                     address(_MMI)
                 )
             );
-        _MMI._setUpALR(interestRateModel, _fee, _initialExchangeRate);
+        _MMI._setUpALR(interestRateModel, _initialExchangeRate);
         _ALRtracker[_MMI.ALR()] = address(_MMI);
         isALR[_MMI.ALR()] = true;
 
@@ -226,6 +222,8 @@ contract MoneyMarketControl is Ownable, Exponential {
         require(isALR[_ALR], "Input ALR address is not an ALR contract");
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .add(_amount);
+        AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
+        alr.burn(_borrower, _amount);
         emit CollateralUp(_ALR, _borrower, _amount);
     }
 
@@ -251,6 +249,8 @@ contract MoneyMarketControl is Ownable, Exponential {
         } else {
             collateralTracker[_borrower][_ALR] = 0;
         }
+          AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
+                alr.mintCollat(_borrower, _amount);
         emit CollateralDown(_ALR, _borrower, _amount);
     }
 
@@ -279,7 +279,7 @@ contract MoneyMarketControl is Ownable, Exponential {
 
     /**
 @notice liquidateTrigger is a protected function that can only be called by a money market instance.
-@param _liquidateValue is the value being liquidated
+@param _liquidateValue is the wETH value being liquidated
 @param _borrower is the address of the account being liquidated
 @param _liquidator is the address of the account doing the liquidating
 @param _ALR is the address of the Asko Low Risk token that was used as collateral
@@ -288,14 +288,15 @@ contract MoneyMarketControl is Ownable, Exponential {
         uint256 _liquidateValue,
         address _borrower,
         address _liquidator,
+        address _asset,
         AskoRiskTokenI _ALR
     ) external onlyMMI {
         require(
             isALR[address(_ALR)],
             "Input ALR address is not an ALR contract"
         );
+        _ALR._liquidate(_liquidateValue, _liquidator, _asset);
         collateralTracker[_borrower][address(_ALR)] = 0;
-        _ALR._liquidate(_liquidateValue, _borrower, _liquidator);
     }
 
     /**

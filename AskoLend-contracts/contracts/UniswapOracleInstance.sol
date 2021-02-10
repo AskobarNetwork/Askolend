@@ -118,8 +118,8 @@ contract UniswapOracleInstance is Ownable {
     }
 
     /**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+@notice consult returns the price of a asset amount in wETH
+@return price is the price of one asset in wETYH(example 1LINK in wETH)
 **/
     function consult(uint256 _amount) external returns (uint256 price) {
         update();
@@ -127,27 +127,27 @@ contract UniswapOracleInstance is Ownable {
     }
 
     /**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+@notice consult returns the price of a asset amount in wETH
+@return price is the price of one asset in wETYH(example 1LINK in wETH)
 **/
     function viewPrice(uint256 _amount) external view returns (uint256 price) {
         price = price0Average.mul(_amount).decode144();
     }
 
     /**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+@notice consult returns the asset value of an input wETH amount
+@return price the asset value of an input wETH amount
 **/
-    function consultUSDC(uint256 _amount) external returns (uint256 price) {
+    function consultwETH(uint256 _amount) external returns (uint256 price) {
         update();
         price = price1Average.mul(_amount).decode144();
     }
 
     /**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+    @notice consult returns the asset value of an input wETH amount
+    @return price the asset value of an input wETH amount
 **/
-    function viewUSDC(uint256 _amount) external view returns (uint256 price) {
+    function viewwETH(uint256 _amount) external view returns (uint256 price) {
         price = price1Average.mul(_amount).decode144();
     }
 }

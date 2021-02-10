@@ -652,23 +652,23 @@ function viewUnderlyingPriceofAsset(address _MMI, uint256 _amount)
 ```
 
 `/**
-@notice getUnderlyingAssetPriceOfUSDC allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
+@notice getUnderlyingAssetPriceOfwETH allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/`
 
 ``` solidity
-function getUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
+function getUnderlyingAssetPriceOfwETH(address _MMI, uint256 _amount)
 ```
 
 `/**
-@notice getUnderlyingAssetPriceOfUSDC allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
+@notice getUnderlyingAssetPriceOfwETH allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/`
 
 ``` solidity
-function viewUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
+function viewUnderlyingAssetPriceOfwETH(address _MMI, uint256 _amount)
 ```
 
 ## Uniswap Oracle Instance

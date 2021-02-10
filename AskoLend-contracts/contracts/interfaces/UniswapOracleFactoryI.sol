@@ -12,6 +12,9 @@ The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory u
 **/
 
 abstract contract UniswapOracleFactoryI {
+
+  address public uniswap_router_add;
+
     /**
 @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
         a new asset is whitelisted
@@ -43,11 +46,11 @@ abstract contract UniswapOracleFactoryI {
         returns (uint256);
 
     /**
-@notice getUnderlyingAssetPriceOfUSDC allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
+@notice getUnderlyingAssetPriceOfwETH allows for the price retrieval of a MoneyMarketInstances underlying asset in asset
 @param _MMI is the address of the MoneyMarketInstance whos asset price is being retrieved
 @return returns the price of the asset
 **/
-    function getUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
+    function getUnderlyingAssetPriceOfwETH(address _MMI, uint256 _amount)
         public
         virtual
         returns (uint256);
@@ -79,9 +82,17 @@ abstract contract UniswapOracleFactoryI {
   **/
     function linkMMI(address _MMI, address _asset) public virtual;
 
-    function viewUnderlyingAssetPriceOfUSDC(address _MMI, uint256 _amount)
+    function viewUnderlyingAssetPriceOfwETH(address _MMI, uint256 _amount)
         public
         view
         virtual
         returns (uint256);
+
+          function getPairAdd(address _asset) external view virtual returns(address);
+
+          function getPathForERC20Swap(address _tokenA, address _tokenB)
+              external
+              view
+              virtual
+              returns (address[] memory);
 }

@@ -15,13 +15,11 @@ abstract contract MoneyMarketInstanceI {
 
     function _setUpAHR(
         address _InterestRateModel,
-        uint256 _fee,
         uint256 _initialExchangeRate
     ) public virtual;
 
     function _setUpALR(
         address _InterestRateModel,
-        uint256 _fee,
         uint256 _initialExchangeRate
     ) public virtual;
 

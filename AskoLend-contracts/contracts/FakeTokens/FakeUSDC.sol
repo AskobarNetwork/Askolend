@@ -4,14 +4,14 @@ import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/// @title FakeUSDC
+/// @title FakewETH
 /// @author Christopher Dixon
 ////////////////////////////////////////////////////////////////////////////////////////////
 /**
-@notice the FakeUSDC contract is used to simulate an ERC20 with uniswap on kovan
+@notice the FakewETH contract is used to simulate an ERC20 with uniswap on kovan
 **/
-contract FakeUSDC is Ownable, ERC20 {
-    constructor() public ERC20("USDC", "USDC") {
+contract FakewETH is Ownable, ERC20 {
+    constructor() public ERC20("wETH", "wETH") {
         _Mint(msg.sender, 1000000000000000000000000000);
         _Mint(
             0x84166f7C1C8BB78C6553556bBa3433fe2eB5ED26,

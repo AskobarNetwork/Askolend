@@ -18,9 +18,9 @@ Getter Functions:
 /// the amount of ALR token the user has locked as collateral
     function collateralTracker ( userAddress, ALRtoken ) returns ( collateralAmountLocked );
 
-///input user address and ALR token address and returns the USDC value of
+///input user address and ALR token address and returns the wETH value of
 ///the users locked collateral
-    function checkCollateralValue( usrAddress, ALRtoken )  returns( USDCvalOfCollateral );
+    function checkCollateralValue( usrAddress, ALRtoken )  returns( wETHvalOfCollateral );
 
 //returns an array of all listed assets
     function getAssets() returns(address[]);

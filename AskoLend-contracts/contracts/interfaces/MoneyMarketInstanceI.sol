@@ -13,15 +13,13 @@ The MoneyMarketinstanceI contract an abstract contract MoneyMarketControl uses t
 abstract contract MoneyMarketInstanceI {
     address public ALR;
 
-    function _setUpAHR(
-        address _InterestRateModel,
-        uint256 _initialExchangeRate
-    ) public virtual;
+    function _setUpAHR(address _InterestRateModel, uint256 _initialExchangeRate)
+        public
+        virtual;
 
-    function _setUpALR(
-        address _InterestRateModel,
-        uint256 _initialExchangeRate
-    ) public virtual;
+    function _setUpALR(address _InterestRateModel, uint256 _initialExchangeRate)
+        public
+        virtual;
 
     function getAssetAdd() public view virtual returns (address);
 

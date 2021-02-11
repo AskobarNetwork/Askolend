@@ -19,6 +19,7 @@ contract("MoneyMarketControl", (accounts) => {
   const ONE_YEAR = 365 * ONE_DAY;
   let account_one = accounts[0];
   let account_two = accounts[1];
+  let account_three = accounts[2];
   let augur;
   let link;
   let MMC;
@@ -410,25 +411,26 @@ contract("MoneyMarketControl", (accounts) => {
       "User two's Link ALR borrow bal after liquidation: " +
         web3.utils.fromWei(linkBorrowedALRafterL, "ether")
     );
+    console.log("checking reserves")
+    let feeReserves = await linkALR.totalReserves();
+    console.log("the reserves earned by the Link ALR contract at this point are: " + web3.utils.fromWei(feeReserves, "ether"));
+  });
+///////////////////////////////////////////////////////////////////////////////////
+  it("should collect the reserve fees from all ART contracts", async () => {
+    let linkBal = await link.balanceOf(account_three)
+    let augurBal = await augur.balanceOf(account_three)
+    console.log("The Link Balance of account 3 before fee collection is: " + web3.utils.fromWei(linkBal, "ether"))
+    console.log("The Augur Balance of account 3 before fee collection is: " + web3.utils.fromWei(augurBal, "ether"))
+    await MMC.collectFees(account_three, {from: account_one});
+    linkBal = await link.balanceOf(account_three)
+    augurBal = await augur.balanceOf(account_three)
+    console.log("The Link Balance of account 3 After fee collection is: " + web3.utils.fromWei(linkBal, "ether"))
+    console.log("The Augur Balance of account 3 After fee collection is: " + web3.utils.fromWei(augurBal, "ether"))
+    let costOfOneWithdraw = await MMC.costOfOneWithdraw();
+    console.log("The cost of one withdraw is: " + web3.utils.fromWei(costOfOneWithdraw, "ether"))
+    let feeTracker = await MMC.feeTracker();
+    console.log("feeTracker ended on: " + feeTracker);
+  });
 
 
-  });
-  ///////////////////////////////////////////////////////////////////////////////////
-  it("should make sure a user cannot transfer their ART token", async () => {
-    linkALRBal = await linkALR.balanceOf(account_one);
-    console.log(
-      "User two's link balance before transfer attempt: " +
-        web3.utils.fromWei(linkALRBal)
-    );
-    await truffleAssert.reverts(
-      linkALR.transfer(account_two, web3.utils.toWei("100"), {
-        from: account_one,
-      })
-    );
-    linkALRBal = await linkALR.balanceOf(account_one);
-    console.log(
-      "User two's link balance after transfer attempt: " +
-        web3.utils.fromWei(linkALRBal)
-    );
-  });
 });

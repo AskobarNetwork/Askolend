@@ -17,15 +17,15 @@ import "./compound/Exponential.sol";
 /**
 MoneyMarketControl is designed to coordinate Money Markets
 This contract uses the OpenZeppelin contract Library to inherit functions from
-  Ownable.sol
+  Ownable.sol && SafeMath.sol
 **/
 
 contract MoneyMarketControl is Ownable, Exponential {
     using SafeMath for uint256;
 
     uint256 public instanceCount; //tracks the number of instances
-    uint256 internal feeTracker;
-    uint256 internal costOfOneWithdraw;
+    uint256 public feeTracker;
+    uint256 public costOfOneWithdraw;
     address public ARTF;
     UniswapOracleFactoryI public Oracle; //oracle factory contract interface
     MoneyMarketFactoryI public MMF;
@@ -75,6 +75,8 @@ contract MoneyMarketControl is Ownable, Exponential {
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
         is used to set up Oracle variables for the MoneyMarketFactory contract.
 @param _oracle is the address for the UniswapOracleFactorycontract
+@param _MMF is the address of the MoneyMarketFactory contract
+@param _ARTF is the address of the ART factory contract
 **/
     constructor(
         address _oracle,
@@ -210,7 +212,7 @@ contract MoneyMarketControl is Ownable, Exponential {
 @notice trackCollateralUp is an external function used bya MMI to track collateral amounts globally
 @param _borrower is the address of the corrower
 @param _ALR is the address of the ALR being collateralized
-@param _amount is the amount of USDC being collateralized
+@param _amount is the amount of wETH being collateralized
 @dev this function can only be called by a MoneyMarketInstance.
 **/
     function trackCollateralUp(
@@ -231,7 +233,7 @@ contract MoneyMarketControl is Ownable, Exponential {
  @notice trackCollateralDown is an external function used bya MMI to track collateral amounts globally
  @param _ALR is the address of the ALR being collateralized
  @param _ALR is the address of the seller
- @param _amount is the amount of USDC being collateralized
+ @param _amount is the amount of wETH being collateralized
  @dev this function can only be called by a MoneyMarketInstance.
  **/
     function trackCollateralDown(
@@ -249,17 +251,18 @@ contract MoneyMarketControl is Ownable, Exponential {
         } else {
             collateralTracker[_borrower][_ALR] = 0;
         }
-          AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
-                alr.mintCollat(_borrower, _amount);
+        AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
+        alr.mintCollat(_borrower, _amount);
         emit CollateralDown(_ALR, _borrower, _amount);
     }
 
     /**
-@notice checkCollateralValue is a view function that accepts an account address and an ALR contract
+@notice checkCollateralValue  accepts an account address and an ALR contract
         address and returns the USD value of the availible collateral they have. Availible collateral is
         determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
 @param _borrower is the address whos collateral value we are looking up
 @param _ALR is the address of the ALR token where collateral value is being looked up
+@dev this function calls the accrueInterest function when called and is therefore not a view function
  **/
     function checkAvailibleCollateralValue(address _borrower, address _ALR)
         external
@@ -269,36 +272,12 @@ contract MoneyMarketControl is Ownable, Exponential {
         AskoRiskTokenI _ART = AskoRiskTokenI(_ALR);
         //get borrowers art balance
         uint256 artBal = _ART.balanceOf(_borrower);
-        //get USDC value of art balance
-        uint256 usdcValOfBalance = _ART.getwETHWorthOfART(artBal);
-        //retrieve the amount of the USDC value they have borrowed
-        uint256 usdcValLocked = collateralTracker[_borrower][_ALR];
-        //retrieve USDC availible collateral
-        return usdcValOfBalance.sub(usdcValLocked);
-    }
-
-    /**
-@notice checkCollateralValue is a view function that accepts an account address and an ALR contract
-        address and returns the USD value of the availible collateral they have. Availible collateral is
-        determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
-@param _borrower is the address whos collateral value we are looking up
-@param _ALR is the address of the ALR token where collateral value is being looked up
- **/
-    function viewAvailibleCollateralValue(address _borrower, address _ALR)
-        external
-        view
-        returns (uint256)
-    {
-        //instantiate art token
-        AskoRiskTokenI _ART = AskoRiskTokenI(_ALR);
-        //get borrowers art balance
-        uint256 artBal = _ART.balanceOf(_borrower);
-        //get USDC value of art balance
-        uint256 usdcValOfBalance = _ART.viewwETHWorthOfART(artBal);
-        //retrieve the amount of the USDC value they have borrowed
-        uint256 usdcValLocked = collateralTracker[_borrower][_ALR];
-        //retrieve USDC availible collateral
-        return usdcValOfBalance.sub(usdcValLocked);
+        //get wETH value of art balance
+        uint256 wETHValOfBalance = _ART.getwETHWorthOfART(artBal);
+        //retrieve the amount of the wETH value they have borrowed
+        uint256 wETHValLocked = collateralTracker[_borrower][_ALR];
+        //retrieve wETH availible collateral
+        return wETHValOfBalance.sub(wETHValLocked);
     }
 
     /**
@@ -454,29 +433,35 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
             //record the gas cost of collecting the fees
             costOfOneWithdraw = start.sub(gasleft());
         }
-
-        //loop through each MoneyMarketInstance
-        for (uint256 x = 1; x <= assets.length; x++) {
+        uint256 length = assets.length;
+        //loop through each remaining MoneyMarketInstance
+        feeTracker++;
+        for (uint256 x = feeTracker; feeTracker <= length; x++) {
             //while the amount of gas allows it
-            while (gasleft() > costOfOneWithdraw) {
+            while (gasleft() > costOfOneWithdraw.mul(2)) {
                 //instantiate the MoneyMarketInstance
                 MoneyMarketInstanceI MMI =
                     MoneyMarketInstanceI(instanceTracker[assets[x]]);
                 //collect fees from it
                 MMI._collectFees(_targetAdd);
-                // if the fee tracker is equal to the number of MMI's
-                if (feeTracker == assets.length) {
-                    //set it to zero
-                    feeTracker = 0;
-                    //if not
-                } else {
-                    //track which MMI the loop is on
-                    feeTracker = x;
-                }
+            }
+            // if the fee tracker is equal to the number of MMI's
+            if (feeTracker == length) {
+              //set it to zero
+              feeTracker = 0;
+              //if not
+            } else {
+              //track which MMI the loop is on
+              feeTracker = x;
             }
         }
     }
 
+    /**
+@notice changeColateRatio allows the owner of this contract to change the collateral ratio for an asset
+@param _asset is the address of the asset whos MoneyMarket is being updated
+@param _newCR is the new collatRatio being set
+**/
     function changeColateRatio(address _asset, uint256 _newCR)
         external
         onlyOwner
@@ -487,6 +472,30 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     }
 
     ///////////View Functions/////////////////////////
+    /**
+    @notice viewAvailibleCollateralValue is a view function that accepts an account address and an ALR contract
+    address and returns the USD value of the availible collateral they have. Availible collateral is
+    determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
+    @param _borrower is the address whos collateral value we are looking up
+    @param _ALR is the address of the ALR token where collateral value is being looked up
+    **/
+    function viewAvailibleCollateralValue(address _borrower, address _ALR)
+        external
+        view
+        returns (uint256)
+    {
+        //instantiate art token
+        AskoRiskTokenI _ART = AskoRiskTokenI(_ALR);
+        //get borrowers art balance
+        uint256 artBal = _ART.balanceOf(_borrower);
+        //get wETH value of art balance
+        uint256 wETHValOfBalance = _ART.viewwETHWorthOfART(artBal);
+        //retrieve the amount of the wETH value they have borrowed
+        uint256 wETHValLocked = collateralTracker[_borrower][_ALR];
+        //retrieve wETH availible collateral
+        return wETHValOfBalance.sub(wETHValLocked);
+    }
+
     /**
     @notice getAsset returns an array of all assets whitelisted on the platform.
     @dev this can be used to loop through and retreive each assets MoneyMarket by the front end

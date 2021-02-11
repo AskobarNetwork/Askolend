@@ -37,14 +37,14 @@ abstract contract AskoRiskTokenI {
         virtual
         returns (uint256);
 
-    function getwETHWorthOfART(uint256 _USDCAmount)
+    function getwETHWorthOfART(uint256 _wETHAmount)
         public
         virtual
         returns (uint256);
 
     function burn(address _account, uint256 _amount) public virtual;
 
-    function viewwETHWorthOfART(uint256 _USDCAmount)
+    function viewwETHWorthOfART(uint256 _wETHAmount)
         public
         view
         virtual
@@ -66,7 +66,7 @@ abstract contract AskoRiskTokenI {
 
     function setReserveRatio(uint256 _RR) public virtual;
 
-    function _withdrawReserves(address _targetAdd) external virtual;
+    function _withdrawFee(address _targetAdd) external virtual;
 
     function mintCollat(address _account, uint256 _amount) external virtual;
 }

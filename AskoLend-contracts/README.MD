@@ -141,7 +141,7 @@ The function trackCollateralUp is used by the Money Market Instance contracts to
 @notice trackCollateralUp is an external function used bya MMI to track collateral amounts globally
 @param _borrower is the address of the corrower
 @param _ALR is the address of the seller
-@param _amount is the amount of USDC being collateralized
+@param _amount is the amount of wETH being collateralized
 @dev this function can only be called by a MoneyMarketInstance.
 **/`
 
@@ -158,7 +158,7 @@ The function trackCollateralDown is used by the Money Market Instance contracts 
  @notice trackCollateralDown is an external function used bya MMI to track collateral amounts globally
  @param _borrower is the address of the corrower
  @param _ALR is the address of the seller
- @param _amount is the amount of USDC being collateralized
+ @param _amount is the amount of wETH being collateralized
  @dev this function can only be called by a MoneyMarketInstance.
  **/`
 
@@ -181,7 +181,7 @@ checkCollateralizedALR allows a borrowers collateralized ALR amount to be retrie
 function checkCollateralizedALR(address _borrower, address _ALR)
 ```
 
-checkAvailibleCollateralValue returns the USDC value of a borrowers locked amount of ALR
+checkAvailibleCollateralValue returns the wETH value of a borrowers locked amount of ALR
 
 `/**
 @notice checkCollateralValue is a view function that accepts an account address and an ALR contract
@@ -534,10 +534,10 @@ The repay borrow function is called by the Money Market Instance when a user rep
 function repayBorrow(uint256 repayAmount, address borrower)
 ```
 
-The get USDC worth of art functions work similiar to all of the other current/prior functions
+The get wETH worth of art functions work similiar to all of the other current/prior functions
 
 `/**
-@pnotice getwETHWorthOfART is used to calculate the current USDC price of the input amount of Asko Risk Token
+@pnotice getwETHWorthOfART is used to calculate the current wETH price of the input amount of Asko Risk Token
 @param _amount is the amount ART being looked up
 **/`
 
@@ -546,7 +546,7 @@ function getwETHWorthOfART(uint256 _amount)
 ```
 
 `/**
-@pnotice viewwETHWorthOfART is used to calculate the prior USDC price of the input amount of Asko Risk Token
+@pnotice viewwETHWorthOfART is used to calculate the prior wETH price of the input amount of Asko Risk Token
 @param _amount is the amount ART being looked up
 **/`
 
@@ -575,7 +575,7 @@ function viewConvertToART(uint256 _amountOfAsset)
 
 `/**
 @notice _liquidate is called by the Money Market Control contract during liquidation
-@param _liquidateValue is the USDC value being liquidated
+@param _liquidateValue is the wETH value being liquidated
 @param _borrower is the address of the borrower
 @param _liquidator is the address of the liquidator account
 **/`
@@ -613,7 +613,7 @@ The Uniswap oracle factory is designed to generate uniswap oracle instances for 
 `/**
 @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
         a new asset is whitelisted
-@param token is the address of the token that this oracle will provide a USDC price feed for
+@param token is the address of the token that this oracle will provide a wETH price feed for
 **/`
 
 ``` solidity
@@ -673,7 +673,7 @@ function viewUnderlyingAssetPriceOfwETH(address _MMI, uint256 _amount)
 
 ## Uniswap Oracle Instance
 
-The Uniswap Oracle Instance is designed to facilitate a USDC price feed for a specific ERC20 based asset
+The Uniswap Oracle Instance is designed to facilitate a wETH price feed for a specific ERC20 based asset
 
 
 `/**
@@ -686,16 +686,16 @@ function update()
 ```
 
 `/**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+@notice consult returns the price of a token in wETH
+@return price is the price of one asset in wETH(example 1WETH in wETH)
 **/`
 
 ``` solidity
 function consult(uint256 _amount)
 ```
 `/**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+@notice consult returns the price of a token in wETH
+@return price is the price of one asset in wETH(example 1WETH in wETH)
 **/`
 
 ``` solidity
@@ -703,18 +703,18 @@ function viewPrice(uint256 _amount)
 ```
 
 `/**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+@notice consult returns the price of a token in wETH
+@return price is the price of one asset in wETH(example 1WETH in wETH)
 **/`
 
 ``` solidity
-function consultUSDC(uint256 _amount)
+function consultwETH(uint256 _amount)
 ```
 `/**
-@notice consult returns the price of a token in USDC
-@return price is the price of one asset in USDC(example 1WETH in USDC)
+@notice consult returns the price of a token in wETH
+@return price is the price of one asset in wETH(example 1WETH in wETH)
 **/`
 
 ``` solidity
-function viewUSDC(uint256 _amount)
+function viewwETH(uint256 _amount)
 ```

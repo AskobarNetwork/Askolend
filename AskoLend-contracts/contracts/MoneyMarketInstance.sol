@@ -17,13 +17,11 @@ import "./interfaces/ARTFactoryI.sol";
 /**
 The MoneyMarketInstance contract is designed facilitate a tiered money market for an individual ERC20 asset
 This contract uses the OpenZeppelin contract Library to inherit functions from
-  Ownable.sol && IRC20.sol
+  Ownable.sol, SafeMath.sol, ReentrancyGuard && SafeERC20.sol
 **/
 contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
-
-
 
     uint256 public divisor;
     uint256 public collatRatio;
@@ -42,6 +40,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 
     mapping(address => address) public collateralLockedALR;
     mapping(address => bool) public cantCollateralize;
+
     /**
 @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Factory contract
 **/
@@ -61,7 +60,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     event Liquidated(
         address borrower,
         address liquidator,
-        uint256 totalBorrowsUSDCval,
+        uint256 totalBorrowswETHval,
         address moneyMarket
     );
     event divisorUpdated(uint256 newDivisor);
@@ -76,8 +75,6 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 @param _collatRatio is the number that will be used when calculating the collateralizastion ratio for a MMI
 @param _assetName is the name of the asset(e.x: ChainLink)
 @param _assetSymbol is the symbol of the asset(e.x: LINK)
-@dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
-      before creating each token.
 **/
     constructor(
         address _assetContractAdd,
@@ -96,6 +93,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         MMF = MoneyMarketFactoryI(_owner);
         asset = IERC20(_assetContractAdd);
         ARTF = ARTFactoryI(_ARTF);
+        transferOwnership(_owner);
     }
 
     ///////////////External Functions //////////////////
@@ -104,15 +102,18 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 @notice setUp is called by the MoneyMarketFactory after a contract is created to set up the initial variables.
         This is split from the constructor function to keep from reaching the gas block limit
 @param  _InterestRateModel is the address of this MoneyMarketInstances InterestRateModel
+@param _initialExchangeRate is the initial exchange rate between an asset and its AHR token
 @dev this function will create a token whos name and symbol is concatenated with a "AHR-" in front of it
       example: AHR-LINK
 @dev asset.approve() is called to allow the AHR contract to freeely transfer the assset from this contract when the mint
       lendToAHRpool function is called.
+@dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
+      before creating each token.
 **/
-    function _setUpAHR(
-        address _InterestRateModel,
-        uint256 _initialExchangeRate
-    ) external onlyMMFactory {
+    function _setUpAHR(address _InterestRateModel, uint256 _initialExchangeRate)
+        external
+        onlyMMFactory
+    {
         bytes memory ahrname = abi.encodePacked("AHR-");
         ahrname = abi.encodePacked(ahrname, assetName);
         //abi encode and concat strings
@@ -141,15 +142,18 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 @notice setUp is called by the MoneyMarketFactory after a contract is created to set up the initial variables.
         This is split from the constructor function to keep from reaching the gas block limit
 @param  _InterestRateModel is the address of this MoneyMarketInstances InterestRateModel
+@param _initialExchangeRate is the initial exchange rate between an asset and its ALR token
 @dev this function will create a token whos name and symbol is concatenated with a "ALR-" in front of it
       example: ALR-LINK
 @dev asset.approve() is called to allow the ALR contract to freeely transfer the assset from this contract when the mint
       lendToALRpool function is called.
+@dev this function uses ABI encoding to properly concatenate AHR- && ALR- in front of the tokens name and symbol
+      before creating each token.
 **/
-    function _setUpALR(
-        address _InterestRateModel,
-        uint256 _initialExchangeRate
-    ) external onlyMMFactory {
+    function _setUpALR(address _InterestRateModel, uint256 _initialExchangeRate)
+        external
+        onlyMMFactory
+    {
         bytes memory alrname = abi.encodePacked("AlR-");
         alrname = abi.encodePacked(alrname, assetName);
         //abi encode and concat strings
@@ -207,7 +211,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         uint256 totalFutureAmountOwed;
         uint256 availibleCollateralValue;
         uint256 assetAmountValOwed;
-        uint256 amountValue; // Note: reverts on error
+        uint256 amountValue;
         uint256 halfVal;
         uint256 collateralNeeded;
         uint256 half;
@@ -229,10 +233,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                 cantCollateralize[msg.sender] == false,
             "collateral not right"
         );
-        require(_amount !=0, "amount cannot be equal to zero");
+        require(_amount != 0, "amount cannot be equal to zero");
         borrowVars memory vars;
         //check that the user has enough collateral in input money market
-        //this returns the USDC price of their asset
+        //this returns the wETH price of their asset
 
         //get current borrow balances for each ART
         vars.borrowBalAHR = AHR.borrowBalanceCurrent(msg.sender);
@@ -251,7 +255,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             address(asset),
             _amount
         );
-        //get USDC value of availible collateral
+        //get wETH value of availible collateral
         vars.availibleCollateralValue = MMF.checkAvailibleCollateralValue(
             msg.sender,
             _collateral
@@ -266,7 +270,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             vars.availibleCollateralValue >= vars.collateralNeeded,
             "not enough collateral"
         );
-        //track USDC value being locked for the loan
+        //track wETH value being locked for the loan
         MMF.trackCollateralUp(msg.sender, _collateral, vars.amountValue);
         //cut amount of tokens in half
         vars.half = _amount.div(2);
@@ -312,7 +316,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                 //if amount owed to ALR isnt zero
                 if (accountBorrowsALR >= _repayAmount) {
                     //if repay amount is less than whats owed in ALR
-                    //transfer asset from the user to this contract
+                    //transfer asset from the user to the ALR contract
                     asset.safeTransferFrom(
                         msg.sender,
                         address(ALR),
@@ -329,7 +333,8 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                         msg.sender,
                         address(ALR),
                         accountBorrowsALR
-                    ); //transfer remaining ALR bal to ALR
+                    );
+                     //transfer remaining ALR bal to ALR
                     payAmountALR = ALR.repayBorrow(0, msg.sender); //pay off ALR
                     asset.safeTransferFrom(
                         msg.sender,
@@ -356,14 +361,14 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         } else {
             repayedAmount = _repayAmount;
         }
-        ///get USDC value of what was repayed
-        uint256 _USDCvalRepayed =
+        ///get wETH value of what was repayed
+        uint256 _wETHvalRepayed =
             UOF.getUnderlyingPriceofAsset(address(asset), repayedAmount);
         ////track repayment in MMC
         MMF.trackCollateralDown(
             msg.sender,
             collateralLockedALR[msg.sender],
-            _USDCvalRepayed
+            _wETHvalRepayed
         );
         //////////////fully repayed logic/////////////
         if (
@@ -373,7 +378,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             //if the loan is fully payed off
             //unlock the users locked collateral for this loan
 
-            //reset collateralLockedALR address to zero so the user can use a different ALR address in future borrows
+            //reset collateralLockedALR address to zero so the user can use a different ALR address in future borrows with this MMI
             collateralLockedALR[msg.sender] = address(0);
             cantCollateralize[msg.sender] = false;
         }
@@ -395,7 +400,8 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     /**
     @notice _liquidateFor is called by the liquidateAccount function on a MMI where a user is being liquidated. This function
             is called on a MMI contract where collateral is staked.
-
+            @param _borrower is the address of the borrower account who is non compliant
+            @param _ARTcollateralized is the address of the ALR Token contract used as collateral
     **/
     function liquidateAccount(
         address _borrower,
@@ -407,7 +413,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         //get current borrowed amount
         uint256 accountBorrowsALR = ALR.borrowBalanceCurrent(_borrower);
         uint256 accountBorrowsAHR = AHR.borrowBalanceCurrent(_borrower);
-        uint256 totalBorrows = accountBorrowsALR.add(accountBorrowsAHR);//666 augur total
+        uint256 totalBorrows = accountBorrowsALR.add(accountBorrowsAHR); //666 augur total
 
         //get wETH value of borrowed value
         vars.borrowedValue = UOF.getUnderlyingPriceofAsset(
@@ -419,44 +425,45 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             _borrower,
             address(_ARTcollateralized)
         );
-        //divide borrowedValue value in half
+        //divide borrowedValue by collatRatio
         vars.halfVal = vars.borrowedValue.div(collatRatio);
-        //add collatRatio ofthe borrowedValue value to the total borrowedValue value for correct collateral amount
+        //add collatRatio of the borrowedValue value to the total borrowedValue value for correct collateral amount
         vars.borrowedValuecollatRatio = vars.borrowedValue.add(vars.halfVal);
         /**
       need to check if the amount of collateral is less than borrowedValuecollatRatio of the borrowed amount
       if the collateral value is greater than or equal to borrowedValuecollatRatio of the borrowed value than we liquidate
       **/
-        require(vars.collatValue < vars.borrowedValuecollatRatio, "Account is compliant");
-            //transfer asset from msg.sender to repay loan
-            MMF.liquidateTrigger(
-                vars.collatValue,
-                _borrower,
-                address(this),
-                address(asset),
-                address(_ARTcollateralized)
-            );
-            uint halfReturnedAmount = asset.balanceOf(address(this)).div(2);
-            asset.safeTransfer(address(AHR), halfReturnedAmount);
-            asset.safeTransfer(address(ALR), halfReturnedAmount);
-            vars.payAmountALR = ALR.repayBorrow(0, _borrower); //pay off ALR
-            vars.payAmountAHR = AHR.repayBorrow(0, _borrower); //pay off  AHR
-
-            emit Liquidated(
-                _borrower,
-                msg.sender,
-                vars.borrowedValue,
-                address(this)
-            );
-
+        require(
+            vars.collatValue < vars.borrowedValuecollatRatio,
+            "Account is compliant cannot liquidate"
+        );
+        //call MoneyMarketControl which will track values and call the ART token for the swap
+        MMF.liquidateTrigger(
+            vars.collatValue,
+            _borrower,
+            address(this),
+            address(asset),
+            address(_ARTcollateralized)
+        );
+        //Half the returned asset amount and send half to each ART contract
+        uint256 halfReturnedAmount = asset.balanceOf(address(this)).div(2);
+        asset.safeTransfer(address(AHR), halfReturnedAmount);
+        asset.safeTransfer(address(ALR), halfReturnedAmount);
+        vars.payAmountALR = ALR.repayBorrow(0, _borrower); //pay off ALR for borrower
+        vars.payAmountAHR = AHR.repayBorrow(0, _borrower); //pay off  AHR for borrower
+        //Emit the Event
+        emit Liquidated(
+            _borrower,
+            msg.sender,
+            vars.borrowedValue,
+            address(this)
+        );
     }
-
 
     /**
     @notice these are admin functions for updating individual ART values. All of these functions are protected
     and can only be called by the MoneyMarketControl contract. These functions can be considered as Internal functions to the platform.
     **/
-
     function updateALR(address _newModel) external onlyMMFactory {
         ALR._updateInterestModel(_newModel);
     }
@@ -487,8 +494,8 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     }
 
     function _collectFees(address _targetAdd) external onlyOwner {
-        AHR._withdrawReserves(_targetAdd);
-        ALR._withdrawReserves(_targetAdd);
+        AHR._withdrawFee(_targetAdd);
+        ALR._withdrawFee(_targetAdd);
     }
 
     function _changeColatRatio(uint256 _newCR) external onlyOwner {

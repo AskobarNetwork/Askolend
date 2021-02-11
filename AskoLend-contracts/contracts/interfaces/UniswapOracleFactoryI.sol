@@ -12,8 +12,7 @@ The UniswapOracleFactoryI contract an abstract contract the MoneyMarketFactory u
 **/
 
 abstract contract UniswapOracleFactoryI {
-
-  address public uniswap_router_add;
+    address public uniswap_router_add;
 
     /**
 @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
@@ -88,11 +87,11 @@ abstract contract UniswapOracleFactoryI {
         virtual
         returns (uint256);
 
-          function getPairAdd(address _asset) external view virtual returns(address);
+    function getPairAdd(address _asset) external view virtual returns (address);
 
-          function getPathForERC20Swap(address _tokenA, address _tokenB)
-              external
-              view
-              virtual
-              returns (address[] memory);
+    function getPathForERC20Swap(address _tokenA, address _tokenB)
+        external
+        view
+        virtual
+        returns (address[] memory);
 }

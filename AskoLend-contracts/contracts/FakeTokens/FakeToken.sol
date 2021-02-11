@@ -4,28 +4,17 @@ import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/// @title FakeAugur
+/// @title FakeToken
 /// @author Christopher Dixon
 ////////////////////////////////////////////////////////////////////////////////////////////
 /**
-@notice the FakeAugur contract is used to simulate an ERC20 with uniswap on kovan
+@notice the FakeToken contract is used to simulate an ERC20 with uniswap on kovan
 **/
-contract FakeAugur is Ownable, ERC20 {
-    constructor() public ERC20("Augur", "AGR") {
+contract FakeToken is Ownable, ERC20 {
+    constructor(string memory _name, string memory _symbol) public ERC20(_name, _symbol) {
         _Mint(msg.sender, 100000000000000000000000000000);
-        _Mint(
-            0x84166f7C1C8BB78C6553556bBa3433fe2eB5ED26,
-            100000000000000000000000000000
-        );
-        _Mint(
-            0x09AF8e15eB40A53265e3FD71897189B363B70530,
-            100000000000000000000000000000
-        );
-        _Mint(
-            0xCAA6b1207bBE1393e6F039c0f91018Bf860C885e,
-            100000000000000000000000000000
-        );
-        //  _setupDecimals(2);
+
+        //  _setupDecimals(10);
     }
 
     function _Mint(address _to, uint256 _amount) public onlyOwner {

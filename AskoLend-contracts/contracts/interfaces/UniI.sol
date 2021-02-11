@@ -5,7 +5,6 @@ pragma solidity 0.6.6;
 /// @author Christopher Dixon
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-
 abstract contract UniI {
     mapping(address => mapping(address => address)) public getPair;
 }

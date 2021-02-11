@@ -15,7 +15,7 @@ contract UniswapOracleInstance is Ownable {
 
     using FixedPoint for *;
 
-    uint256 public constant PERIOD = 24 hours;
+    uint256 public constant PERIOD = 12 hours;
 
     IUniswapV2Pair public pair;
     address public token0;
@@ -34,7 +34,7 @@ contract UniswapOracleInstance is Ownable {
 @notice the constructor function is fired once during token creation to initialize the oracle contract to a specific token pair
 @param _factory is the address of the Uniswap factory contract
 @param _tokenA is the address of the asset being looked up
-@param _tokenB is the address of the USDC token
+@param _tokenB is the address of the wETH token
 **/
 
     constructor(

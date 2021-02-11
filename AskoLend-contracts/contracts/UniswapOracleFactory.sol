@@ -44,11 +44,13 @@ contract UniswapOracleFactory is Ownable {
     /**
   @notice createNewOracle allows the owner of this contract to deploy a new oracle contract when
           a new asset is whitelisted
-  @param token is the address of the token that this oracle will provide a USDC price feed for
+  @param token is the address of the token that this oracle will provide a wETH price feed for
   **/
     function createNewOracle(address token) public onlyOwner returns (address) {
         address _oracle =
-            address(new UniswapOracleInstance(address(factory), token, wETH_add));
+            address(
+                new UniswapOracleInstance(address(factory), token, wETH_add)
+            );
         instanceTracker[token] = _oracle;
         return _oracle;
     }
@@ -128,25 +130,24 @@ contract UniswapOracleFactory is Ownable {
 @param _tokenB is the address of the token being exchanged to
 @dev example: LINK => Augur swap _tokenA would be LINK address while _tokenB would be Augur Address
 **/
-  function getPathForERC20Swap(address _tokenA, address _tokenB)
-      external
-      view
-      returns (address[] memory)
-  {
-      address[] memory path = new address[](3);
-      path[0] = _tokenA;
-      path[1] = wETH_add;
-      path[2] = _tokenB;
+    function getPathForERC20Swap(address _tokenA, address _tokenB)
+        external
+        view
+        returns (address[] memory)
+    {
+        address[] memory path = new address[](3);
+        path[0] = _tokenA;
+        path[1] = wETH_add;
+        path[2] = _tokenB;
 
-      return path;
-  }
+        return path;
+    }
 
-
-  /**
+    /**
   @notice getPairAdd is used to return the address of the input assets wETH uniswap pair contract
   @param _asset is the address of the ERC20 token contract whos pair contract is being retrieved
   **/
-    function getPairAdd(address _asset) external view returns(address) {
-      return factory.getPair(_asset, wETH_add);
+    function getPairAdd(address _asset) external view returns (address) {
+        return factory.getPair(_asset, wETH_add);
     }
 }

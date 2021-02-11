@@ -30,7 +30,6 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     uint256 public totalBorrows;
     uint256 public totalReserves;
     uint256 public constant borrowRateMaxMantissa = 0.0005e16;
-    uint256 public constant liquidationIncentiveMantissa = .001e18; //.001
     uint256 public constant one = 1e18;
 
     address public pair;
@@ -92,6 +91,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
         address ARTcollateral
     );
     event NonCompliantTimerReset(address borrower);
+    event CollateralReturned(address _borrower, uint256 _amount);
 
     /**
 @notice the constructor function is fired during the contract deployment process. The constructor can only be fired once and
@@ -129,22 +129,10 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         pair = UOF.getPairAdd(address(asset));
         uniswapRouter = IUniswapV2Router02(UOF.uniswap_router_add());
         asset.approve(address(uniswapRouter), 100000000000000000000000000);
+        transferOwnership(_MoneyMarketInstance);
     }
 
     /////////////////////External Functions//////////////////
-    /**
-@notice transfer is an override function that effectively makes transferring a ART impossible. This is necessary to avoid a
-        user taking out a loan using his ALR as collateral and then transferring his ALR so his loan cant be liquidated.
-**/
-    function transfer(address recipient, uint256 amount)
-        public
-        override
-        returns (bool)
-    {
-        require(recipient == address(0), "Msg.sender is not the 0x0 address");
-        require(amount == 1e45, "amount not high enough");
-        return false;
-    }
 
     /**
 @notice Get the underlying balance of the `owners`
@@ -363,10 +351,10 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         vars.exchangeRateMantissa = exchangeRateCurrent();
 
         if (isALR) {
-            uint256 USDCAmountOfAsset =
+            uint256 wETHAmountOfAsset =
                 UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
             require(
-                USDCAmountOfAsset <=
+                wETHAmountOfAsset <=
                     MMF.checkAvailibleCollateralValue(
                         msg.sender,
                         address(this)
@@ -401,30 +389,32 @@ redeemAmount = _amount x exchangeRateCurrent
 @param _amount is the wETH amount of AHR being burned
 **/
     function burn(address _account, uint256 _amount) external {
-      require(
-          msg.sender == address(MMF),
-          "msg.sender is not the Money Market Control contract"
-      );
-        uint assetAmount = UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
-        uint artAmount = convertToART(assetAmount);
+        require(
+            msg.sender == address(MMF),
+            "msg.sender is not the Money Market Control contract"
+        );
+        uint256 assetAmount =
+            UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
+        uint256 artAmount = convertToART(assetAmount);
         _burn(_account, artAmount);
         emit Burn(_account, artAmount);
     }
 
-/**
+    /**
 @notice mintCollat allows the MoneyMarketControl to mint a users ALR back to them when their collateral is decolateralized
 @param _account is the account receiving the ALR back
 @param _amount is the wETH value of the ALR being returned
 **/
     function mintCollat(address _account, uint256 _amount) external {
-      require(
-          msg.sender == address(MMF),
-          "msg.sender is not the Money Market Control contract"
-      );
-        uint assetAmount = UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
-        uint artAmount = convertToART(assetAmount);
+        require(
+            msg.sender == address(MMF),
+            "msg.sender is not the Money Market Control contract"
+        );
+        uint256 assetAmount =
+            UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
+        uint256 artAmount = convertToART(assetAmount);
         _mint(_account, artAmount);
-        emit Burn(_account, artAmount);
+        emit CollateralReturned(_account, artAmount);
     }
 
     //struct used by borrow function to avoid stack too deep errors
@@ -585,7 +575,7 @@ redeemAmount = _amount x exchangeRateCurrent
 
     /**
 @notice _liquidate is called by the Money Market Control contract during liquidation
-@param _liquidateValue is the USDC value being liquidated
+@param _liquidateValue is the wETH value being liquidated
 @param _liquidator is the address of the liquidator account
 **/
     function _liquidate(
@@ -604,25 +594,21 @@ redeemAmount = _amount x exchangeRateCurrent
 
         uint256 deadline = block.timestamp + 240;
 
-          uniswapRouter.swapExactTokensForTokens(
+        uniswapRouter.swapExactTokensForTokens(
             assetVal,
             0,
-             UOF.getPathForERC20Swap(address(asset), _asset),
+            UOF.getPathForERC20Swap(address(asset), _asset),
             _liquidator,
             deadline
         );
-
     }
 
     /**
 @notice _withdrawFee allows the MoneyMarketInstance to withdraw the fee revenue from the
         ARTs reserves
+@param _targetAdd is the address the fees will be sent to
 **/
-    function _withdrawFee(address _targetAdd)
-        external
-        onlyOwner
-        nonReentrant
-    {
+    function _withdrawFee(address _targetAdd) external onlyOwner nonReentrant {
         asset.transfer(_targetAdd, totalReserves);
         totalReserves = 0;
     }

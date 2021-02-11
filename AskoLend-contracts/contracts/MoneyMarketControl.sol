@@ -278,6 +278,30 @@ contract MoneyMarketControl is Ownable, Exponential {
     }
 
     /**
+@notice checkCollateralValue is a view function that accepts an account address and an ALR contract
+        address and returns the USD value of the availible collateral they have. Availible collateral is
+        determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
+@param _borrower is the address whos collateral value we are looking up
+@param _ALR is the address of the ALR token where collateral value is being looked up
+ **/
+    function viewAvailibleCollateralValue(address _borrower, address _ALR)
+        external
+        view
+        returns (uint256)
+    {
+        //instantiate art token
+        AskoRiskTokenI _ART = AskoRiskTokenI(_ALR);
+        //get borrowers art balance
+        uint256 artBal = _ART.balanceOf(_borrower);
+        //get USDC value of art balance
+        uint256 usdcValOfBalance = _ART.viewwETHWorthOfART(artBal);
+        //retrieve the amount of the USDC value they have borrowed
+        uint256 usdcValLocked = collateralTracker[_borrower][_ALR];
+        //retrieve USDC availible collateral
+        return usdcValOfBalance.sub(usdcValLocked);
+    }
+
+    /**
 @notice liquidateTrigger is a protected function that can only be called by a money market instance.
 @param _liquidateValue is the wETH value being liquidated
 @param _borrower is the address of the account being liquidated

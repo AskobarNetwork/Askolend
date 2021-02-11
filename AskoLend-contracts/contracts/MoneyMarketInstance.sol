@@ -227,6 +227,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                 cantCollateralize[msg.sender] == false,
             "collateral not right"
         );
+        require(_amount !=0, "amount cannot be equal to zero");
         borrowVars memory vars;
         //check that the user has enough collateral in input money market
         //this returns the USDC price of their asset

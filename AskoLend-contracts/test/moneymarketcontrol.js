@@ -379,11 +379,13 @@ contract("MoneyMarketControl", (accounts) => {
     console.log("Time travel success!!!");
     console.log("Our Loan is now non compliant!");
      let linkBalB4 = await link.balanceOf(linkALR.address)
+     let linkBalB4AHR = await link.balanceOf(linkAHR.address)
      let augurBalB4 = await augur.balanceOf(augurALR.address)
      let account2LinkBal = await link.balanceOf(account_two)
      let MMILinkBal = await link.balanceOf(linkMMI.address)
 
     console.log("link ALR bal b4: " + web3.utils.fromWei(linkBalB4, "ether"))
+    console.log("link AHR bal b4: " + web3.utils.fromWei(linkBalB4AHR, "ether"))
     console.log("augur ALR bal b4: " + web3.utils.fromWei(augurBalB4, "ether"))
     console.log("account 2 Link bal b4: " + web3.utils.fromWei(account2LinkBal, "ether"))
     console.log("LinkMMI Link bal b4: " + web3.utils.fromWei(MMILinkBal, "ether"))

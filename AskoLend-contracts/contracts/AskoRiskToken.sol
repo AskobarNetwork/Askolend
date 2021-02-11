@@ -127,7 +127,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         borrowIndex = mantissaOne;
         reserveFactorMantissa = 1000000000000000000;
         pair = UOF.getPairAdd(address(asset));
-        asset.approve(pair, 100000000000000000000000000);
         uniswapRouter = IUniswapV2Router02(UOF.uniswap_router_add());
         asset.approve(address(uniswapRouter), 100000000000000000000000000);
     }
@@ -412,6 +411,11 @@ redeemAmount = _amount x exchangeRateCurrent
         emit Burn(_account, artAmount);
     }
 
+/**
+@notice mintCollat allows the MoneyMarketControl to mint a users ALR back to them when their collateral is decolateralized
+@param _account is the account receiving the ALR back
+@param _amount is the wETH value of the ALR being returned
+**/
     function mintCollat(address _account, uint256 _amount) external {
       require(
           msg.sender == address(MMF),
@@ -611,10 +615,10 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     /**
-@notice _withdrawReserves allows the MoneyMarketInstance to withdraw the fee revenue from the
+@notice _withdrawFee allows the MoneyMarketInstance to withdraw the fee revenue from the
         ARTs reserves
 **/
-    function _withdrawReserves(address _targetAdd)
+    function _withdrawFee(address _targetAdd)
         external
         onlyOwner
         nonReentrant

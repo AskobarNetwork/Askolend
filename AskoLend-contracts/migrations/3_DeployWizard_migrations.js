@@ -18,8 +18,8 @@ module.exports = async (deployer, network) => {
   await MMC.whitelistAsset(FakeAugur.address, 2, "Augur", "AGR");
   console.log("FakeAugur White Listed");
   await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "50000000000000000", //base rate per year(approx target base APR)(.05%)
+    "33333333333300000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
     "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
@@ -27,7 +27,7 @@ module.exports = async (deployer, network) => {
   );
   console.log("FakeAugur Asko High Risk Token Created");
   await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
+    "20000000000000000", //base rate per year(approx target base APR)(.02%)
     "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
@@ -40,8 +40,8 @@ module.exports = async (deployer, network) => {
   await MMC.whitelistAsset(FakeLink.address, 2, "Link", "LINK");
   console.log("FakeLink White Listed");
   await MMC.setUpAHR(
-    "20000000000000000", //base rate per year(approx target base APR)
-    "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+    "50000000000000000", //base rate per year(approx target base APR)(.05%)
+    "33333333333300000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
     "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
@@ -49,7 +49,7 @@ module.exports = async (deployer, network) => {
   );
   console.log("FakeLink Asko High Risk Token Created");
   await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
+    "20000000000000000", //base rate per year(approx target base APR)(.02%)
     "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)

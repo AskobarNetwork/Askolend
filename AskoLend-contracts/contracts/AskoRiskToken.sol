@@ -747,7 +747,7 @@ redeemAmount = _amount x exchangeRateCurrent
     **/
     function getSupplyAPY() external view returns (uint256) {
         //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
-        return supplyRatePerBlock().mul(2372500);
+        return supplyRatePerBlock().mul(2102400);
     }
 
     /**
@@ -755,7 +755,7 @@ redeemAmount = _amount x exchangeRateCurrent
     **/
     function getBorrowAPY() external view returns (uint256) {
         //multiply rate per block by blocks per year with an average of 6500 blocks a day per https://ycharts.com/indicators/ethereum_blocks_per_day
-        return borrowRatePerBlock().mul(2372500);
+        return borrowRatePerBlock().mul(2102400);
     }
 
     /**

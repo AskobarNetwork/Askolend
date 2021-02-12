@@ -8,6 +8,10 @@ To run the contracts locally install Ganache-cli, clone this repo, change direct
 
 to install the projects dependencies.
 
+install ganache:
+
+`npm -i ganache-cli`
+
 To test the contracts locally run ganache-cli using
 
 `ganache-cli`

@@ -173,7 +173,7 @@ contract("MoneyMarketControl", (accounts) => {
     console.log("augur AHR wETH value: " + web3.utils.fromWei(augurwETHAHRbal));
     console.log("augur ALR wETH value: " + web3.utils.fromWei(augurwETHALRbal));
 
-    augurCollateral = await MMC.viewCollateral(account_one, augurALR.address);
+    augurCollateral = await MMC.checkCollateralizedALR(account_one, augurALR.address);
 
     console.log(
       "Augur Collateral ALR wETH value before borrow: " +
@@ -184,7 +184,7 @@ contract("MoneyMarketControl", (accounts) => {
       from: account_one,
     });
 
-    augurCollateral = await MMC.viewCollateral(account_one, augurALR.address);
+    augurCollateral = await MMC.checkCollateralizedALR(account_one, augurALR.address);
 
     console.log(
       "Augur Collateral ALR wETH value after borrow: " +
@@ -236,7 +236,7 @@ contract("MoneyMarketControl", (accounts) => {
       "Link ALR borrow bal before repay: " +
         web3.utils.fromWei(linkBorrowedALR, "ether")
     );
-    augurCollateral = await MMC.viewCollateral(account_one, augurALR.address);
+    augurCollateral = await MMC.checkCollateralizedALR(account_one, augurALR.address);
 
     console.log(
       "Augur Collateral ALR wETH before loan repay: " +
@@ -262,7 +262,7 @@ contract("MoneyMarketControl", (accounts) => {
         web3.utils.fromWei(linkBorrowedALRafter, "ether")
     );
 
-    augurCollateral = await MMC.viewCollateral(account_one, augurALR.address);
+    augurCollateral = await MMC.checkCollateralizedALR(account_one, augurALR.address);
 
     console.log(
       "Augur Collateral ALR wETH after 20 loan repay: " +
@@ -283,7 +283,7 @@ contract("MoneyMarketControl", (accounts) => {
         web3.utils.fromWei(linkBorrowedALRafter, "ether")
     );
 
-    augurCollateral = await MMC.viewCollateral(account_one, augurALR.address);
+    augurCollateral = await MMC.checkCollateralizedALR(account_one, augurALR.address);
 
     console.log(
       "Augur Collateral ALR wETH after 20 loan repay: " +
@@ -306,7 +306,7 @@ contract("MoneyMarketControl", (accounts) => {
         web3.utils.fromWei(linkBorrowedALRafter, "ether")
     );
 
-    augurCollateral = await MMC.viewCollateral(account_one, augurALR.address);
+    augurCollateral = await MMC.checkCollateralizedALR(account_one, augurALR.address);
 
     console.log(
       "Augur Collateral ALR wETH after full loan repay: " +
@@ -326,22 +326,30 @@ contract("MoneyMarketControl", (accounts) => {
       "Link AHR borrow bal before borrow: " +
         web3.utils.fromWei(linkBorrowedAHRb4, "ether")
     );
+    console.log("lending assets to augur pools");
+    await augur.transfer(account_two, web3.utils.toWei("300000"), {from: account_one})
+    await augur.approve(augurMMI.address, web3.utils.toWei("300000"), {from: account_two})
+    await augurMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_two});
+    await augurMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_two});
+
+    let augurALRBal = await augurALR.balanceOf(account_one);
+    console.log("account one's augur ALR bal is: " + augurALRBal);
+    let borrowLimitwETH = await MMC.viewAvailibleCollateralValue(account_one, augurALR.address);
+    console.log("The borrow limit in wETH is:" + borrowLimitwETH + " wETH");
+    let alrBorrowLimit = await oracle.viewUnderlyingAssetPriceOfwETH(augur.address, borrowLimitwETH);
+    console.log("The Augur Value of the borrow limit is: " + alrBorrowLimit + " AUG");
+    let slightlyLess = parseInt
     console.log(
       "first we borrow near the max amount of link using our augur as collateral from account one"
     );
     await linkMMI.borrow(
-      web3.utils.toWei("1332.333333333333333333"),
+      "1333333333333333332000",
       augurALR.address,
       {
         from: account_one,
       }
     );
     console.log("Max amount of link successfully borrowed!");
-    console.log("lending assets to augur pools");
-    await augur.transfer(account_two, web3.utils.toWei("300000"), {from: account_one})
-    await augur.approve(augurMMI.address, web3.utils.toWei("300000"), {from: account_two})
-    await augurMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_two});
-    await augurMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_two});
     console.log("Augur lent")
      linkBorrowedALRb4 = await linkALR.borrowBalancePrior(account_one);
     console.log(
@@ -375,8 +383,8 @@ contract("MoneyMarketControl", (accounts) => {
         web3.utils.fromWei(linkBorrowedAHRafter, "ether")
     );
 
-    let availibleCollateralValue = await MMC.viewCollateral(account_one, augurALR.address);
-    console.log("availible collateral value in wETH for account one: "+ web3.utils.fromWei(availibleCollateralValue, "ether"))
+    let collateralValue = await MMC.checkCollateralizedALR(account_one, augurALR.address);
+    console.log("locked collateral value in wETH for account one: "+ web3.utils.fromWei(collateralValue, "ether"))
     console.log("Time travel success!!!");
     console.log("Our Loan is now non compliant!");
      let linkBalB4 = await link.balanceOf(linkALR.address)
@@ -388,7 +396,7 @@ contract("MoneyMarketControl", (accounts) => {
     console.log("link ALR bal b4: " + web3.utils.fromWei(linkBalB4, "ether"))
     console.log("link AHR bal b4: " + web3.utils.fromWei(linkBalB4AHR, "ether"))
     console.log("augur ALR bal b4: " + web3.utils.fromWei(augurBalB4, "ether"))
-    console.log("account 2 Link bal b4: " + web3.utils.fromWei(account2LinkBal, "ether"))
+    console.log("Liquidators Link bal b4: " + web3.utils.fromWei(account2LinkBal, "ether"))
     console.log("LinkMMI Link bal b4: " + web3.utils.fromWei(MMILinkBal, "ether"))
 
     await linkMMI.liquidateAccount(account_one, augurALR.address, {
@@ -396,19 +404,21 @@ contract("MoneyMarketControl", (accounts) => {
     });
 
     console.log("Account One's loan liquidated");
-     let linkBalAfter = await link.balanceOf(linkALR.address)
+     let linkALRBalAfter = await link.balanceOf(linkALR.address)
+     let linkAHRBalAfter = await link.balanceOf(linkAHR.address)
      let augurBalAfter = await augur.balanceOf(augurALR.address)
      account2LinkBal = await link.balanceOf(account_two)
       MMILinkBal = await link.balanceOf(linkMMI.address)
 
-    console.log("link ALR bal After: " + web3.utils.fromWei(linkBalAfter, "ether"))
+    console.log("link ALR bal After: " + web3.utils.fromWei(linkALRBalAfter, "ether"))
+    console.log("link AHR bal After: " + web3.utils.fromWei(linkAHRBalAfter, "ether"))
     console.log("augur ALR bal After: " + web3.utils.fromWei(augurBalAfter, "ether"))
-    console.log("account 2 Link bal after: " + web3.utils.fromWei(account2LinkBal, "ether"))
+    console.log("Liquidators Link bal after: " + web3.utils.fromWei(account2LinkBal, "ether"))
     console.log("LinkMMI Link bal after: " + web3.utils.fromWei(MMILinkBal, "ether"))
 
     let linkBorrowedALRafterL = await linkALR.borrowBalancePrior(account_one);
     console.log(
-      "User two's Link ALR borrow bal after liquidation: " +
+      "account one Link ALR borrow bal after liquidation: " +
         web3.utils.fromWei(linkBorrowedALRafterL, "ether")
     );
     console.log("checking reserves")

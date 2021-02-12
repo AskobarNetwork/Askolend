@@ -446,9 +446,11 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             address(_ARTcollateralized)
         );
         //Half the returned asset amount and send half to each ART contract
-        uint256 halfReturnedAmount = asset.balanceOf(address(this)).div(2);
-        asset.safeTransfer(address(AHR), halfReturnedAmount);
-        asset.safeTransfer(address(ALR), halfReturnedAmount);
+        uint256 totalEarned = asset.balanceOf(address(this));
+        uint remaining = totalEarned.sub(totalBorrows);
+        asset.safeTransfer(address(AHR), accountBorrowsAHR);
+        asset.safeTransfer(address(ALR), accountBorrowsALR);
+        asset.safeTransfer(msg.sender, remaining);
         vars.payAmountALR = ALR.repayBorrow(0, _borrower); //pay off ALR for borrower
         vars.payAmountAHR = AHR.repayBorrow(0, _borrower); //pay off  AHR for borrower
         //Emit the Event

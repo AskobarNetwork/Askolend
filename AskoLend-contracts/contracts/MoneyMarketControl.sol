@@ -273,11 +273,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         //get borrowers art balance
         uint256 artBal = _ART.balanceOf(_borrower);
         //get wETH value of art balance
-        uint256 wETHValOfBalance = _ART.getwETHWorthOfART(artBal);
-        //retrieve the amount of the wETH value they have borrowed
-        uint256 wETHValLocked = collateralTracker[_borrower][_ALR];
-        //retrieve wETH availible collateral
-        return wETHValOfBalance.sub(wETHValLocked);
+        return _ART.getwETHWorthOfART(artBal);
     }
 
     /**
@@ -474,8 +470,7 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     ///////////View Functions/////////////////////////
     /**
     @notice viewAvailibleCollateralValue is a view function that accepts an account address and an ALR contract
-    address and returns the USD value of the availible collateral they have. Availible collateral is
-    determined by the total amount of collateral minus the amount of collateral that is still availible to borrow against
+    address and returns the wETH value of the availible collateral they have.
     @param _borrower is the address whos collateral value we are looking up
     @param _ALR is the address of the ALR token where collateral value is being looked up
     **/
@@ -489,11 +484,7 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
         //get borrowers art balance
         uint256 artBal = _ART.balanceOf(_borrower);
         //get wETH value of art balance
-        uint256 wETHValOfBalance = _ART.viewwETHWorthOfART(artBal);
-        //retrieve the amount of the wETH value they have borrowed
-        uint256 wETHValLocked = collateralTracker[_borrower][_ALR];
-        //retrieve wETH availible collateral
-        return wETHValOfBalance.sub(wETHValLocked);
+        return  _ART.viewwETHWorthOfART(artBal);
     }
 
     /**
@@ -526,14 +517,5 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
         return isALR[__inQ];
     }
 
-    /**
-tells you the wETH value of their locked ALR
-**/
-    function viewCollateral(address _account, address _alr)
-        public
-        view
-        returns (uint256)
-    {
-        return collateralTracker[_account][_alr];
-    }
+
 }

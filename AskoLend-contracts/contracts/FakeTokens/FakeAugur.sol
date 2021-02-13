@@ -12,7 +12,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 **/
 contract FakeAugur is Ownable, ERC20 {
     constructor() public ERC20("Augur", "AGR") {
-        _Mint(msg.sender, 100000000000000000000000000000);
+        _Mint(msg.sender, 1000000000000000000000000000000000);
         _Mint(
             0x84166f7C1C8BB78C6553556bBa3433fe2eB5ED26,
             100000000000000000000000000000

@@ -20,6 +20,7 @@ contract("MoneyMarketControl", (accounts) => {
   let account_one = accounts[0];
   let account_two = accounts[1];
   let account_three = accounts[2];
+  let account_four = accounts[3];
   let augur;
   let link;
   let MMC;
@@ -442,5 +443,70 @@ contract("MoneyMarketControl", (accounts) => {
     console.log("feeTracker ended on: " + feeTracker);
   });
 
+  ///////////////////////////////////////////////////////////////////////////////////
+  it("should return the right amount of Link for ART after several borrows", async () => {
 
+    await link.transfer(account_four, web3.utils.toWei("2000"))
+    await link.approve(linkMMI.address, "1000000000000000000000000", {
+      from: account_four,
+    });
+    await augur.approve(augurMMI.address, "1000000000000000000000000", {
+      from: account_one,
+    });
+    let linkb4bal = await link.balanceOf(account_four);
+    await linkMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_four});
+    await linkMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_four});
+    console.log("lent")
+
+    await augurMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_one});
+    await augurMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_one});
+    let linkAHRbal = await linkAHR.balanceOf(account_four);
+    let linkALRbal = await linkALR.balanceOf(account_four);
+    let linkAHRbalValAsset = await linkAHR.viewConvertFromART(linkAHRbal);
+    let linkALRbalValAsset = await linkALR.viewConvertFromART(linkALRbal);
+    console.log("the value of the AHR in link before borrow is: " + web3.utils.fromWei(linkAHRbalValAsset, "ether"));
+    console.log("the value of the ALR in link before borrow is: " + web3.utils.fromWei(linkALRbalValAsset, "ether"));
+    await linkMMI.borrow(
+      "100000000000000000000",
+      augurALR.address,
+      {
+        from: account_one,
+      }
+    );
+    console.log("time to time travel  into the world of tommorow!");
+    let numOfBlock = 50;
+
+    for (let block = 0; block < numOfBlock; ++block) {
+      await linkALR.accrueInterest();
+      await linkAHR.accrueInterest();
+    }
+    await link.approve(linkMMI.address, web3.utils.toWei("300000"), {from: account_one})
+
+    await linkMMI.repay(web3.utils.toWei("0"), {
+      from: account_one,
+    });
+
+    let linkAfterLend = await link.balanceOf(account_four);
+     linkAHRbal = await linkAHR.balanceOf(account_four);
+     linkALRbal = await linkALR.balanceOf(account_four);
+     linkAHRbalValAsset = await linkAHR.viewConvertFromART(linkAHRbal);
+     linkALRbalValAsset = await linkALR.viewConvertFromART(linkALRbal);
+    console.log("the value of the AHR is: " + web3.utils.fromWei(linkAHRbalValAsset, "ether"));
+    console.log("the value of the ALR is: " + web3.utils.fromWei(linkALRbalValAsset, "ether"));
+
+    await linkAHR.redeem(linkAHRbalValAsset, {
+      from: account_four,
+    });
+    await linkALR.redeem(linkALRbalValAsset, {
+      from: account_four,
+    });
+
+
+    let linkAfterRedeem = await link.balanceOf(account_four);
+
+  console.log("the link balance of account one Before lend/borrow/redeem: " + web3.utils.fromWei(linkb4bal))
+  console.log("the link balance after lend: " + web3.utils.fromWei(linkAfterLend))
+  console.log("the link balance of account one After lend/borrow/redeem:  " + web3.utils.fromWei(linkAfterRedeem))
+
+  });
 });

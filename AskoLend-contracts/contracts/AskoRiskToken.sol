@@ -125,7 +125,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         initialExchangeRateMantissa = _initialExchangeRate; //sets the initialExchangeRateMantissa
         accrualBlockNumber = getBlockNumber();
         borrowIndex = mantissaOne;
-        reserveFactorMantissa = 1000000000000000000;
+        reserveFactorMantissa = 10000000000000000;
         pair = UOF.getPairAdd(address(asset));
         uniswapRouter = IUniswapV2Router02(UOF.uniswap_router_add());
         asset.approve(address(uniswapRouter), 100000000000000000000000000);
@@ -324,10 +324,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         //We get the current exchange rate and calculate the number of AHR to be minted:
         //mintTokens = _amount / exchangeRate
 
-        (vars.mathErr, vars.mintTokens) = divScalarByExpTruncate(
-            _amount,
-            Exp({mantissa: vars.exchangeRateMantissa})
-        );
+        vars.mintTokens =  convertToART(_amount);
         _mint(_account, vars.mintTokens);
         emit Minted(_account, vars.mintTokens);
     }
@@ -344,11 +341,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 **/
     function redeem(uint256 _amount) external nonReentrant {
         require(_amount != 0, "amount cannot be zero");
-
+        require(_amount <= convertFromART(balanceOf(msg.sender)), "trying to redeem more than held");
         RedeemLocalVars memory vars;
-
-        //get exchange rate
-        vars.exchangeRateMantissa = exchangeRateCurrent();
 
         if (isALR) {
             uint256 wETHAmountOfAsset =
@@ -368,10 +362,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 We calculate the exchange rate and the amount of underlying to be redeemed:
 redeemAmount = _amount x exchangeRateCurrent
 */
-        (vars.mathErr, vars.redeemAmount) = divScalarByExpTruncate(
-            _amount,
-            Exp({mantissa: vars.exchangeRateMantissa})
-        );
+        vars.redeemAmount = convertToART( _amount);
         //Fail if protocol has insufficient cash
         require(
             getCashPrior() >= vars.redeemAmount,
@@ -642,6 +633,26 @@ redeemAmount = _amount x exchangeRateCurrent
     }
 
     /**
+    @notice convertToART is used to convert an input amount of asset into the prior ART value
+    @param _amountOfAsset is the amount of asset being input
+    **/
+    function viewConvertToART(uint256 _amountOfAsset)
+    external
+    view
+    returns (uint256)
+    {
+      //We get the current exchange rate and calculate the number of AHR to be minted:
+      //mintTokens = _amount / exchangeRate
+      MathError mathErr;
+      uint256 artTokens;
+
+      (mathErr, artTokens) = divScalarByExpTruncate(
+          _amountOfAsset,
+          Exp({mantissa: exchangeRatePrior()})
+      );
+      return artTokens;
+    }
+    /**
     @notice convertFromART converts an input amount of ART to the prior value in the underlying asset
     @param _amountOfART is the amount of ART being converted
     **/
@@ -655,31 +666,12 @@ redeemAmount = _amount x exchangeRateCurrent
         MathError mathErr;
         uint256 artTokens;
         (mathErr, artTokens) = mulScalarTruncate(
-            Exp({mantissa: exchangeRatePrior()}),
-            _amountOfART
+          Exp({mantissa: exchangeRatePrior()}),
+          _amountOfART
         );
         return artTokens;
     }
 
-    /**
-    @notice convertToART is used to convert an input amount of asset into the prior ART value
-    @param _amountOfAsset is the amount of asset being input
-    **/
-    function viewConvertToART(uint256 _amountOfAsset)
-        external
-        view
-        returns (uint256)
-    {
-        //We get the current exchange rate and calculate the number of AHR to be minted:
-        //mintTokens = _amount / exchangeRate
-        MathError mathErr;
-        uint256 artTokens;
-        (mathErr, artTokens) = divScalarByExpTruncate(
-            _amountOfAsset,
-            Exp({mantissa: exchangeRatePrior()})
-        );
-        return artTokens;
-    }
 
     /**
     @notice viewwETHWorthOfART is used to calculate the prior wETH price of the input amount of Asko Risk Token

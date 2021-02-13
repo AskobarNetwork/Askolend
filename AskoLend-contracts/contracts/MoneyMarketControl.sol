@@ -106,7 +106,7 @@ contract MoneyMarketControl is Ownable, Exponential {
     ) external onlyOwner {
         instanceCount++;
 
-        address oracle = address(Oracle.createNewOracle(_assetContractAdd));
+address oracle = address(Oracle.createNewOracle(_assetContractAdd));
 
         address _MMinstance =
             MMF.createMMI(

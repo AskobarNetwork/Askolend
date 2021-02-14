@@ -36,8 +36,10 @@ contract MoneyMarketControl is Ownable, Exponential {
     mapping(address => address) public _ALRtracker; // tracks a money markets address to its ALR token.
     mapping(address => address) public oracleTracker; //maps a MM oracle to its Money market address
     mapping(address => mapping(address => uint256)) public collateralTracker; //tracks user to a market to an amount collaterlized in that market
+    mapping(address => mapping(address => uint256)) public totalCollateralTracker; //tracks user to a market to an amount collaterlized in that market
     mapping(address => bool) public isMMI;
     mapping(address => bool) public isALR;
+
 
     /**
   @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Instance contract
@@ -222,6 +224,8 @@ address oracle = address(Oracle.createNewOracle(_assetContractAdd));
     ) external onlyMMI {
         require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
         require(isALR[_ALR], "Input ALR address is not an ALR contract");
+        totalCollateralTracker[_borrower][_ALR] = totalCollateralTracker[_borrower][_ALR]
+            .add(_amount);
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .add(_amount);
         AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
@@ -250,9 +254,10 @@ address oracle = address(Oracle.createNewOracle(_assetContractAdd));
                 .sub(_amount);
         } else {
             collateralTracker[_borrower][_ALR] = 0;
+            AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
+            alr.mintCollat(_borrower, totalCollateralTracker[_borrower][_ALR]);
+            totalCollateralTracker[_borrower][_ALR] = 0;
         }
-        AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
-        alr.mintCollat(_borrower, _amount);
         emit CollateralDown(_ALR, _borrower, _amount);
     }
 

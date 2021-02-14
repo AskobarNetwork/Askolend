@@ -45,7 +45,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
 
     mapping(address => BorrowSnapshot) internal accountBorrows;
     mapping(address => uint256) public nonCompliant; // tracks user to a market to a time
-
+    mapping(address => uint256) public amountBurnt;
     /**
 @notice struct for borrow balance information
 @member principal Total balance (with accrued interest), after applying the most recent balance-changing action
@@ -218,19 +218,19 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             totalBorrows = totalBorrowsNew;
             totalReserves = totalReservesNew;
 
-            emit InterestAccrued(
-                accrualBlockNumber,
-                borrowIndex,
-                totalBorrows,
-                totalReserves
-            );
+            // emit InterestAccrued(
+            //     accrualBlockNumber,
+            //     borrowIndex,
+            //     totalBorrows,
+            //     totalReserves
+            // );
         } else {
-            emit InterestAccrued(
-                accrualBlockNumber,
-                borrowIndex,
-                totalBorrows,
-                totalReserves
-            );
+            // emit InterestAccrued(
+            //     accrualBlockNumber,
+            //     borrowIndex,
+            //     totalBorrows,
+            //     totalReserves
+            // );
         }
     }
 
@@ -319,11 +319,6 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     function mint(address _account, uint256 _amount) external onlyMMInstance {
         //declare struct
         MintLocalVars memory vars;
-        //retrieve exchange rate
-        vars.exchangeRateMantissa = exchangeRateCurrent();
-        //We get the current exchange rate and calculate the number of AHR to be minted:
-        //mintTokens = _amount / exchangeRate
-
         vars.mintTokens =  convertToART(_amount);
         _mint(_account, vars.mintTokens);
         emit Minted(_account, vars.mintTokens);
@@ -387,7 +382,9 @@ redeemAmount = _amount x exchangeRateCurrent
         uint256 assetAmount =
             UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
         uint256 artAmount = convertToART(assetAmount);
-        _burn(_account, artAmount);
+         _burn(_account, artAmount);
+         _mint(address(this), artAmount);
+         amountBurnt[_account] = amountBurnt[_account].add(artAmount);
         emit Burn(_account, artAmount);
     }
 
@@ -404,7 +401,10 @@ redeemAmount = _amount x exchangeRateCurrent
         uint256 assetAmount =
             UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
         uint256 artAmount = convertToART(assetAmount);
-        _mint(_account, artAmount);
+
+         _burn(address(this),  amountBurnt[_account]);
+          amountBurnt[_account] = 0;
+         _mint(_account, artAmount);
         emit CollateralReturned(_account, artAmount);
     }
 
@@ -540,12 +540,12 @@ redeemAmount = _amount x exchangeRateCurrent
         //We get the current exchange rate and calculate the number of AHR to be minted:
         //mintTokens = _amount / exchangeRate
         MathError mathErr;
-        uint256 artTokens;
-        (mathErr, artTokens) = mulScalarTruncate(
+        uint256 assetVal;
+        (mathErr, assetVal) = mulScalarTruncate(
             Exp({mantissa: exchangeRateCurrent()}),
             _amountOfART
         );
-        return artTokens;
+        return assetVal;
     }
 
     /**
@@ -641,7 +641,7 @@ redeemAmount = _amount x exchangeRateCurrent
     view
     returns (uint256)
     {
-      //We get the current exchange rate and calculate the number of AHR to be minted:
+      //We get the current exchange rate and calculate the number of ART to be minted:
       //mintTokens = _amount / exchangeRate
       MathError mathErr;
       uint256 artTokens;
@@ -662,7 +662,7 @@ redeemAmount = _amount x exchangeRateCurrent
         returns (uint256)
     {
         //We get the current exchange rate and calculate the number of AHR to be minted:
-        //mintTokens = _amount / exchangeRate
+        //artTokens = _amount * exchangeRate
         MathError mathErr;
         uint256 artTokens;
         (mathErr, artTokens) = mulScalarTruncate(

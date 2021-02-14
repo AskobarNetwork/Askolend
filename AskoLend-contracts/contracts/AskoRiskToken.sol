@@ -218,19 +218,19 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             totalBorrows = totalBorrowsNew;
             totalReserves = totalReservesNew;
 
-            // emit InterestAccrued(
-            //     accrualBlockNumber,
-            //     borrowIndex,
-            //     totalBorrows,
-            //     totalReserves
-            // );
+            emit InterestAccrued(
+                accrualBlockNumber,
+                borrowIndex,
+                totalBorrows,
+                totalReserves
+            );
         } else {
-            // emit InterestAccrued(
-            //     accrualBlockNumber,
-            //     borrowIndex,
-            //     totalBorrows,
-            //     totalReserves
-            // );
+            emit InterestAccrued(
+                accrualBlockNumber,
+                borrowIndex,
+                totalBorrows,
+                totalReserves
+            );
         }
     }
 

@@ -48,57 +48,57 @@ contract("MoneyMarketControl", (accounts) => {
     augurALR = await AskoRiskToken.at(await augurMMI.alr());
   });
   ///////////////////////////////////////////////////////////////////////////////////
-  // it("should check that the oracle is returning the right prices", async () => {
-  //   let priceOfOneLink = await oracle.viewUnderlyingPriceofAsset(
-  //     link.address,
-  //     web3.utils.toWei("1")
-  //   );
-  //   console.log(
-  //     "the price of one link is: " + web3.utils.fromWei(priceOfOneLink) + " wETH"
-  //   );
-  //   assert.equal(
-  //     web3.utils.fromWei(priceOfOneLink),
-  //     "10",
-  //     "Returning the wrong price"
-  //   );
-  //   let priceOfOneAugur = await oracle.viewUnderlyingPriceofAsset(
-  //     augur.address,
-  //     web3.utils.toWei("1")
-  //   );
-  //   console.log(
-  //     "the price of one augur is: " + web3.utils.fromWei(priceOfOneAugur) + " wETH"
-  //   );
-  //   assert.equal(
-  //     web3.utils.fromWei(priceOfOneAugur),
-  //     "20",
-  //     "Returning the wrong price"
-  //   );
-  //
-  // });
-  // ///////////////////////////////////////////////////////////////////////////////////
-  // it("should return the right amount of Link for ART", async () => {
-  //   await link.approve(linkMMI.address, "1000000000000000000000000", {
-  //     from: account_one,
-  //   });
-  //   let linkb4bal = await link.balanceOf(account_one);
-  //   await linkMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_one});
-  //   await linkMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_one});
-  //   let linkAHRbal = await linkAHR.balanceOf(account_one);
-  //   let linkALRbal = await linkALR.balanceOf(account_one);
-  //   let linkAfterLend = await link.balanceOf(account_one);
-  //
-  //   await linkAHR.redeem(linkAHRbal, {
-  //     from: account_one,
-  //   });
-  //   await linkALR.redeem(linkALRbal, {
-  //     from: account_one,
-  //   });
-  //   let linkAfterRedeem = await link.balanceOf(account_one);
-  //   assert.equal(
-  //     web3.utils.fromWei(linkb4bal),
-  //     web3.utils.fromWei(linkAfterRedeem)
-  //   );
-  // });
+  it("should check that the oracle is returning the right prices", async () => {
+    let priceOfOneLink = await oracle.viewUnderlyingPriceofAsset(
+      link.address,
+      web3.utils.toWei("1")
+    );
+    console.log(
+      "the price of one link is: " + web3.utils.fromWei(priceOfOneLink) + " wETH"
+    );
+    assert.equal(
+      web3.utils.fromWei(priceOfOneLink),
+      "10",
+      "Returning the wrong price"
+    );
+    let priceOfOneAugur = await oracle.viewUnderlyingPriceofAsset(
+      augur.address,
+      web3.utils.toWei("1")
+    );
+    console.log(
+      "the price of one augur is: " + web3.utils.fromWei(priceOfOneAugur) + " wETH"
+    );
+    assert.equal(
+      web3.utils.fromWei(priceOfOneAugur),
+      "20",
+      "Returning the wrong price"
+    );
+
+  });
+  ///////////////////////////////////////////////////////////////////////////////////
+  it("should return the right amount of Link for ART", async () => {
+    await link.approve(linkMMI.address, "1000000000000000000000000", {
+      from: account_one,
+    });
+    let linkb4bal = await link.balanceOf(account_one);
+    await linkMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_one});
+    await linkMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_one});
+    let linkAHRbal = await linkAHR.balanceOf(account_one);
+    let linkALRbal = await linkALR.balanceOf(account_one);
+    let linkAfterLend = await link.balanceOf(account_one);
+
+    await linkAHR.redeem(linkAHRbal, {
+      from: account_one,
+    });
+    await linkALR.redeem(linkALRbal, {
+      from: account_one,
+    });
+    let linkAfterRedeem = await link.balanceOf(account_one);
+    assert.equal(
+      web3.utils.fromWei(linkb4bal),
+      web3.utils.fromWei(linkAfterRedeem)
+    );
+  });
   ///////////////////////////////////////////////////////////////////////////////////
   it("should return the right amount of ART for each lend", async () => {
     await link.approve(linkMMI.address, "1000000000000000000000000", {
@@ -410,27 +410,30 @@ contract("MoneyMarketControl", (accounts) => {
         "Link AHR borrow bal before borrow: " +
           web3.utils.fromWei(linkBorrowedAHRb4, "ether")
       );
+      await link.approve(linkMMI.address, web3.utils.toWei("300000"), {from: account_one})
+      await linkMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_one});
+      await linkMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_one});
       console.log("lending assets to augur pools");
       await augur.transfer(account_two, web3.utils.toWei("300000"), {from: account_one})
       await augur.approve(augurMMI.address, web3.utils.toWei("300000"), {from: account_two})
       await augurMMI.lendToAHRpool(web3.utils.toWei("1000"), {from: account_two});
       await augurMMI.lendToALRpool(web3.utils.toWei("1000"), {from: account_two});
 
-      let augurALRBal = await augurALR.balanceOf(account_one);
-      console.log("account one's augur ALR bal is: " + augurALRBal);
+
       let borrowLimitwETH = await MMC.viewAvailibleCollateralValue(account_one, augurALR.address);
       console.log("The borrow limit in wETH is:" + borrowLimitwETH + " wETH");
-      let alrBorrowLimit = await oracle.viewUnderlyingAssetPriceOfwETH(augur.address, borrowLimitwETH);
-      console.log("The Augur Value of the borrow limit is: " + alrBorrowLimit + " AUG");
+      let linkValOfALR = await oracle.viewUnderlyingAssetPriceOfwETH(link.address, borrowLimitwETH);
+      console.log("LINK VALUE OF THE ALR: " + linkValOfALR)
+      let collateralValue = await MMC.checkCollateralizedALR(account_one, augurALR.address);
 
       console.log(
         "first we borrow near the max amount of link using our augur as collateral from account one"
       );
       await linkMMI.borrow(
-        "1999999999999999999999",
+        web3.utils.toWei("1333.333333333333333333"),
         augurALR.address,
         {
-          from: account_one,
+          from: account_two,
         }
       );
       console.log("Max amount of link successfully borrowed!");
@@ -467,7 +470,7 @@ contract("MoneyMarketControl", (accounts) => {
           web3.utils.fromWei(linkBorrowedAHRafter, "ether")
       );
 
-      let collateralValue = await MMC.checkCollateralizedALR(account_one, augurALR.address);
+       collateralValue = await MMC.checkCollateralizedALR(account_one, augurALR.address);
       let linkValOfCollat = await oracle.viewUnderlyingAssetPriceOfwETH(link.address, collateralValue)
       console.log("locked collateral value in wETH for account one: "+ web3.utils.fromWei(collateralValue, "ether"))
       console.log("the collateral value in link is: " + web3.utils.fromWei(linkValOfCollat, "ether"))
@@ -485,8 +488,8 @@ contract("MoneyMarketControl", (accounts) => {
       console.log("Liquidators Link bal b4: " + web3.utils.fromWei(account2LinkBal, "ether"))
       console.log("LinkMMI Link bal b4: " + web3.utils.fromWei(MMILinkBal, "ether"))
 
-      await linkMMI.liquidateAccount(account_one, augurALR.address, {
-        from: account_two,
+      await linkMMI.liquidateAccount(account_two, augurALR.address, {
+        from: account_one,
       });
 
       console.log("Account One's loan liquidated");

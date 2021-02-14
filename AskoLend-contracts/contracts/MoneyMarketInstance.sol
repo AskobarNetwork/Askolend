@@ -271,7 +271,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             "not enough collateral"
         );
         //track wETH value being locked for the loan
-        MMF.trackCollateralUp(msg.sender, _collateral, vars.amountValue);
+        MMF.trackCollateralUp(msg.sender, _collateral, vars.collateralNeeded);
         //cut amount of tokens in half
         vars.half = _amount.div(2);
 
@@ -439,7 +439,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         );
         //call MoneyMarketControl which will track values and call the ART token for the swap
         MMF.liquidateTrigger(
-            vars.borrowedValuecollatRatio,
+            vars.collatValue,
             _borrower,
             address(this),
             address(asset),

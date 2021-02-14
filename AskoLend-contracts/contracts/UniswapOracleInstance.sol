@@ -42,6 +42,7 @@ contract UniswapOracleInstance is Ownable {
         address _tokenA,
         address _tokenB
     ) public {
+      if(_tokenA != _tokenB) {
         IUniswapV2Pair _pair =
             IUniswapV2Pair(
                 UniswapV2Library.pairFor(_factory, _tokenA, _tokenB)
@@ -67,7 +68,11 @@ contract UniswapOracleInstance is Ownable {
         firstRun = true;
         update();
         firstRun = false;
+      } else {
+          price0Average = FixedPoint.uq112x112(uint224(1));
+          price1Average = FixedPoint.uq112x112(uint224(1));
     }
+  }
 
     /**
 @notice update updates the prices for the input token pair over a set 24hour period
@@ -80,7 +85,7 @@ contract UniswapOracleInstance is Ownable {
             uint32 blockTimestamp
         ) = UniswapV2OracleLibrary.currentCumulativePrices(address(pair));
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
-
+  if(token0 != token1) {
         //check if this is the first update
         if (timeElapsed >= PERIOD || firstRun == true) {
             // ensure that at least one full period has passed since the last update
@@ -115,6 +120,10 @@ contract UniswapOracleInstance is Ownable {
 
             blockTimestampLast = blockTimestamp;
         }
+      } else {
+        price0Average = FixedPoint.uq112x112(uint224(1));
+        price1Average = FixedPoint.uq112x112(uint224(1));
+      }
     }
 
     /**

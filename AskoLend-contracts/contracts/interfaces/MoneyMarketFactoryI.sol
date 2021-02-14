@@ -47,7 +47,8 @@ abstract contract MoneyMarketFactoryI {
     function trackCollateralUp(
         address _borrower,
         address _ALR,
-        uint256 _amount
+        uint256 _amount,
+        uint256 _amountBorrowed
     ) external virtual;
 
     function trackCollateralDown(

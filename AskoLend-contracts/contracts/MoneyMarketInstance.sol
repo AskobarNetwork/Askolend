@@ -271,7 +271,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             "not enough collateral"
         );
         //track wETH value being locked for the loan
-        MMF.trackCollateralUp(msg.sender, _collateral, vars.collateralNeeded);
+        MMF.trackCollateralUp(msg.sender, _collateral, vars.collateralNeeded, vars.amountValue);
         //cut amount of tokens in half
         vars.half = _amount.div(2);
 
@@ -300,15 +300,24 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         ///////////////repay all///////////////
         if (_repayAmount == 0) {
             if (accountBorrowsALR != 0) {
+              payAmountALR = ALR.repayBorrow(accountBorrowsALR, msg.sender); // repay amount to ALR
                 asset.safeTransferFrom(
                     msg.sender,
                     address(ALR),
                     accountBorrowsALR
                 );
-                payAmountALR = ALR.repayBorrow(accountBorrowsALR, msg.sender); // repay amount to ALR
             }
-            asset.safeTransferFrom(msg.sender, address(AHR), accountBorrowsAHR);
             payAmountAHR = AHR.repayBorrow(accountBorrowsAHR, msg.sender); //pay off towards AHR
+            asset.safeTransferFrom(msg.sender, address(AHR), accountBorrowsAHR);
+            ///get wETH value of what was repayed
+            uint256 _wETHvalRepayed =
+                UOF.getUnderlyingPriceofAsset(address(asset), totalBorrows);
+            ////track repayment in MMC
+            MMF.trackCollateralDown(
+                msg.sender,
+                collateralLockedALR[msg.sender],
+                _wETHvalRepayed
+            );
             emit Repayed(msg.sender, accountBorrowsAHR, accountBorrowsALR);
         } else {
             ///////////////repay ALR///////////////////
@@ -354,22 +363,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             }
         }
 
-        ///////unlock collateral value logic/////////
-        uint256 repayedAmount;
-        if (_repayAmount == 0) {
-            repayedAmount = totalBorrows;
-        } else {
-            repayedAmount = _repayAmount;
-        }
-        ///get wETH value of what was repayed
-        uint256 _wETHvalRepayed =
-            UOF.getUnderlyingPriceofAsset(address(asset), repayedAmount);
-        ////track repayment in MMC
-        MMF.trackCollateralDown(
-            msg.sender,
-            collateralLockedALR[msg.sender],
-            _wETHvalRepayed
-        );
+
         //////////////fully repayed logic/////////////
         if (
             accountBorrowsAHR.sub(payAmountAHR) == 0 &&

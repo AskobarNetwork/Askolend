@@ -230,7 +230,7 @@ contract("MoneyMarketControl", (accounts) => {
     let augurALRbal = await augurALR.balanceOf(account_one);
 
     console.log("augur AHR bal: " + web3.utils.fromWei(augurAHRbal));
-    console.log("augur ALR bal: " + web3.utils.fromWei(augurALRbal));
+    console.log("augur ALR bal before borrow: " + web3.utils.fromWei(augurALRbal));
     let augurwETHAHRbal = await augurAHR.viewwETHWorthOfART(augurAHRbal);
     let augurwETHALRbal = await augurALR.viewwETHWorthOfART(augurALRbal);
 
@@ -375,6 +375,11 @@ contract("MoneyMarketControl", (accounts) => {
     console.log(
       "Augur Collateral ALR wETH after full loan repay: " +
         web3.utils.fromWei(augurCollateral, "ether")
+    );
+    let augurALRbalafter = await augurALR.balanceOf(account_one);
+    console.log(
+      "Augur ALR bal After repay: " +
+        web3.utils.fromWei(augurALRbalafter, "ether")
     );
   });
   ///////////////////////////////////////////////////////////////////////////////////

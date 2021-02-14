@@ -188,7 +188,6 @@ module.exports = async (deployer, network) => {
   console.log("Listed USDC_BAT");
   ////////////////////////////////////////////////////////////////////////////////////////////
 } else {
-  console.log("Mainnet")
 
 }
 console.log("Deploying oracle factory")

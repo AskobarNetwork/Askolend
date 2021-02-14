@@ -81,6 +81,19 @@ module.exports = {
       timeoutBlocks: 300, // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
     },
+    mainnet: {
+      provider: () =>
+        new HDWalletProvider(
+          mnemonic,
+          `https://kovan.infura.io/v3/` + infuraKey
+        ),
+        network_id: 1,
+         gas: 6500000,           // Default gas to send per transaction
+         gasPrice: 1000000000,  // 10 gwei (default: 20 gwei)
+         confirmations: 0,       // # of confs to wait between deployments. (default: 0)
+         timeoutBlocks: 200,     // # of blocks before a deployment times out  (minimum/default: 50)
+         skipDryRun: false        // Skip dry run before migrations? (default: false for public nets )
+    },
   },
 
   // Set default mocha options here, use special reporters etc.

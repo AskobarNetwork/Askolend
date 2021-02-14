@@ -324,11 +324,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         emit Minted(_account, vars.mintTokens);
     }
 
-    struct RedeemLocalVars {
-        MathError mathErr;
-        uint256 exchangeRateMantissa;
-        uint256 redeemAmount;
-    }
+
 
     /**
 @notice redeem allows a user to redeem their AskoRiskToken for the appropriate amount of underlying asset
@@ -337,7 +333,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     function redeem(uint256 _amount) external nonReentrant {
         require(_amount != 0, "amount cannot be zero");
         require(_amount <= convertFromART(balanceOf(msg.sender)), "trying to redeem more than held");
-        RedeemLocalVars memory vars;
+
 
         if (isALR) {
             uint256 wETHAmountOfAsset =
@@ -400,6 +396,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 
          _burn(address(this),  amountBurnt[_account]);
           amountBurnt[_account] = 0;
+
          _mint(_account, artAmount);
         emit CollateralReturned(_account, artAmount);
     }

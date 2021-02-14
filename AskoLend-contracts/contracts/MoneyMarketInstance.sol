@@ -184,10 +184,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 @dev the user will need to first approve the transfer of the underlying asset
 **/
     function lendToAHRpool(uint256 _amount) external nonReentrant {
-        //transfer appropriate amount off the asset from msg.sender to the AHR contract
-        asset.safeTransferFrom(msg.sender, address(AHR), _amount);
         //call mint function on AHR contract
         AHR.mint(msg.sender, _amount);
+        //transfer appropriate amount off the asset from msg.sender to the AHR contract
+        asset.safeTransferFrom(msg.sender, address(AHR), _amount);
         emit LentToAHR(msg.sender, _amount);
     }
 
@@ -197,10 +197,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 @dev the user will need to first approve the transfer of the underlying asset
 **/
     function lendToALRpool(uint256 _amount) external nonReentrant {
-        //transfer appropriate amount off the asset from msg.sender to the AHR contract
-        asset.safeTransferFrom(msg.sender, address(ALR), _amount);
         //call mint function on ALR contract
         ALR.mint(msg.sender, _amount);
+        //transfer appropriate amount off the asset from msg.sender to the AHR contract
+        asset.safeTransferFrom(msg.sender, address(ALR), _amount);
         emit LentToALR(msg.sender, _amount);
     }
 
@@ -421,7 +421,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             totalBorrows
         );
         //get wETH collateral value
-        vars.collatValue = MMF.checkAvailibleCollateralValue(
+        vars.collatValue = MMF.checkCollateralizedALR(
             _borrower,
             address(_ARTcollateralized)
         );
@@ -439,7 +439,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         );
         //call MoneyMarketControl which will track values and call the ART token for the swap
         MMF.liquidateTrigger(
-            vars.collatValue,
+            vars.borrowedValuecollatRatio,
             _borrower,
             address(this),
             address(asset),
@@ -448,8 +448,8 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         //Half the returned asset amount and send half to each ART contract
         uint256 totalEarned = asset.balanceOf(address(this));
         uint remaining = totalEarned.sub(totalBorrows);
-        asset.safeTransfer(address(AHR), accountBorrowsAHR);
         asset.safeTransfer(address(ALR), accountBorrowsALR);
+        asset.safeTransfer(address(AHR), accountBorrowsAHR);
         asset.safeTransfer(msg.sender, remaining);
         vars.payAmountALR = ALR.repayBorrow(0, _borrower); //pay off ALR for borrower
         vars.payAmountAHR = AHR.repayBorrow(0, _borrower); //pay off  AHR for borrower

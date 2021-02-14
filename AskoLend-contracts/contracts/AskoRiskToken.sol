@@ -353,19 +353,15 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         }
 
         _burn(msg.sender, convertToART(_amount));
-        /**
-We calculate the exchange rate and the amount of underlying to be redeemed:
-redeemAmount = _amount x exchangeRateCurrent
-*/
-        vars.redeemAmount = convertToART( _amount);
+
         //Fail if protocol has insufficient cash
         require(
-            getCashPrior() >= vars.redeemAmount,
+            getCashPrior() >= _amount,
             "Protocol has insufficient funds for redeem"
         );
         //transfer the calculated amount of underlying asset to the msg.sender
-        asset.transfer(msg.sender, vars.redeemAmount);
-        emit Redeemed(msg.sender, _amount, vars.redeemAmount);
+        asset.transfer(msg.sender, _amount);
+        emit Redeemed(msg.sender, _amount, convertToART(_amount));
     }
 
     /**
@@ -525,6 +521,7 @@ redeemAmount = _amount x exchangeRateCurrent
         //mintTokens = _amount / exchangeRate
         MathError mathErr;
         uint256 artTokens;
+
         (mathErr, artTokens) = divScalarByExpTruncate(
             _amountOfAsset,
             Exp({mantissa: exchangeRateCurrent()})
@@ -572,7 +569,8 @@ redeemAmount = _amount x exchangeRateCurrent
     function _liquidate(
         uint256 _liquidateValue,
         address _liquidator,
-        address _asset
+        address _asset,
+        address _account
     ) external nonReentrant {
         //require that this function can only be called by control contract
         require(
@@ -583,6 +581,8 @@ redeemAmount = _amount x exchangeRateCurrent
         uint256 assetVal =
             UOF.getUnderlyingAssetPriceOfwETH(address(asset), _liquidateValue);
 
+            _burn(address(this),  amountBurnt[_account]);
+            amountBurnt[_account] = 0;
         uint256 deadline = block.timestamp + 240;
 
         uniswapRouter.swapExactTokensForTokens(

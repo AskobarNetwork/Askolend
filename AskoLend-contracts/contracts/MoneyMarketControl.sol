@@ -299,7 +299,7 @@ address oracle = address(Oracle.createNewOracle(_assetContractAdd));
             isALR[address(_ALR)],
             "Input ALR address is not an ALR contract"
         );
-        _ALR._liquidate(_liquidateValue, _liquidator, _asset);
+        _ALR._liquidate(_liquidateValue, _liquidator, _asset, _borrower);
         collateralTracker[_borrower][address(_ALR)] = 0;
     }
 

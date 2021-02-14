@@ -25,7 +25,8 @@ abstract contract AskoRiskTokenI {
     function _liquidate(
         uint256 _liquidateValue,
         address _liquidator,
-        address _asset
+        address _asset,
+        address _account
     ) public virtual;
 
     function mint(address _account, uint256 _amount) public virtual;

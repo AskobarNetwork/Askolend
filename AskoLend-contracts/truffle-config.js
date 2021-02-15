@@ -87,7 +87,7 @@ module.exports = {
           mnemonic,
           `https://kovan.infura.io/v3/` + infuraKey
         ),
-        network_id: 1,
+        network_id: '*',
          gas: 6500000,           // Default gas to send per transaction
          gasPrice: 1000000000,  // 10 gwei (default: 20 gwei)
          confirmations: 0,       // # of confs to wait between deployments. (default: 0)

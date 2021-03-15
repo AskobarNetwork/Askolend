@@ -10,7 +10,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 /**
 @notice the FakewETH contract is used to simulate an ERC20 with uniswap on kovan
 **/
-contract FakewETH is Ownable, ERC20 {
+contract FakeUSDC is Ownable, ERC20 {
     constructor() public ERC20("wETH", "wETH") {
         _Mint(msg.sender, 1000000000000000000000000000);
         _Mint(

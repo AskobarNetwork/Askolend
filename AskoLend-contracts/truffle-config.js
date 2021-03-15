@@ -21,7 +21,6 @@
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const infuraKey = "7ca32ddf4bf44a6e818cbbf8949d67f5";
 const mnemonic =
-  "life extend whale clown walnut leopard nut purse frame dwarf ecology inherit";
 
 module.exports = {
   /**
@@ -94,13 +93,19 @@ module.exports = {
          timeoutBlocks: 200,     // # of blocks before a deployment times out  (minimum/default: 50)
          skipDryRun: false        // Skip dry run before migrations? (default: false for public nets )
     },
+    bsc: {
+      provider: () => new HDWalletProvider(mnemonic, `https://bsc-dataseed1.binance.org`),
+      network_id: 56,
+      gasPrice: 10000000000,  // 10 gwei (default: 20 gwei)
+      confirmations: 5,
+      timeoutBlocks: 200,
+      skipDryRun: false
+    },
   },
-
   // Set default mocha options here, use special reporters etc.
   mocha: {
     timeout: 100000,
   },
-
   // Configure your compilers
   compilers: {
     solc: {
@@ -110,7 +115,7 @@ module.exports = {
         // See the solidity docs for advice about optimization and evmVersion
         optimizer: {
           enabled: true,
-          runs: 200,
+          runs: 1000,
         },
         //  evmVersion: "byzantium"
       },

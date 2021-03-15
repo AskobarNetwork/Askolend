@@ -43,9 +43,13 @@ contract UniswapOracleInstance is Ownable {
         address _tokenB
     ) public {
       if(_tokenA != _tokenB) {
+        IUniswapV2Factory _fac =
+            IUniswapV2Factory(
+                _factory
+            );
         IUniswapV2Pair _pair =
             IUniswapV2Pair(
-                UniswapV2Library.pairFor(_factory, _tokenA, _tokenB)
+                _fac.getPair( _tokenA, _tokenB)
             );
         tokenA = _tokenA;
         pair = _pair;
@@ -69,9 +73,10 @@ contract UniswapOracleInstance is Ownable {
         update();
         firstRun = false;
       } else {
-          price0Average = FixedPoint.uq112x112(uint224(1));
-          price1Average = FixedPoint.uq112x112(uint224(1));
+        token0 = _tokenA;
+        token1 = _tokenB;
     }
+
   }
 
     /**
@@ -85,7 +90,6 @@ contract UniswapOracleInstance is Ownable {
             uint32 blockTimestamp
         ) = UniswapV2OracleLibrary.currentCumulativePrices(address(pair));
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
-  if(token0 != token1) {
         //check if this is the first update
         if (timeElapsed >= PERIOD || firstRun == true) {
             // ensure that at least one full period has passed since the last update
@@ -120,10 +124,6 @@ contract UniswapOracleInstance is Ownable {
 
             blockTimestampLast = blockTimestamp;
         }
-      } else {
-        price0Average = FixedPoint.uq112x112(uint224(1));
-        price1Average = FixedPoint.uq112x112(uint224(1));
-      }
     }
 
     /**
@@ -131,8 +131,12 @@ contract UniswapOracleInstance is Ownable {
 @return price is the price of one asset in wETYH(example 1LINK in wETH)
 **/
     function consult(uint256 _amount) external returns (uint256 price) {
+      if(token0 == token1) {
+        price = _amount;
+      } else {
         update();
         price = price0Average.mul(_amount).decode144();
+      }
     }
 
     /**
@@ -140,7 +144,11 @@ contract UniswapOracleInstance is Ownable {
 @return price is the price of one asset in wETYH(example 1LINK in wETH)
 **/
     function viewPrice(uint256 _amount) external view returns (uint256 price) {
+      if(token0 == token1) {
+        price = _amount;
+      } else {
         price = price0Average.mul(_amount).decode144();
+      }
     }
 
     /**
@@ -148,8 +156,12 @@ contract UniswapOracleInstance is Ownable {
 @return price the asset value of an input wETH amount
 **/
     function consultwETH(uint256 _amount) external returns (uint256 price) {
+      if(token0 == token1) {
+        price = _amount;
+      } else {
         update();
         price = price1Average.mul(_amount).decode144();
+      }
     }
 
     /**
@@ -157,6 +169,10 @@ contract UniswapOracleInstance is Ownable {
     @return price the asset value of an input wETH amount
 **/
     function viewwETH(uint256 _amount) external view returns (uint256 price) {
+      if(token0 == token1) {
+        price = _amount;
+      } else {
         price = price1Average.mul(_amount).decode144();
+      }
     }
 }

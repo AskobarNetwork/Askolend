@@ -11,7 +11,6 @@ const UniswapV2Router02 = artifacts.require("UniswapV2Router02");
 const MoneyMarketFactory = artifacts.require("MoneyMarketFactory");
 const ARTFactory = artifacts.require("ARTFactory");
 const MoneyMarketControl = artifacts.require("MoneyMarketControl");
-const FakeFaucet = artifacts.require("FakeFaucet");
 
 module.exports = async (deployer, network) => {
   const ownerAddress = "0x7d4A13FE119C9F36425008a7afCB2737B2bB5C41";
@@ -29,14 +28,7 @@ module.exports = async (deployer, network) => {
     await deployer.deploy(FakeBAT);
     await deployer.deploy(FakewBTC);
     await deployer.deploy(FakewETH);
-    await deployer.deploy(
-      FakeFaucet,
-      FakeLink.address,
-      FakeAugur.address,
-      FakeBAT.address,
-      FakewBTC.address,
-      FakewETH.address
-    );
+
 
     const usdc = await FakeUSDC.deployed();
     const link = await FakeLink.deployed();
@@ -45,11 +37,7 @@ module.exports = async (deployer, network) => {
     const wbtc = await FakewBTC.deployed();
     const weth = await FakewETH.deployed();
 
-    await link.transferOwnership(FakeFaucet.address);
-    await augur.transferOwnership(FakeFaucet.address);
-    await bat.transferOwnership(FakeFaucet.address);
-    await wbtc.transferOwnership(FakeFaucet.address);
-    await weth.transferOwnership(FakeFaucet.address);
+
 
     console.log(FakeUSDC.address);
     console.log(FakeLink.address);
@@ -57,7 +45,7 @@ module.exports = async (deployer, network) => {
     console.log(FakeBAT.address);
     console.log(FakewBTC.address);
     console.log(FakewETH.address);
-    console.log("Faucet set to drip!");
+
 
   await deployer.deploy(
     UniswapV2Factory,

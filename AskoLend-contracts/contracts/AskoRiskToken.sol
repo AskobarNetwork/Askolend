@@ -333,29 +333,12 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     function redeem(uint256 _amount) external nonReentrant {
         require(_amount != 0, "amount cannot be zero");
         require(_amount <= convertFromART(balanceOf(msg.sender)), "trying to redeem more than held");
-
-
-        if (isALR) {
-            uint256 wETHAmountOfAsset =
-                UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
-            require(
-                wETHAmountOfAsset <=
-                    MMF.checkAvailibleCollateralValue(
-                        msg.sender,
-                        address(this)
-                    ),
-                "trying to redeem more than allowed"
-            );
-        }
+        require(
+          getCashPrior() >= _amount,
+          "Protocol has insufficient funds for redeem"
+        );
 
         _burn(msg.sender, convertToART(_amount));
-
-        //Fail if protocol has insufficient cash
-        require(
-            getCashPrior() >= _amount,
-            "Protocol has insufficient funds for redeem"
-        );
-        //transfer the calculated amount of underlying asset to the msg.sender
         asset.transfer(msg.sender, _amount);
         emit Redeemed(msg.sender, _amount, convertToART(_amount));
     }

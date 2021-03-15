@@ -11,7 +11,6 @@ const UniswapV2Router02 = artifacts.require("UniswapV2Router02");
 const MoneyMarketFactory = artifacts.require("MoneyMarketFactory");
 const ARTFactory = artifacts.require("ARTFactory");
 const MoneyMarketControl = artifacts.require("MoneyMarketControl");
-const FakeFaucet = artifacts.require("FakeFaucet");
 
 module.exports = async (deployer, network) => {
 
@@ -116,7 +115,6 @@ module.exports = async (deployer, network) => {
   console.log("Augur address: " + FakeAugur.address);
   console.log("wBTC address: " + FakewBTC.address);
   console.log("wETH address: " + FakewETH.address);
-  console.log("Fake Faucet address: " + FakeFaucet.address);
   console.log("Money Market Control: " + MoneyMarketControl.address);
   ////////////////////////////////////////////////////////////////////////////////////////////
 };

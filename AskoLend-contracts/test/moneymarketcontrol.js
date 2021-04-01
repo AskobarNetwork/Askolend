@@ -332,6 +332,7 @@ contract("MoneyMarketControl", (accounts) => {
       "Augur Collateral ALR wETH after 20 loan repay: " +
         web3.utils.fromWei(augurCollateral, "ether")
     );
+
     console.log("Repaying another 20 Link");
     await linkMMI.repay(web3.utils.toWei("20"), {
       from: account_one,
@@ -518,5 +519,6 @@ contract("MoneyMarketControl", (accounts) => {
       console.log("checking reserves")
       let feeReserves = await linkALR.totalReserves();
       console.log("the reserves earned by the Link ALR contract at this point are: " + web3.utils.fromWei(feeReserves, "ether"));
+      console.log(await linkAHR.totalBorrows());
     });
 });

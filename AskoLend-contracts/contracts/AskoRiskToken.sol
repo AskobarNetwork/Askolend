@@ -30,7 +30,6 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     uint256 public totalBorrows;
     uint256 public totalReserves;
     uint256 public constant borrowRateMaxMantissa = 0.0005e16;
-    uint256 public constant one = 1e18;
 
     address public pair;
 
@@ -39,12 +38,11 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     IERC20 public asset;
     InterestRateModel public interestRateModel;
     MoneyMarketInstanceI public MMI;
-    MoneyMarketFactoryI public MMF;
+    MoneyMarketFactoryI public MMC;
     UniswapOracleFactoryI public UOF;
     IUniswapV2Router02 public uniswapRouter;
 
     mapping(address => BorrowSnapshot) internal accountBorrows;
-    mapping(address => uint256) public nonCompliant; // tracks user to a market to a time
     mapping(address => uint256) public amountBurnt;
     /**
 @notice struct for borrow balance information
@@ -57,7 +55,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     }
 
     /**
-@notice onlyMMInstance is a modifier used to make a function only callable by theproperMoneyMarketInstance contract
+@notice onlyMMInstance is a modifier used to make a function only callable by the proper MoneyMarketInstance contract
 **/
     modifier onlyMMInstance() {
         require(
@@ -65,6 +63,17 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
             "Msg.sender is not this contracts MMI"
         );
         _;
+    }
+
+    /**
+@notice onlyMMC is a modifier used to make a function only callable by MoneyMarketControl contract
+**/
+    modifier onlyMMC() {
+      require(
+        msg.sender == address(MMC),
+        "msg.sender is not the Money Market Control contract"
+      );
+      _;
     }
 
     event InterestAccrued(
@@ -82,7 +91,6 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     event Burn(address account, uint256 amount);
     event Borrowed(address borrower, uint256 amountBorrowed);
     event Repayed(address borrower, uint256 amountRepayed);
-    event NonCompliantTimerStart(address borrower);
     event Accountliquidated(
         address borrower,
         address liquidator,
@@ -90,7 +98,6 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
         address ARTowed,
         address ARTcollateral
     );
-    event NonCompliantTimerReset(address borrower);
     event CollateralReturned(address _borrower, uint256 _amount);
 
     /**
@@ -120,7 +127,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         MMI = MoneyMarketInstanceI(_MoneyMarketInstance); //instanciates this contracts MoneyMarketInstance contract
         interestRateModel = InterestRateModel(_interestRateModel); //instanciates the this contracts interest rate model as a contract
         UOF = UniswapOracleFactoryI(_oracleFactory); //instantiatesthe UniswapOracleFactory as a contract
-        MMF = MoneyMarketFactoryI(_MoneyMarketControl);
+        MMC = MoneyMarketFactoryI(_MoneyMarketControl);
         isALR = _isALR; // sets the isALR varaible to determine whether or not a specific contract is an ALR token
         initialExchangeRateMantissa = _initialExchangeRate; //sets the initialExchangeRateMantissa
         accrualBlockNumber = getBlockNumber();
@@ -128,7 +135,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         reserveFactorMantissa = 10000000000000000;
         pair = UOF.getPairAdd(address(asset));
         uniswapRouter = IUniswapV2Router02(UOF.uniswap_router_add());
-        asset.approve(address(uniswapRouter), 100000000000000000000000000);
+        require(asset.approve(address(uniswapRouter), 10000000000000000000000000000000), "Asset approval failed");
         transferOwnership(_MoneyMarketInstance);
     }
 
@@ -143,7 +150,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
         (MathError mErr, uint256 balance) =
             mulScalarTruncate(exchangeRate, balanceOf(owner));
-        require(mErr == MathError.NO_ERROR, "Math Error in underlying balance");
+         require(mErr == MathError.NO_ERROR, "Math Error in underlying balance");
         return balance;
     }
 
@@ -158,19 +165,13 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         uint256 accrualBlockNumberPrior = accrualBlockNumber;
 
         //Read the previous values out of storage
-        uint256 cashPrior = getCashPrior();
         uint256 borrowsPrior = totalBorrows;
         uint256 reservesPrior = totalReserves;
         uint256 borrowIndexPrior = borrowIndex;
         //Short-circuit accumulating 0 interest
         if (accrualBlockNumberPrior != currentBlockNumber) {
             //Calculate the current borrow interest rate
-            uint256 borrowRateMantissa =
-                interestRateModel.getBorrowRate(
-                    cashPrior,
-                    borrowsPrior,
-                    reservesPrior
-                );
+          uint256 borrowRateMantissa = borrowRatePerBlock();
             require(
                 borrowRateMantissa <= borrowRateMaxMantissa,
                 "Borrow Rate too high"
@@ -179,6 +180,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             //Calculate the number of blocks elapsed since the last accrual
             (MathError mathErr, uint256 blockDelta) =
                 subUInt(currentBlockNumber, accrualBlockNumberPrior);
+                require(mathErr == MathError.NO_ERROR, "Math Error in subUInt of block elapsed calculation");
             //Calculate the interest accumulated into borrows and reserves and the new index:
             Exp memory simpleInterestFactor;
             uint256 interestAccumulated;
@@ -190,48 +192,53 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
                 Exp({mantissa: borrowRateMantissa}),
                 blockDelta
             );
+            require(mathErr == MathError.NO_ERROR, "Math Error in simpleInterestFactor calculation");
+
             //interestAccumulated = simpleInterestFactor * totalBorrows
             (mathErr, interestAccumulated) = mulScalarTruncate(
                 simpleInterestFactor,
                 borrowsPrior
             );
+            require(mathErr == MathError.NO_ERROR, "Math Error in interestAccumulated calculation");
+
             //totalBorrowsNew = interestAccumulated + totalBorrows
             (mathErr, totalBorrowsNew) = addUInt(
                 interestAccumulated,
                 borrowsPrior
             );
+            require(mathErr == MathError.NO_ERROR, "Math Error in totalBorrowsNew calculation");
+
             //totalReservesNew = interestAccumulated * reserveFactor + totalReserves
             (mathErr, totalReservesNew) = mulScalarTruncateAddUInt(
                 Exp({mantissa: reserveFactorMantissa}),
                 interestAccumulated,
                 reservesPrior
             );
+            require(mathErr == MathError.NO_ERROR, "Math Error in totalReservesNew calculation");
+
             //borrowIndexNew = simpleInterestFactor * borrowIndex + borrowIndex
             (mathErr, borrowIndexNew) = mulScalarTruncateAddUInt(
                 simpleInterestFactor,
                 borrowIndexPrior,
                 borrowIndexPrior
             );
+            require(mathErr == MathError.NO_ERROR, "Math Error in borrowIndexNew calculation");
+
             //Write the previously calculated values into storage
             accrualBlockNumber = currentBlockNumber;
             borrowIndex = borrowIndexNew;
             totalBorrows = totalBorrowsNew;
             totalReserves = totalReservesNew;
 
-            emit InterestAccrued(
-                accrualBlockNumber,
-                borrowIndex,
-                totalBorrows,
-                totalReserves
-            );
-        } else {
-            emit InterestAccrued(
-                accrualBlockNumber,
-                borrowIndex,
-                totalBorrows,
-                totalReserves
-            );
+
         }
+            emit InterestAccrued(
+                accrualBlockNumber,
+                borrowIndex,
+                totalBorrows,
+                totalReserves
+            );
+
     }
 
     /**
@@ -279,36 +286,10 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 **/
     function exchangeRateCurrent() public returns (uint256) {
         accrueInterest();
-        if (totalSupply() == 0) {
-            //If there are no tokens minted: exchangeRate = initialExchangeRate
-            return initialExchangeRateMantissa;
-        } else {
-            //Otherwise: exchangeRate = (totalCash + totalBorrows - totalReserves) / totalSupply
-            uint256 totalCash = getCashPrior(); //get contract asset balance
-            uint256 cashPlusBorrowsMinusReserves;
-            Exp memory exchangeRate;
-            MathError mathErr;
-            //calculate total value held by contract plus owed to contract
-            (mathErr, cashPlusBorrowsMinusReserves) = addThenSubUInt(
-                totalCash,
-                totalBorrows,
-                totalReserves
-            );
-            //calculate exchange rate
-            (mathErr, exchangeRate) = getExp(
-                cashPlusBorrowsMinusReserves,
-                totalSupply()
-            );
-            return (exchangeRate.mantissa);
-        }
+        return exchangeRatePrior();
     }
 
-    //struct used by mint to avoid stack too deep errors
-    struct MintLocalVars {
-        MathError mathErr;
-        uint256 exchangeRateMantissa;
-        uint256 mintTokens;
-    }
+
 
     /**
 @notice mint is a modified function that only the owner of this contract(its MoneyMarketInstance) can call.
@@ -316,12 +297,10 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @param _account is the account the AHR is being minted to
 @param _amount is the amount of stablecoin being input
 **/
-    function mint(address _account, uint256 _amount) external onlyMMInstance {
-        //declare struct
-        MintLocalVars memory vars;
-        vars.mintTokens =  convertToART(_amount);
-        _mint(_account, vars.mintTokens);
-        emit Minted(_account, vars.mintTokens);
+    function mint(address _account, uint256 _amount) external onlyMMInstance nonReentrant {
+        uint256 mintTokens =  convertToART(_amount);
+        _mint(_account, mintTokens);
+        emit Minted(_account, mintTokens);
     }
 
 
@@ -339,7 +318,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         );
 
         _burn(msg.sender, convertToART(_amount));
-        asset.transfer(msg.sender, _amount);
+        require(asset.transfer(msg.sender, _amount), "Failed to transfer asset when redeemed");
         emit Redeemed(msg.sender, _amount, convertToART(_amount));
     }
 
@@ -349,11 +328,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @param _account is the account the AHR is being burned from
 @param _amount is the wETH amount of AHR being burned
 **/
-    function burn(address _account, uint256 _amount) external {
-        require(
-            msg.sender == address(MMF),
-            "msg.sender is not the Money Market Control contract"
-        );
+    function burn(address _account, uint256 _amount) external nonReentrant onlyMMC{
         uint256 assetAmount =
             UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
         uint256 artAmount = convertToART(assetAmount);
@@ -368,11 +343,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @param _account is the account receiving the ALR back
 @param _amount is the wETH value of the ALR being returned
 **/
-    function mintCollat(address _account, uint256 _amount) external {
-        require(
-            msg.sender == address(MMF),
-            "msg.sender is not the Money Market Control contract"
-        );
+    function mintCollat(address _account, uint256 _amount) external onlyMMC{
         uint256 assetAmount =
             UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
         uint256 artAmount = convertToART(assetAmount);
@@ -412,17 +383,21 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             vars.accountBorrows,
             _borrowAmount
         );
+        require(vars.mathErr == MathError.NO_ERROR, "Math Error in accountBorrowsNew calculation");
+
         //totalBorrowsNew = totalBorrows + borrowAmount
         (vars.mathErr, vars.totalBorrowsNew) = addUInt(
             totalBorrows,
             _borrowAmount
         );
+        require(vars.mathErr == MathError.NO_ERROR, "Math Error in totalBorrowsNew calculation");
+
         //We write the previously calculated values into storage
         accountBorrows[_borrower].principal = vars.accountBorrowsNew;
         accountBorrows[_borrower].interestIndex = borrowIndex;
         totalBorrows = vars.totalBorrowsNew;
         //send them their loaned asset
-        asset.transfer(_borrower, _borrowAmount);
+        require(asset.transfer(_borrower, _borrowAmount), "asset transfer failed during borrow");
         emit Borrowed(_borrower, _borrowAmount);
     }
 
@@ -466,11 +441,20 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             vars.accountBorrows,
             vars.repayAmount
         );
+
+        require(vars.mathErr == MathError.NO_ERROR, "Math Error in accountBorrowsNew calculation");
+
         //totalBorrowsNew = totalBorrows - actualRepayAmount
         (vars.mathErr, vars.totalBorrowsNew) = subUInt(
             totalBorrows,
             vars.repayAmount
         );
+        //in rare cases when repayAmount == 0 a rounding issue can cause an underflow
+        //to avoid this we just assert that vars.totalBorrowsNew = 0 if there is a math error
+        if(vars.mathErr == MathError.NO_ERROR) {
+          vars.totalBorrowsNew = 0;
+        }
+
         /* We write the previously calculated values into storage */
         accountBorrows[borrower].principal = vars.accountBorrowsNew;
         accountBorrows[borrower].interestIndex = vars.borrowerIndex;
@@ -483,7 +467,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @notice getwETHWorthOfART is used to calculate the current wETH price of the input amount of Asko Risk Token
 @param _amount is the amount ART being looked up
 **/
-    function getwETHWorthOfART(uint256 _amount) public returns (uint256) {
+    function getwETHWorthOfART(uint256 _amount) external returns (uint256) {
         uint256 assetValOfArt = convertFromART(_amount);
         //get asset price of wETH
         uint256 wETHAmountOfAsset =
@@ -506,6 +490,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             _amountOfAsset,
             Exp({mantissa: exchangeRateCurrent()})
         );
+        require(mathErr == MathError.NO_ERROR, "Math Error in artTokens calculation");
+
         return artTokens;
     }
 
@@ -522,6 +508,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             Exp({mantissa: exchangeRateCurrent()}),
             _amountOfART
         );
+        require(mathErr == MathError.NO_ERROR, "Math Error in assetVal calculation");
+
         return assetVal;
     }
 
@@ -531,6 +519,14 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
     **/
     function _updateInterestModel(address _newModel) external onlyOwner {
         interestRateModel = InterestRateModel(_newModel);
+    }
+
+    /**
+    @notice _updateOracle is used to update the oracle of this ART
+    @param _newOracle is the address of the new oracle
+    **/
+    function _updateOracle(address _newOracle) external onlyOwner {
+          UOF = UniswapOracleFactoryI(_newOracle);
     }
 
     /**
@@ -551,12 +547,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         address _liquidator,
         address _asset,
         address _account
-    ) external nonReentrant {
-        //require that this function can only be called by control contract
-        require(
-            msg.sender == address(MMF),
-            "msg.sender is not the Money Market Control contract"
-        );
+    ) external nonReentrant onlyMMC{
         //get asset amount of the input wETH price
         uint256 assetVal =
             UOF.getUnderlyingAssetPriceOfwETH(address(asset), _liquidateValue);
@@ -630,6 +621,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
           _amountOfAsset,
           Exp({mantissa: exchangeRatePrior()})
       );
+      require(mathErr == MathError.NO_ERROR, "Math Error in artTokens calculation");
+
       return artTokens;
     }
     /**
@@ -649,6 +642,8 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
           Exp({mantissa: exchangeRatePrior()}),
           _amountOfART
         );
+        require(mathErr == MathError.NO_ERROR, "Math Error in artTokens calculation");
+
         return artTokens;
     }
 
@@ -705,11 +700,15 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
                 totalBorrows,
                 totalReserves
             );
+            require(mathErr == MathError.NO_ERROR, "Math Error in cashPlusBorrowsMinusReserves calculation");
+
             //calculate exchange rate
             (mathErr, exchangeRate) = getExp(
                 cashPlusBorrowsMinusReserves,
                 totalSupply()
             );
+            require(mathErr == MathError.NO_ERROR, "Math Error in exchangeRate calculation");
+
             return (exchangeRate.mantissa);
         }
     }
@@ -775,7 +774,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         uint256 result;
 
         //Get borrowBalance and borrowIndex
-        BorrowSnapshot storage borrowSnapshot = accountBorrows[account];
+        BorrowSnapshot memory borrowSnapshot = accountBorrows[account];
 
         //If borrowBalance = 0 then borrowIndex is likely also 0.
         //Rather than failing the calculation with a division by 0, we immediately return 0 in this case.

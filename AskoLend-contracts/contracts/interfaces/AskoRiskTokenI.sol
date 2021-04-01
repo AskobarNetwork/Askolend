@@ -70,4 +70,7 @@ abstract contract AskoRiskTokenI {
     function _withdrawFee(address _targetAdd) external virtual;
 
     function mintCollat(address _account, uint256 _amount) external virtual;
+
+    function _updateOracle(address _newOracle) external virtual;
+
 }

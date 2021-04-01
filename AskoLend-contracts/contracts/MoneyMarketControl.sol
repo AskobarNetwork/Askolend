@@ -107,9 +107,7 @@ contract MoneyMarketControl is Ownable, Exponential {
         string calldata _assetSymbol
     ) external onlyOwner {
         instanceCount++;
-
-address oracle = address(Oracle.createNewOracle(_assetContractAdd));
-
+        address oracle = address(Oracle.createNewOracle(_assetContractAdd));
         address _MMinstance =
             MMF.createMMI(
                 _assetContractAdd,
@@ -223,7 +221,6 @@ address oracle = address(Oracle.createNewOracle(_assetContractAdd));
         uint256 _amount,
         uint256 _amountBorrowed
     ) external onlyMMI {
-        require(isMMI[msg.sender] || isALR[msg.sender], "not a asko contract");
         require(isALR[_ALR], "Input ALR address is not an ALR contract");
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .add(_amount);
@@ -490,7 +487,7 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     @notice getAsset returns an array of all assets whitelisted on the platform.
     @dev this can be used to loop through and retreive each assets MoneyMarket by the front end
     **/
-    function getAssets() public view returns (address[] memory) {
+    function getAssets() external view returns (address[] memory) {
         return assets;
     }
 
@@ -500,7 +497,7 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     @param _ALR is the address of the ALR being used as collateral
     **/
     function checkCollateralizedALR(address _borrower, address _ALR)
-        public
+        external
         view
         returns (uint256)
     {

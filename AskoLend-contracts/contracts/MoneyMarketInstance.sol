@@ -41,16 +41,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     mapping(address => address) public collateralLockedALR;
     mapping(address => bool) public cantCollateralize;
 
-    /**
-@notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Factory contract
-**/
-    modifier onlyMMFactory() {
-        require(
-            msg.sender == address(MMF),
-            "Msg.sender is not the Money Market Control contract"
-        );
-        _;
-    }
+
 
     event LentToAHR(address lender, uint256 amount);
     event LentToALR(address lender, uint256 amount);
@@ -112,7 +103,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 **/
     function _setUpAHR(address _InterestRateModel, uint256 _initialExchangeRate)
         external
-        onlyMMFactory
+        onlyOwner
     {
         bytes memory ahrname = abi.encodePacked("AHR-");
         ahrname = abi.encodePacked(ahrname, assetName);
@@ -152,7 +143,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 **/
     function _setUpALR(address _InterestRateModel, uint256 _initialExchangeRate)
         external
-        onlyMMFactory
+        onlyOwner
     {
         bytes memory alrname = abi.encodePacked("AlR-");
         alrname = abi.encodePacked(alrname, assetName);
@@ -307,8 +298,13 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                     accountBorrowsALR
                 );
             }
+            require(accountBorrowsAHR > 0, "There is nothing to repay on this account");
             payAmountAHR = AHR.repayBorrow(accountBorrowsAHR, msg.sender); //pay off towards AHR
-            asset.safeTransferFrom(msg.sender, address(AHR), accountBorrowsAHR);
+            asset.safeTransferFrom(
+              msg.sender,
+              address(AHR),
+              accountBorrowsAHR
+            );
             ///get wETH value of what was repayed
             uint256 _wETHvalRepayed =
                 UOF.getUnderlyingPriceofAsset(address(asset), totalBorrows);
@@ -326,39 +322,39 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                 if (accountBorrowsALR >= _repayAmount) {
                     //if repay amount is less than whats owed in ALR
                     //transfer asset from the user to the ALR contract
-                    asset.safeTransferFrom(
-                        msg.sender,
-                        address(ALR),
-                        _repayAmount
-                    );
                     payAmountALR = ALR.repayBorrow(_repayAmount, msg.sender); // repay amount to ALR
+                    asset.safeTransferFrom(
+                      msg.sender,
+                      address(ALR),
+                      _repayAmount
+                    );
 
                     emit Repayed(msg.sender, 0, _repayAmount);
                 } else {
                     ///////////////repay all of ALR && some AHR///////////////////
                     //if repay amount is MORE than ALR owed
                     uint256 amountToAHR = _repayAmount.sub(accountBorrowsALR); //calculate amount going to AHR
-                    asset.safeTransferFrom(
-                        msg.sender,
-                        address(ALR),
-                        accountBorrowsALR
-                    );
                      //transfer remaining ALR bal to ALR
                     payAmountALR = ALR.repayBorrow(0, msg.sender); //pay off ALR
                     asset.safeTransferFrom(
-                        msg.sender,
-                        address(AHR),
-                        amountToAHR
-                    ); // transfer remaining payment amount to AHR
+                      msg.sender,
+                      address(ALR),
+                      accountBorrowsALR
+                    );
                     payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
+                    asset.safeTransferFrom(
+                      msg.sender,
+                      address(AHR),
+                      amountToAHR
+                    ); // transfer remaining payment amount to AHR
                     //if payAmountAHR is greater than 0 transfer asset from the user to the AHR contract
                     emit Repayed(msg.sender, payAmountAHR, payAmountALR);
                 }
             } else {
                 //if amount owed to ALR is zero
-                //transfer asset from the user to this contract
-                asset.safeTransferFrom(msg.sender, address(AHR), payAmountAHR);
+                //transfer asset from the user to the AHR contract
                 payAmountAHR = AHR.repayBorrow(_repayAmount, msg.sender); //pay towards AHR
+                asset.safeTransferFrom(msg.sender, address(AHR), _repayAmount);
                 emit Repayed(msg.sender, payAmountAHR, 0);
             }
         }
@@ -460,29 +456,31 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     @notice these are admin functions for updating individual ART values. All of these functions are protected
     and can only be called by the MoneyMarketControl contract. These functions can be considered as Internal functions to the platform.
     **/
-    function updateALR(address _newModel) external onlyMMFactory {
+    function updateALR(address _newModel) external onlyOwner {
         ALR._updateInterestModel(_newModel);
     }
 
-    function updateAHR(address _newModel) external onlyMMFactory {
+    function updateAHR(address _newModel) external onlyOwner {
         AHR._updateInterestModel(_newModel);
     }
 
-    function setRRAHR(uint256 _RR) external onlyMMFactory {
+    function setRRAHR(uint256 _RR) external onlyOwner {
         AHR.setReserveRatio(_RR);
     }
 
-    function setRRALR(uint256 _RR) external onlyMMFactory {
+    function setRRALR(uint256 _RR) external onlyOwner {
         ALR.setReserveRatio(_RR);
     }
 
-    function updateDivisor(uint256 _NewD) external onlyMMFactory {
+    function updateDivisor(uint256 _NewD) external onlyOwner {
         divisor = _NewD;
         emit divisorUpdated(_NewD);
     }
 
-    function _upgradeMMIOracle(address _newOracle) external onlyMMFactory {
+    function _upgradeMMIOracle(address _newOracle) external onlyOwner {
         UOF = UniswapOracleFactoryI(_newOracle);
+        ALR._updateOracle(_newOracle);
+        AHR._updateOracle(_newOracle);
     }
 
     function upgradeMoneyMarketFactory(address _newMMF) external onlyOwner {
@@ -502,11 +500,11 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     /**
     @notice getAssetAdd allows for easy retrieval of a Money Markets underlying asset's address
     **/
-    function getAssetAdd() public view returns (address) {
+    function getAssetAdd() external view returns (address) {
         return address(asset);
     }
 
-    function checkIfALR(address _inQuestion) public view returns (bool) {
+    function checkIfALR(address _inQuestion) external view returns (bool) {
         return MMF._checkIfALR(_inQuestion);
     }
 }

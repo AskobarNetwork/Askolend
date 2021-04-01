@@ -46,7 +46,7 @@ contract UniswapOracleFactory is Ownable {
           a new asset is whitelisted
   @param token is the address of the token that this oracle will provide a wETH price feed for
   **/
-    function createNewOracle(address token) public onlyOwner returns (address) {
+    function createNewOracle(address token) external onlyOwner returns (address) {
         address _oracle =
             address(
                 new UniswapOracleInstance(address(factory), token, wETH_add)
@@ -60,7 +60,7 @@ contract UniswapOracleFactory is Ownable {
 @param _MMI is the address of the MoneyMarketInstance
 @param _asset is the address of the MoneyMarketInstancesunderlying asset
 **/
-    function linkMMI(address _MMI, address _asset) public {
+    function linkMMI(address _MMI, address _asset) external {
         address oracle = instanceTracker[_asset];
         instanceTracker[_MMI] = oracle;
     }
@@ -71,7 +71,7 @@ contract UniswapOracleFactory is Ownable {
 @return returns the price of the asset
 **/
     function getUnderlyingPriceofAsset(address _MMI, uint256 _amount)
-        public
+        external
         returns (uint256)
     {
         UniswapOracleInstance oracle =
@@ -85,7 +85,7 @@ contract UniswapOracleFactory is Ownable {
     @return returns the price of the asset
     **/
     function viewUnderlyingPriceofAsset(address _MMI, uint256 _amount)
-        public
+        external
         view
         returns (uint256)
     {
@@ -100,7 +100,7 @@ contract UniswapOracleFactory is Ownable {
 @return returns the price of the asset
 **/
     function getUnderlyingAssetPriceOfwETH(address _MMI, uint256 _amount)
-        public
+        external
         returns (uint256)
     {
         UniswapOracleInstance oracle =
@@ -114,7 +114,7 @@ contract UniswapOracleFactory is Ownable {
     @return returns the price of the asset
     **/
     function viewUnderlyingAssetPriceOfwETH(address _MMI, uint256 _amount)
-        public
+        external
         view
         returns (uint256)
     {
@@ -124,7 +124,7 @@ contract UniswapOracleFactory is Ownable {
     }
 
     /**
-@notice getPathForERC20Swap is an public function used to create a uniswap trade path for two input
+@notice getPathForERC20Swap is an external function used to create a uniswap trade path for two input
       ERC20 tokens using WETH as a medium of exchange.
 @param _tokenA is the address of the token being exchanged from
 @param _tokenB is the address of the token being exchanged to

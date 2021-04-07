@@ -95,27 +95,32 @@ contract UniswapOracleInstance is Ownable {
             // ensure that at least one full period has passed since the last update
             // cumulative price is in (uq112x112 price * seconds) units so we simply wrap it after division by time elapsed
             if (token0 == tokenA) {
+               uint256 diff0 = price0Cumulative.sub(price0CumulativeLast);
                 price0Average = FixedPoint.uq112x112(
                     uint224(
-                        (price0Cumulative - price0CumulativeLast) / timeElapsed
+                        (diff0) / timeElapsed
                     )
                 );
+
+                 uint256 diff1 = price1Cumulative.sub(price1CumulativeLast);
                 price1Average = FixedPoint.uq112x112(
                     uint224(
-                        (price1Cumulative - price1CumulativeLast) / timeElapsed
+                        (diff1) / timeElapsed
                     )
                 );
                 price0CumulativeLast = price0Cumulative;
                 price1CumulativeLast = price1Cumulative;
             } else {
+              uint256 diff0 = price1Cumulative.sub(price0CumulativeLast);
                 price0Average = FixedPoint.uq112x112(
                     uint224(
-                        (price1Cumulative - price0CumulativeLast) / timeElapsed
+                        (diff0) / timeElapsed
                     )
                 );
+                   uint256 diff1 = price0Cumulative.sub(price1CumulativeLast);
                 price1Average = FixedPoint.uq112x112(
                     uint224(
-                        (price0Cumulative - price1CumulativeLast) / timeElapsed
+                        (diff1) / timeElapsed
                     )
                 );
                 price0CumulativeLast = price1Cumulative;

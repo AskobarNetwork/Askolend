@@ -135,7 +135,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
         reserveFactorMantissa = 10000000000000000;
         pair = UOF.getPairAdd(address(asset));
         uniswapRouter = IUniswapV2Router02(UOF.uniswap_router_add());
-        require(asset.approve(address(uniswapRouter), 10000000000000000000000000000000), "Asset approval failed");
+        require(asset.approve(address(uniswapRouter), uint(-1)), "Asset approval failed");
         transferOwnership(_MoneyMarketInstance);
     }
 
@@ -343,7 +343,7 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
 @param _account is the account receiving the ALR back
 @param _amount is the wETH value of the ALR being returned
 **/
-    function mintCollat(address _account, uint256 _amount) external onlyMMC{
+    function mintCollat(address _account, uint256 _amount) external nonReentrant onlyMMC{
         uint256 assetAmount =
             UOF.getUnderlyingAssetPriceOfwETH(address(asset), _amount);
         uint256 artAmount = convertToART(assetAmount);

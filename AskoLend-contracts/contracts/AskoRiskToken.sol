@@ -788,17 +788,15 @@ is used to set up the name, symbol, and decimal variables for the AskoRiskToken 
             borrowSnapshot.principal,
             borrowIndex
         );
-        if (mathErr != MathError.NO_ERROR) {
-            return (0);
-        }
+        require(mathErr == MathError.NO_ERROR, "borrowBalancePrior: principalTimesIndex calculation error");
+
 
         (mathErr, result) = divUInt(
             principalTimesIndex,
             borrowSnapshot.interestIndex
         );
-        if (mathErr != MathError.NO_ERROR) {
-            return (0);
-        }
+        require(mathErr == MathError.NO_ERROR, "borrowBalancePrior: result calculation error");
+
 
         return (result);
     }

@@ -169,12 +169,12 @@ contract("MoneyMarketControl", (accounts) => {
     await linkMMI.repay(web3.utils.toWei("0"), {
       from: account_one,
     });
-
     let linkAfterLend = await link.balanceOf(account_four);
      linkAHRbal = await linkAHR.balanceOf(account_four);
      linkALRbal = await linkALR.balanceOf(account_four);
      linkAHRbalValAsset = await linkAHR.viewConvertFromART(linkAHRbal);
      linkALRbalValAsset = await linkALR.viewConvertFromART(linkALRbal);
+
     console.log("the value of the AHR is: " + web3.utils.fromWei(linkAHRbalValAsset, "ether"));
     console.log("the value of the ALR is: " + web3.utils.fromWei(linkALRbalValAsset, "ether"));
 

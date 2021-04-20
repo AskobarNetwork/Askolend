@@ -421,10 +421,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         vars.borrowedValuecollatRatio = vars.borrowedValue.add(vars.halfVal);
         /**
       need to check if the amount of collateral is less than borrowedValuecollatRatio of the borrowed amount
-      if the collateral value is greater than or equal to borrowedValuecollatRatio of the borrowed value than we liquidate
+      if the collateral value is greater than or equal to borrowedValuecollatRatio of the borrowed value than we dont liquidate
       **/
         require(
-            vars.collatValue < vars.borrowedValuecollatRatio,
+            vars.collatValue <= vars.borrowedValuecollatRatio,
             "Account is compliant cannot liquidate"
         );
         //call MoneyMarketControl which will track values and call the ART token for the swap

@@ -24,6 +24,7 @@ contract UniswapOracleFactory is Ownable {
 
     mapping(address => address) public instanceTracker; //maps erc20 address to the assets MoneyMarketInstance
 
+event MMIlinked(address MMI, address asset);
     /**
 @notice constructor function is fired once during contract creation. This constructor initializes uniswapRouter
         as a usable contract instance within the UniswapOracleFactory
@@ -60,9 +61,10 @@ contract UniswapOracleFactory is Ownable {
 @param _MMI is the address of the MoneyMarketInstance
 @param _asset is the address of the MoneyMarketInstancesunderlying asset
 **/
-    function linkMMI(address _MMI, address _asset) external {
+    function linkMMI(address _MMI, address _asset) external onlyOwner {
         address oracle = instanceTracker[_asset];
         instanceTracker[_MMI] = oracle;
+        emit MMIlinked(_MMI, _asset);
     }
 
     /**

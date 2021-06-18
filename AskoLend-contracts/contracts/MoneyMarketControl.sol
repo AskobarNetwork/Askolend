@@ -40,7 +40,6 @@ contract MoneyMarketControl is Ownable, Exponential {
     mapping(address => bool) public isMMI;
     mapping(address => bool) public isALR;
 
-
     /**
   @notice onlyMMFactory is a modifier used to make a function only callable by the Money Market Instance contract
   **/
@@ -224,7 +223,9 @@ contract MoneyMarketControl is Ownable, Exponential {
         require(isALR[_ALR], "Input ALR address is not an ALR contract");
         collateralTracker[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
             .add(_amount);
-        actualAmountBorrowed[_borrower][_ALR] = collateralTracker[_borrower][_ALR]
+        actualAmountBorrowed[_borrower][_ALR] = collateralTracker[_borrower][
+            _ALR
+        ]
             .add(_amountBorrowed);
         AskoRiskTokenI alr = AskoRiskTokenI(_ALR);
         alr.burn(_borrower, _amount);
@@ -439,12 +440,12 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
             }
             // if the fee tracker is equal to the number of MMI's
             if (feeTracker == length) {
-              //set it to zero
-              feeTracker = 0;
-              //if not
+                //set it to zero
+                feeTracker = 0;
+                //if not
             } else {
-              //track which MMI the loop is on
-              feeTracker = x;
+                //track which MMI the loop is on
+                feeTracker = x;
             }
         }
     }
@@ -461,6 +462,20 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
         MoneyMarketInstanceI MMI =
             MoneyMarketInstanceI(instanceTracker[_asset]);
         MMI._changeColatRatio(_newCR);
+    }
+
+    /**
+@notice setLiquidationBot allows the admin account to set the address of the liquidation bot on an individual MMI
+@param asset is the address of the asset whos MoneyMarket is being updated
+@param _bot is the address of the liquidation bot
+*/
+    function setLiquidationBot(address _asset, address _bot)
+        external
+        onlyOwner
+    {
+        MoneyMarketInstanceI MMI =
+            MoneyMarketInstanceI(instanceTracker[_asset]);
+        MMI.setLiquidationBot(_bot);
     }
 
     ///////////View Functions/////////////////////////
@@ -480,7 +495,7 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
         //get borrowers art balance
         uint256 artBal = _ART.balanceOf(_borrower);
         //get wETH value of art balance
-        return  _ART.viewwETHWorthOfART(artBal);
+        return _ART.viewwETHWorthOfART(artBal);
     }
 
     /**
@@ -512,6 +527,4 @@ v@notice upgradeMoneyMarketFactory allows the contract owner to update the Money
     function _checkIfALR(address __inQ) external view returns (bool) {
         return isALR[__inQ];
     }
-
-
 }

@@ -22,6 +22,10 @@ const eos = "0x56b6fB708fC5732DEC1Afc8D8556423A2EDcCbD6";
 const cake = "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82";
 const uni = "0xbf5140a22578168fd562dccf235e5d43a02ce9b1";
 
+const belt = "0xe0e514c71282b6f4e823703a39374cf58dc3ea4f";
+const bunny = "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51";
+const eps = "0xa7f552078dcc247c2684336020c03648500c6d9f";
+const alice = "0xac51066d7bec65dc4589368da368b212745d63e8";
 
 module.exports = async (deployer, network) => {
   MMC = await MoneyMarketControl.deployed();
@@ -30,7 +34,7 @@ module.exports = async (deployer, network) => {
   await MMC.whitelistAsset(bnb, 2, "Wrapped BNB", "wBNB");
   console.log("BNB White Listed");
   await MMC.setUpAHR(
-    "50000000000000000", //base rate per year(approx target base APR)
+    "7000000000000000000", //base rate per year(approx target base APR)
     "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
@@ -39,7 +43,7 @@ module.exports = async (deployer, network) => {
   );
   console.log("Asko Asko High Risk Token Created");
   await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
+    "3000000000000000000", //base rate per year(approx target base APR)
     "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
@@ -47,28 +51,118 @@ module.exports = async (deployer, network) => {
     bnb
   );
   console.log("Asko Asko Low Risk Token Created");
-  ////////////////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////////
   console.log("Setting up Asko Money Market Instance");
-  await MMC.whitelistAsset(chainlink, 2, "ChainLink", "LINK");
-  console.log("ChainLink White Listed");
+  await MMC.whitelistAsset(alice, 2, "My Neighbor Alice ", "ALICE");
+  console.log("BNB White Listed");
   await MMC.setUpAHR(
-    "50000000000000000", //base rate per year(approx target base APR)
+    "30000000000000000000", //base rate per year(approx target base APR)
     "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
     "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    chainlink //asset address
+    alice //asset address
   );
   console.log("Asko Asko High Risk Token Created");
   await MMC.setUpALR(
-    "20000000000000000", //base rate per year(approx target base APR)
+    "10000000000000000000", //base rate per year(approx target base APR)
     "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
     "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
     "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
     "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
-    chainlink
+    alice
   );
   console.log("Asko Asko Low Risk Token Created");
+  // ////////////////////////////////////////////////////////////////////////////////////////////
+
+  // console.log("Setting up Asko Money Market Instance");
+  // await MMC.whitelistAsset(belt, 2, "Belt", "BELT");
+  // console.log("Belt White Listed");
+  // await MMC.setUpAHR(
+  //   "30000000000000000000", //base rate per year(approx target base APR)(.05%)
+  //   "33333333333300000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   belt //asset address
+  // );
+  // console.log("Asko Asko High Risk Token Created");
+  // await MMC.setUpALR(
+  //   "10000000000000000000", //base rate per year(approx target base APR)(.02%)
+  //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   belt
+  // );
+  // console.log("Asko Asko Low Risk Token Created");
+  // console.log("Setting up Asko Money Market Instance");
+  // await MMC.whitelistAsset(bunny, 2, "Pancake Bunny", "BUNNY");
+  // console.log("Pancake Bunny White Listed");
+  // await MMC.setUpAHR(
+  //   "300000000000000000000", //base rate per year(approx target base APR)
+  //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   bunny //asset address
+  // );
+  // console.log("Asko Asko High Risk Token Created");
+  // await MMC.setUpALR(
+  //   "150000000000000000000", //base rate per year(approx target base APR)
+  //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   bunny
+  // );
+  // console.log("Asko Asko Low Risk Token Created");
+  // // ////////////////////////////////////////////////////////////////////////////////////////////
+  // console.log("Setting up Asko Money Market Instance");
+  // await MMC.whitelistAsset(eps, 2, "Ellipsis", "EPS");
+  // console.log("Ellipsis White Listed");
+  // await MMC.setUpAHR(
+  //   "50000000000000000", //base rate per year(approx target base APR)
+  //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   bnb //asset address
+  // );
+  // console.log("Asko Asko High Risk Token Created");
+  // await MMC.setUpALR(
+  //   "20000000000000000", //base rate per year(approx target base APR)
+  //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   bnb
+  // );
+  // console.log("Asko Asko Low Risk Token Created");
+  // // ////////////////////////////////////////////////////////////////////////////////////////////
+  // // ////////////////////////////////////////////////////////////////////////////////////////////
+
+  // console.log("Setting up Asko Money Market Instance");
+  // await MMC.whitelistAsset(chainlink, 2, "ChainLink", "LINK");
+  // console.log("ChainLink White Listed");
+  // await MMC.setUpAHR(
+  //   "50000000000000000", //base rate per year(approx target base APR)
+  //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   chainlink //asset address
+  // );
+  // console.log("Asko Asko High Risk Token Created");
+  // await MMC.setUpALR(
+  //   "20000000000000000", //base rate per year(approx target base APR)
+  //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)
+  //   "40", //Jump Multiplier Per Year(the multiplier per block after hitting a specific utilizastion point)
+  //   "900000000000000000", //optimal(this is the utilizastion point or "kink" at which the jump multiplier is applied)
+  //   "1000000000000000000", //intitial exchange rate(the rate at which the initial exchange of asset/ART is set)
+  //   chainlink
+  // );
+  // console.log("Asko Asko Low Risk Token Created");
   // ////////////////////////////////////////////////////////////////////////////////////////////
   // console.log("Setting up Asko Money Market Instance");
   // await MMC.whitelistAsset(tether, 2, "Tether", "USDT");
@@ -137,8 +231,8 @@ module.exports = async (deployer, network) => {
   // console.log("Asko Asko Low Risk Token Created");
   // ////////////////////////////////////////////////////////////////////////////////////////////
   // console.log("Setting up Asko Money Market Instance");
-  // await MMC.whitelistAsset(litecoin, 2, "LightCoin", "LTC");
-  // console.log("LightCoin White Listed");
+  // await MMC.whitelistAsset(litecoin, 2, "LiteCoin", "LTC");
+  // console.log("LiteCoin White Listed");
   // await MMC.setUpAHR(
   //   "50000000000000000", //base rate per year(approx target base APR)
   //   "22222222222200000", //multiplier per year(rate of increase in interest w/ utilizastion)

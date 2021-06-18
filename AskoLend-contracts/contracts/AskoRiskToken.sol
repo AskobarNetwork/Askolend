@@ -29,7 +29,7 @@ contract AskoRiskToken is Ownable, ERC20, Exponential, ReentrancyGuard {
     uint256 public borrowIndex;
     uint256 public totalBorrows;
     uint256 public totalReserves;
-    uint256 public constant borrowRateMaxMantissa = 0.0005e16;
+    uint256 public constant borrowRateMaxMantissa = 0.05e16;
 
     address public pair;
 

@@ -27,6 +27,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
     uint256 public collatRatio;
     address public ahr;
     address public alr;
+    address public liquidationBot;
 
     string public assetName;
     string public assetSymbol;
@@ -40,8 +41,6 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 
     mapping(address => address) public collateralLockedALR;
     mapping(address => bool) public cantCollateralize;
-
-
 
     event LentToAHR(address lender, uint256 amount);
     event LentToALR(address lender, uint256 amount);
@@ -262,7 +261,12 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
             "not enough collateral"
         );
         //track wETH value being locked for the loan
-        MMF.trackCollateralUp(msg.sender, _collateral, vars.collateralNeeded, vars.amountValue);
+        MMF.trackCollateralUp(
+            msg.sender,
+            _collateral,
+            vars.collateralNeeded,
+            vars.amountValue
+        );
         //cut amount of tokens in half
         vars.half = _amount.div(2);
 
@@ -291,20 +295,19 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         ///////////////repay all///////////////
         if (_repayAmount == 0) {
             if (accountBorrowsALR != 0) {
-              payAmountALR = ALR.repayBorrow(accountBorrowsALR, msg.sender); // repay amount to ALR
+                payAmountALR = ALR.repayBorrow(accountBorrowsALR, msg.sender); // repay amount to ALR
                 asset.safeTransferFrom(
                     msg.sender,
                     address(ALR),
                     accountBorrowsALR
                 );
             }
-            require(accountBorrowsAHR > 0, "There is nothing to repay on this account");
-            payAmountAHR = AHR.repayBorrow(accountBorrowsAHR, msg.sender); //pay off towards AHR
-            asset.safeTransferFrom(
-              msg.sender,
-              address(AHR),
-              accountBorrowsAHR
+            require(
+                accountBorrowsAHR > 0,
+                "There is nothing to repay on this account"
             );
+            payAmountAHR = AHR.repayBorrow(accountBorrowsAHR, msg.sender); //pay off towards AHR
+            asset.safeTransferFrom(msg.sender, address(AHR), accountBorrowsAHR);
             ///get wETH value of what was repayed
             uint256 _wETHvalRepayed =
                 UOF.getUnderlyingPriceofAsset(address(asset), totalBorrows);
@@ -324,9 +327,9 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                     //transfer asset from the user to the ALR contract
                     payAmountALR = ALR.repayBorrow(_repayAmount, msg.sender); // repay amount to ALR
                     asset.safeTransferFrom(
-                      msg.sender,
-                      address(ALR),
-                      _repayAmount
+                        msg.sender,
+                        address(ALR),
+                        _repayAmount
                     );
 
                     emit Repayed(msg.sender, 0, _repayAmount);
@@ -334,18 +337,18 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                     ///////////////repay all of ALR && some AHR///////////////////
                     //if repay amount is MORE than ALR owed
                     uint256 amountToAHR = _repayAmount.sub(accountBorrowsALR); //calculate amount going to AHR
-                     //transfer remaining ALR bal to ALR
+                    //transfer remaining ALR bal to ALR
                     payAmountALR = ALR.repayBorrow(0, msg.sender); //pay off ALR
                     asset.safeTransferFrom(
-                      msg.sender,
-                      address(ALR),
-                      accountBorrowsALR
+                        msg.sender,
+                        address(ALR),
+                        accountBorrowsALR
                     );
                     payAmountAHR = AHR.repayBorrow(amountToAHR, msg.sender); //pay off towards AHR
                     asset.safeTransferFrom(
-                      msg.sender,
-                      address(AHR),
-                      amountToAHR
+                        msg.sender,
+                        address(AHR),
+                        amountToAHR
                     ); // transfer remaining payment amount to AHR
                     //if payAmountAHR is greater than 0 transfer asset from the user to the AHR contract
                     emit Repayed(msg.sender, payAmountAHR, payAmountALR);
@@ -358,7 +361,6 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
                 emit Repayed(msg.sender, payAmountAHR, 0);
             }
         }
-
 
         //////////////fully repayed logic/////////////
         if (
@@ -397,6 +399,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         address _borrower,
         AskoRiskTokenI _ARTcollateralized
     ) external {
+        require(msg.sender == liquidationBot, "not the liquidation bot");
         //create local vars storage
         liquidateLocalVar memory vars;
         require(msg.sender != _borrower, "you cant liquidate yourself");
@@ -437,7 +440,7 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
         );
         //Half the returned asset amount and send half to each ART contract
         uint256 totalEarned = asset.balanceOf(address(this));
-        uint remaining = totalEarned.sub(totalBorrows);
+        uint256 remaining = totalEarned.sub(totalBorrows);
         asset.safeTransfer(address(ALR), accountBorrowsALR);
         asset.safeTransfer(address(AHR), accountBorrowsAHR);
         asset.safeTransfer(msg.sender, remaining);
@@ -494,6 +497,10 @@ contract MoneyMarketInstance is Ownable, Exponential, ReentrancyGuard {
 
     function _changeColatRatio(uint256 _newCR) external onlyOwner {
         collatRatio = _newCR;
+    }
+
+    function setLiquidationBot(address _bot) external onlyowner {
+        liquidationBot = _bot;
     }
 
     //////////////////View Functions/////////////////
